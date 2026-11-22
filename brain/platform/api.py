@@ -106,7 +106,10 @@ def db(request: Request) -> Iterator[Session]:
         session.close()
 
 
-DB = Annotated[Session, Depends(db)]
+# Commit/rollback before sending any success response. Request-scoped yield
+# cleanup happens after the body, allowing an immediate GET/worker to miss an
+# acknowledged write (and making a failed commit too late to reject success).
+DB = Annotated[Session, Depends(db, scope="function")]
 bearer = HTTPBearer(auto_error=False)
 
 

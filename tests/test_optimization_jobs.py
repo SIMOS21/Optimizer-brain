@@ -10,6 +10,7 @@ from types import SimpleNamespace
 import pytest
 from sqlalchemy import select, update
 from sqlalchemy.exc import DBAPIError
+from starlette.responses import Response
 
 from brain.platform.database import set_tenant
 from brain.platform.models import Membership, OptimizationJob, OptimizationRun, User, now
@@ -448,3 +449,41 @@ def test_postgres_concurrent_submissions_share_one_idempotent_job(platform):
     assert [response.status_code for response in responses] == [202, 202]
     assert responses[0].json()["id"] == responses[1].json()["id"]
     assert len(p.request("GET", p.base + "/optimization-jobs").json()["items"]) == 1
+
+
+@pytest.mark.parametrize("kind", ["job", "graph"])
+def test_mutation_commits_before_sending_success_response(platform, monkeypatch, kind):
+    """An immediate GET/worker must be able to observe an acknowledged job."""
+    p = platform
+    model_id = p.model()
+    events = []
+    original_factory = p.app.state.session_factory
+    original_call = Response.__call__
+
+    def tracking_factory():
+        session = original_factory()
+        original_commit = session.commit
+
+        def commit():
+            original_commit()
+            events.append("committed")
+
+        session.commit = commit
+        return session
+
+    async def track_response(response, scope, receive, send):
+        if response.status_code in (201, 202):
+            events.append("accepted")
+        await original_call(response, scope, receive, send)
+
+    monkeypatch.setattr(p.app.state, "session_factory", tracking_factory)
+    monkeypatch.setattr(Response, "__call__", track_response)
+    if kind == "job":
+        created = _submit_job(p, model_id, "commit-before-accepted-key")
+        assert created.status_code == 202
+    else:
+        graph = p.graph_body()
+        graph["graph"]["organization"]["version"] = "commit-order-test"
+        created = p.request("POST", p.base + "/graphs", json=graph)
+        assert created.status_code == 201, created.text
+    assert events == ["committed", "accepted"]

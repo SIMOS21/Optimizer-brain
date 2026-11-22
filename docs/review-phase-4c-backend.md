@@ -21,7 +21,7 @@ modification du kernel, du compositeur, de HiGHS, du vérificateur ou de l'API l
   consultée : trois jobs réussis (Linux, Windows et PostgreSQL, incluant le Studio).
   Ce résultat ne remplace pas la validation du correctif de cette revue.
 
-## Constat démontré et correction
+## Constats démontrés et corrections
 
 **Révocation de compte non relue à la publication.** Le child contrôlait le
 compte avant le calcul, puis réutilisait l'objet détaché dans une nouvelle
@@ -36,6 +36,22 @@ avec une désactivation concurrente. L'ordre organisation → utilisateur → jo
 évite de conserver un verrou pendant le solve. Le superviseur traite la sortie
 sans résultat comme un échec ; aucun résultat mathématique n'est inventé.
 
+**Succès HTTP antérieur au commit.** Le scope par défaut des dépendances yield
+FastAPI fermait la transaction après l'envoi du corps de réponse. Un test
+instrumentant `Session.commit` et le début de `Response.__call__` a reproduit
+l'ordre incorrect `accepted → committed` sur SQLite et PostgreSQL. La dépendance
+`DB` utilise désormais `Depends(db, scope="function")`. Quatre tests sur les
+créations de jobs et de graphes imposent `committed → accepted` ; aucun changement
+de route, payload ou contrat OpenAPI. Une lecture immédiatement suivante et le
+worker ne doivent pas manquer une écriture déjà annoncée comme réussie.
+
+La première CI de revue a rencontré un import graphe sans écran DRAFT dans le
+dernier parcours navigateur. Douze parcours passaient ; le même cas passait aussi
+10 fois localement. La course transactionnelle ci-dessus est démontrée et
+compatible avec ce symptôme, sans prétendre identifier rétrospectivement toute
+la cause de l'échec distant. Aucun sleep, retry automatique ou délai artificiel
+n'a été ajouté au parcours pour le masquer.
+
 ## Invariants examinés
 
 | Point | Code et preuve exercée |
@@ -47,6 +63,7 @@ sans résultat comme un échec ; aucun résultat mathématique n'est inventé.
 | Arrêt effectif | Groupe Linux/subreaper et Job Object Windows ; tests d'arrêt de descendants et de crash du superviseur |
 | CPU/mémoire | Budget CPU Windows et RLIMIT_CPU/AS Linux ; fixture contrôlée utilisant le bootstrap de production, plafond 128 MiB et budget 2 s, allocation totale de secours limitée à 256 MiB |
 | Atomicité | `record_run` revérifie indépendamment puis run/SUCCEEDED partagent la transaction ; expiration simulée après création du run entraîne son rollback |
+| Accusé HTTP durable | Commit de la dépendance SQLAlchemy avant envoi de la réponse ; ordre instrumenté sur créations graphes/jobs sous SQLite et PostgreSQL |
 | Annulation/réussite | Verrous organisation/job et garde SQL des états terminaux ; demande séparée de la confirmation, course avec worker testée, succès conservé |
 | Intégrité du résultat | Une solution volontairement corrompue est rejetée par la revérification à la persistance ; aucun run créé |
 | Crash/résultat obsolète | Échec après expiration, aucune reprise automatique ; tentative périmée sans run, historique terminal protégé par trigger |
@@ -129,7 +146,8 @@ Windows / PowerShell, Python 3.14.3, PostgreSQL 17, Node 24.13.0, npm 11.6.2.
 | Baseline Python avec PostgreSQL | **320 passed, 6 skipped, 2 warnings**, 62,22 s |
 | Reproduction avant correction | **2 failed, 2 passed** : révocation du compte acceptée à tort sur SQLite et PostgreSQL ; adhésion déjà refusée |
 | Révocation après correction | **4 passed**, 5,38 s |
-| Suite Python finale avec PostgreSQL | **332 passed, 7 skipped, 2 warnings**, 74,82 s |
+| Commit avant confirmation HTTP, après correction | **4 passed**, 4,58 s ; test d'ordre auparavant en échec sur SQLite et PostgreSQL |
+| Suite Python finale avec PostgreSQL | **336 passed, 7 skipped, 2 warnings**, 77,88 s |
 | Limites CPU/mémoire et arbres de processus Windows, test ciblé | **4 passed**, 10,04 s |
 | Ruff check / format | Réussis ; **50 fichiers** conformes au périmètre de formatage étendu |
 | mypy strict | Réussi, **36 fichiers** |
@@ -137,7 +155,7 @@ Windows / PowerShell, Python 3.14.3, PostgreSQL 17, Node 24.13.0, npm 11.6.2.
 | TypeScript strict / build / lint | Réussis ; `npm run typecheck`, `npm run build`, `npm run lint` |
 | Contrats | Export OpenAPI testé par pytest ; `openapi-typescript --check` réussi, types inchangés |
 | Vitest | **37 passed**, 4 fichiers, 5,12 s |
-| Playwright, bundle compilé + API sécurisée + PostgreSQL réel | **13 passed**, 21,1 s ; régressions usine/université et permissions |
+| Playwright, bundle compilé + API sécurisée + PostgreSQL réel | **13 passed**, 19,0 s après correction transactionnelle ; régressions usine/université et permissions |
 
 Les **sept skips** finaux correspondent exclusivement aux variantes SQLite des
 tests de worker/file/concurrence PostgreSQL. Leurs variantes PostgreSQL sont
@@ -154,8 +172,12 @@ explicitement nommée `optimizer_brain_test`. Les parcours navigateur ajoutent d
 versions synthétiques, sans altérer les versions/historiques existants ; leurs
 captures sont dans `frontend/test-results/review-4c-screenshots`, ignoré par Git.
 
-La CI du correctif poussé reste à consulter ; la CI initiale verte de `b82a65a`
-ne constitue pas une preuve d'exécution de ces nouveaux tests. Les parcours
+La [première CI de revue](https://github.com/SIMOS21/Optimizer-brain/actions/runs/45051501208)
+au commit `dcc3f0b` a validé Linux/Windows (296 passed, 43 skipped chacun),
+PostgreSQL (332 passed, 7 skipped), Vitest (37) et 12/13 parcours navigateur.
+L'échec du treizième parcours est conservé dans ce compte rendu ; une nouvelle
+CI après correction transactionnelle doit encore être consultée. La CI initiale
+verte de `b82a65a` ne prouve pas l'exécution des nouveaux tests. Les parcours
 Playwright restent ceux du Studio 4B : ils ne sont pas présentés comme une UI 4C.
 
 L'intégration de la PR #2 reste une étape humaine explicite. Aucune fusion dans

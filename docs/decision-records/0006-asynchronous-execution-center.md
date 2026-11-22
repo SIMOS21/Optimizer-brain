@@ -45,6 +45,12 @@ verrou SQL n'est conservé pendant le calcul. Les tests reproduisent une révoca
 du compte ou de l'adhésion après résolution et avant publication, puis vérifient
 l'absence de run. Voir [la revue backend](../review-phase-4c-backend.md).
 
+La dépendance SQLAlchemy des routes utilise explicitement le scope FastAPI
+`function` : le commit/rollback et la fermeture de session précèdent l'envoi de
+la réponse. Le scope `request` par défaut termine les dépendances yield après
+l'envoi du corps, ce qui pouvait annoncer une écriture encore invisible à un GET
+ou au worker. Les schémas OpenAPI et les formats des réponses sont conservés.
+
 ## Conséquences / limites
 
 La concurrence configurable s'applique par processus worker, pas globalement à
