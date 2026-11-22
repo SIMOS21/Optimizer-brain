@@ -1006,3 +1006,79 @@ tr:last-child td {
     margin-bottom: 12px;
   }
 }
+
+.execution-settings {
+  border: 1px solid #dce2e8;
+  border-radius: 10px;
+  padding: 18px;
+  min-width: 0;
+  display: grid;
+  gap: 18px;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 190px), 1fr));
+}
+.execution-settings legend {
+  padding: 0 6px;
+  font-weight: 600;
+}
+.execution-settings .checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.execution-settings input[type="checkbox"] {
+  width: auto;
+}
+.execution-actions,
+.job-status {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  margin: 18px 0;
+}
+.job-state {
+  padding: 7px 12px;
+  border-radius: 6px;
+  background: #edf1f6;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+.job-state.running {
+  color: #175e9d;
+  background: #edf5ff;
+}
+.job-state.succeeded {
+  color: #176644;
+  background: #e8f5ed;
+}
+.job-state.failed {
+  color: #a43535;
+  background: #fff0f0;
+}
+.job-state.cancelled {
+  color: #76511c;
+  background: #fff4df;
+}
+.decision-cockpit > section {
+  margin: 28px 0;
+}
+.decision-cockpit table {
+  margin: 12px 0;
+}
+@media (min-width: 800px) {
+  .job-monitor dl,
+  .decision-cockpit dl {
+    display: grid;
+    grid-template-columns: minmax(140px, 210px) minmax(0, 1fr);
+    gap: 10px 18px;
+  }
+  .job-monitor dt,
+  .job-monitor dd,
+  .decision-cockpit dt,
+  .decision-cockpit dd {
+    margin: 0;
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+}

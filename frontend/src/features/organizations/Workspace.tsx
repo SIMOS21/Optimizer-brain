@@ -24,6 +24,13 @@ import { ModelEditor, ModelInspector } from "../models/ModelInspector";
 import { canonical } from "../../api/validation";
 import { exportGraph } from "../graph/projection";
 import { ArtifactImport } from "./ArtifactImport";
+import { StoredRun } from "../execution/DecisionCockpit";
+
+const OptimizationCenter = lazy(() =>
+  import("../execution/OptimizationCenter").then((module) => ({
+    default: module.OptimizationCenter,
+  })),
+);
 
 const GraphCanvas = lazy(() =>
   import("../graph/GraphCanvas").then((module) => ({
@@ -451,13 +458,19 @@ function ModelRoute(props: Omit<Parameters<typeof ModelPage>[0], "id">) {
   const { id = "" } = useParams();
   return <ModelPage key={id} {...props} id={id} />;
 }
+function RunRoute({ client, org }: { client: ApiClient; org: string }) {
+  const { id = "" } = useParams();
+  return <StoredRun key={id} client={client} org={org} id={id} />;
+}
 
 export function Workspace({
   client,
   organizationId,
+  userId,
 }: {
   client: ApiClient;
   organizationId: string;
+  userId: string;
 }) {
   const navigate = useNavigate();
   const [revision, setRevision] = useState(0);
@@ -499,6 +512,7 @@ export function Workspace({
           <NavLink to={`${base}/graphs`}>Organization Graph</NavLink>
           <NavLink to={`${base}/models`}>Modèles & contraintes</NavLink>
           <NavLink to={`${base}/history`}>Historique vérifié</NavLink>
+          <NavLink to={`${base}/execution`}>Optimization Center</NavLink>
         </nav>
         <div className="sidebar-note">
           <span className="online-dot" /> Brain indépendant du LLM
@@ -513,6 +527,27 @@ export function Workspace({
       </aside>
       <main id="main-content" className="content">
         <Routes>
+          <Route
+            path="execution/:jobId?"
+            element={
+              <Suspense
+                fallback={
+                  <p role="status">Chargement du centre d’exécution…</p>
+                }
+              >
+                <OptimizationCenter
+                  client={client}
+                  organization={organization}
+                  userId={userId}
+                  models={models}
+                />
+              </Suspense>
+            }
+          />
+          <Route
+            path="history/:id"
+            element={<RunRoute client={client} org={organization.id} />}
+          />
           <Route
             index
             element={

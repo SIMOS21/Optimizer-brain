@@ -30,4 +30,6 @@ export type RunArtifact = Schemas["RunArtifactResponse"];
 export type ModelSource = Schemas["OrganizationModel-Output"];
 export type Composition = Schemas["CompositionDocument"];
 export type Json = Schemas["JsonValue"];
+export type OptimizationJob = Schemas["OptimizationJobResponse"];
+export type SolveSettings = Schemas["SolveSettings-Input"];
 export type Page<T> = { items: T[]; limit: number; offset: number };

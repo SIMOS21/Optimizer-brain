@@ -25,13 +25,30 @@ const ajv = new Ajv({
   validateFormats: false,
   allErrors: false,
 });
-// OpenAPI 3.1 component schemas are JSON Schema; preserve the original contract.
-ajv.addSchema({ $id: "urn:brain:contract", components: contract.components });
+// Pydantic emits Decimal("1e-7") as "1E-7", while its generated output
+// pattern excludes exponents. Accept that exact textual notation only for
+// recorded verification tolerances. No input schema or numeric value changes.
+const runtimeComponents = structuredClone(contract.components);
+for (const field of Object.values(
+  runtimeComponents.schemas["VerificationSettings-Output"].properties,
+)) {
+  field.pattern = "^[+-]?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:[eE][+-]?\\d+)?$";
+}
+ajv.addSchema({ $id: "urn:brain:contract", components: runtimeComponents });
 
 export function decode<K extends keyof Schemas>(
   schema: K,
   value: unknown,
 ): Schemas[K] {
+  // Only bounded solver configuration uses binary64 numbers. Model coefficients,
+  // decisions, fractions and recorded result metrics keep their original text.
+  if (schema === "OptimizationJobResponse") value = jobSettings(value);
+  if (
+    schema === "Page_OptimizationJobResponse_" &&
+    isRecord(value) &&
+    Array.isArray(value.items)
+  )
+    value = { ...value, items: value.items.map(jobSettings) };
   const validate = ajv.getSchema<Schemas[K]>(
     `urn:brain:contract#/components/schemas/${schema}`,
   );
@@ -52,6 +69,23 @@ export function decode<K extends keyof Schemas>(
     } as Schemas[K];
   }
   return value as Schemas[K];
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return value !== null && typeof value === "object" && !Array.isArray(value);
+}
+function jobSettings(value: unknown): unknown {
+  if (!isRecord(value) || !isRecord(value.settings)) return value;
+  const settings = { ...value.settings };
+  for (const key of ["time_limit_seconds", "mip_rel_gap"]) {
+    const entry = settings[key];
+    if (
+      typeof entry === "string" &&
+      /^-?(?:\d+\.?\d*|\.\d+)(?:e[+-]?\d+)?$/i.test(entry)
+    )
+      settings[key] = Number(entry);
+  }
+  return { ...value, settings };
 }
 
 export function parsePrecise(text: string): unknown {

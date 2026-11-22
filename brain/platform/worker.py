@@ -183,6 +183,9 @@ class OptimizationWorker:
                     queued.state = "CANCELLED"
                     queued.updated_at = current
                     queued.finished_at = current
+                    # Flush under this job's RLS context before selecting the
+                    # next organization; a later autoflush would hide the row.
+                    session.flush()
                     continue
                 attempt_id = str(uuid4())
                 queued.state = "RUNNING"

@@ -13,7 +13,14 @@ from sqlalchemy.exc import DBAPIError
 from starlette.responses import Response
 
 from brain.platform.database import set_tenant
-from brain.platform.models import Membership, OptimizationJob, OptimizationRun, User, now
+from brain.platform.models import (
+    Membership,
+    OptimizationJob,
+    OptimizationRun,
+    Organization,
+    User,
+    now,
+)
 from brain.platform import auth, job_child
 from brain.platform.worker import JobClaim, OptimizationWorker, WorkerSettings
 from tests.conftest_platform import platform_fixture, postgres_urls_fixture  # noqa: F401
@@ -487,3 +494,44 @@ def test_mutation_commits_before_sending_success_response(platform, monkeypatch,
         created = p.request("POST", p.base + "/graphs", json=graph)
         assert created.status_code == 201, created.text
     assert events == ["committed", "accepted"]
+
+
+def test_postgres_queued_cancellation_flushes_before_switching_tenant(platform):
+    p = platform
+    if p.app.state.engine.dialect.name != "postgresql":
+        pytest.skip("La régression de flush RLS nécessite PostgreSQL")
+    model_id = p.model()
+    job_id = _submit_job(p, model_id, "multi-tenant-cancel-flush-key").json()["id"]
+    assert (
+        p.request(
+            "POST", p.base + f"/optimization-jobs/{job_id}/cancel", role="builder"
+        ).status_code
+        == 200
+    )
+    # Always ordered after any UUIDv4 organization, forcing a tenant switch
+    # after the first queued job has been changed to CANCELLED.
+    following_id = "ffffffff-ffff-ffff-ffff-ffffffffffff"
+    with p.app.state.session_factory.begin() as session:
+        session.add(
+            Organization(
+                id=following_id,
+                key="following_tenant",
+                name="Synthetic following tenant",
+                created_by=p.users["admin"],
+            )
+        )
+        session.flush()
+        session.add(
+            Membership(
+                organization_id=following_id, user_id=p.users["admin"], role="ADMIN", active=True
+            )
+        )
+    worker = OptimizationWorker(
+        p.app.state.engine,
+        p.app.state.session_factory,
+        WorkerSettings(),
+        database_url=p.app.state.settings.database_url,
+    )
+    assert worker.run_once() is False
+    final = p.request("GET", p.base + f"/optimization-jobs/{job_id}", role="viewer")
+    assert final.json()["state"] == "CANCELLED"

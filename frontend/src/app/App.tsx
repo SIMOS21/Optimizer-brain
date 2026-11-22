@@ -1,5 +1,12 @@
 import { useState } from "react";
-import { Link, Route, Routes, useMatch, useNavigate } from "react-router-dom";
+import {
+  Link,
+  Route,
+  Routes,
+  useLocation,
+  useMatch,
+  useNavigate,
+} from "react-router-dom";
 import { ApiClient } from "../api/client";
 import type { Schemas } from "../api/types";
 import { Workspace } from "../features/organizations/Workspace";
@@ -46,7 +53,7 @@ function Login({
           <i />
           <span>Modèle mathématique</span>
         </div>
-        <small>Phase 4B · Sans LLM · Données et versions explicites</small>
+        <small>Phase 4C · Sans LLM · Données et versions explicites</small>
       </div>
       <section className="login-form">
         <span className="eyebrow">VOTRE WORKSPACE</span>
@@ -178,6 +185,7 @@ function SignedIn({
                   key={organization.id}
                   client={client}
                   organizationId={organization.id}
+                  userId={user.id}
                 />
               ) : (
                 <Empty>Organisation absente ou inaccessible.</Empty>
@@ -274,12 +282,12 @@ export function App() {
   const [user, setUser] = useState<User | null>(null);
   const [notice, setNotice] = useState<string>();
   const navigate = useNavigate();
+  const location = useLocation();
   const [client] = useState(
     () =>
       new ApiClient(() => {
         setUser(null);
         setNotice("Session expirée. Reconnectez-vous.");
-        navigate("/");
       }),
   );
   function logout() {
@@ -302,7 +310,11 @@ export function App() {
       onLogin={(current) => {
         setUser(current);
         setNotice(undefined);
-        navigate("/");
+        navigate(
+          location.pathname.startsWith("/organizations/")
+            ? location.pathname
+            : "/",
+        );
       }}
     />
   );
