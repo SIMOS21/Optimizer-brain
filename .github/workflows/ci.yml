@@ -13,11 +13,34 @@ jobs:
           python-version: '3.11'
       - run: python -m pip install -r requirements-dev.txt
       - run: python -m pytest -q
-      - run: python -m ruff check brain tests
-      - run: python -m ruff format --check brain/kernel brain/solvers brain/organization tests/test_kernel.py tests/test_generic_solver.py tests/test_organization.py
+      - run: python -m ruff check brain tests migrations
+      - run: python -m ruff format --check brain/kernel brain/solvers brain/organization brain/platform migrations tests/test_kernel.py tests/test_generic_solver.py tests/test_organization.py tests/test_platform.py tests/conftest_platform.py
       - run: python -m mypy
       - run: python -m brain.demo
       - run: python -m brain.kernel verify examples/demo_cross_department.json --plan examples/golden_plan.json
       - run: python -m brain.kernel solve examples/demo_cross_department.json
       - run: python -m brain.organization solve examples/organizations/factory/project.json --output results/organization_factory.json
       - run: python -m brain.organization solve examples/organizations/university/project.json --output results/organization_university.json
+  postgres:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: brain_migrator
+          POSTGRES_PASSWORD: ci-only-migrator-password
+          POSTGRES_DB: postgres
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U brain_migrator -d postgres"
+          --health-interval 2s --health-timeout 5s --health-retries 30
+    env:
+      BRAIN_TEST_MIGRATION_DATABASE_URL: postgresql+psycopg://brain_migrator:ci-only-migrator-password@127.0.0.1:5432/optimizer_brain_test
+      BRAIN_TEST_DATABASE_URL: postgresql+psycopg://brain_app:ci-only-runtime-password@127.0.0.1:5432/optimizer_brain_test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install -r requirements-dev.txt
+      - run: python -m pytest -q

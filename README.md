@@ -1,4 +1,4 @@
-> **Développement avec Codex :** lire `AGENTS.md` et `OPTIMIZATION_BRAIN_SPEC.md`. Les phases 0 à 3 sont livrées ; la plateforme complète reste une cible.
+> **Développement avec Codex :** lire `AGENTS.md` et `OPTIMIZATION_BRAIN_SPEC.md`. Les phases 0 à 3 et les fondations 4A sont livrées ; la plateforme complète reste une cible.
 
 # Optimization Brain — MVP conservé et Universal Model Kernel
 
@@ -18,6 +18,23 @@ Phase 3 : [Organization Graph](docs/organization-graph.md),
 [composition et snapshots locaux](docs/model-composition.md),
 [ADR de composition](docs/decision-records/0003-organization-composition-and-local-snapshots.md),
 [audit préalable](docs/audit-phase-3.md), [validation phase 3](docs/validation-phase-3.md).
+Phase 4A : [déploiement PostgreSQL et API sécurisée](docs/platform-phase-4a.md),
+[ADR identité et gouvernance](docs/decision-records/0004-persistence-identity-governance.md),
+[audit préalable](docs/audit-phase-4a.md), [validation](docs/validation-phase-4a.md).
+
+## Fondations de persistance et de gouvernance (phase 4A)
+
+`brain/platform/` ajoute PostgreSQL, migrations Alembic, comptes Argon2id,
+sessions révocables, appartenances et rôles par organisation. Les graphes et
+modèles ont une publication authentifiée et un contenu immuable ; les résultats
+historiques et l'audit restent append-only. Les contrats API sont versionnés et
+décrits dans OpenAPI, avec isolation applicative et RLS PostgreSQL sur les artefacts.
+
+Lancer cette application avec `python -m uvicorn brain.platform.api:create_app --factory`
+après la [configuration et les migrations](docs/platform-phase-4a.md).
+L'application legacy `brain.api:app` reste une démonstration locale séparée,
+sans authentification. Les snapshots SQLite de Phase 3 et le Brain hors ligne
+restent disponibles. Aucun frontend, worker ou Phase 4B/4C/5 n'est livré ici.
 
 ## Composition multi-départements (phase 3)
 
