@@ -51,6 +51,16 @@ la réponse. Le scope `request` par défaut termine les dépendances yield aprè
 l'envoi du corps, ce qui pouvait annoncer une écriture encore invisible à un GET
 ou au worker. Les schémas OpenAPI et les formats des réponses sont conservés.
 
+## Parcours frontend — flush sous le contexte RLS courant
+
+Le worker effectue explicitement le flush d'une annulation en file avant de
+passer à l'organisation suivante. Sans ce flush, l'autoflush de la requête ORM
+suivante peut s'exécuter après le changement de contexte RLS : la ligne précédente
+est alors invisible, provoquant StaleDataError et l'arrêt du worker. Le parcours
+réel multi-organisations a révélé ce défaut ; un test PostgreSQL reproduit
+l'échec avant correction et vérifie ensuite CANCELLED sans run. La politique RLS
+reste inchangée et aucun accès entre organisations n'est ajouté.
+
 ## Conséquences / limites
 
 La concurrence configurable s'applique par processus worker, pas globalement à
