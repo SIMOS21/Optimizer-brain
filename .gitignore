@@ -5,3 +5,12 @@ __pycache__/
 .mypy_cache/
 .ruff_cache/
 local_store/
+.local/
+.env
+.env.*
+!.env.example
+node_modules/
+frontend/dist/
+frontend/test-results/
+frontend/playwright-report/
+*.tsbuildinfo

@@ -1,0 +1,1373 @@
+{
+  "organization": {
+    "id": "14957d28-5d73-4428-bad6-b6a9cc6545b0",
+    "key": "synthetic_factory",
+    "name": "Usine fictive",
+    "role": "ADMIN"
+  },
+  "graph": {
+    "id": "b051e556-e2ed-4866-aa65-c36d94c6bf4f",
+    "organization_id": "14957d28-5d73-4428-bad6-b6a9cc6545b0",
+    "created_at": 1795356923,
+    "created_by": "63f204b5-81e2-458c-b233-b217e99fc144",
+    "content_hash": "5e8648deb2294457a5149e7ee4e70871961681439e41164066544176d2d3bb09",
+    "key": "synthetic_factory",
+    "version": "1",
+    "state": "PUBLISHED",
+    "published_by": "63f204b5-81e2-458c-b233-b217e99fc144",
+    "published_at": 1795356923,
+    "graph_snapshot_id": null,
+    "model_hash": null,
+    "data_snapshot_id": null,
+    "model_version_id": null,
+    "status": null,
+    "document": {
+      "graph": {
+        "schema_version": "1.0",
+        "organization": {
+          "source": "synthetic_organization",
+          "approved": true,
+          "version": "1",
+          "id": "synthetic_factory",
+          "name": "Usine fictive",
+          "data_snapshot_id": "synthetic_demo_v1"
+        },
+        "departments": [
+          {
+            "source": "synthetic_organization",
+            "approved": true,
+            "version": "1",
+            "id": "finance",
+            "name": "Finance",
+            "owner_id": "demo_owner_finance"
+          },
+          {
+            "source": "synthetic_organization",
+            "approved": true,
+            "version": "1",
+            "id": "logistics",
+            "name": "Logistics",
+            "owner_id": "demo_owner_logistics"
+          },
+          {
+            "source": "synthetic_organization",
+            "approved": true,
+            "version": "1",
+            "id": "production",
+            "name": "Production",
+            "owner_id": "demo_owner_production"
+          },
+          {
+            "source": "synthetic_organization",
+            "approved": true,
+            "version": "1",
+            "id": "sales",
+            "name": "Sales",
+            "owner_id": "demo_owner_sales"
+          }
+        ],
+        "resources": [
+          {
+            "source": "synthetic_demo",
+            "approved": true,
+            "version": "1",
+            "unit": "EUR",
+            "id": "finance_resource",
+            "name": "finance_resource",
+            "capacity": {
+              "parameter": "operating_cash_budget_eur"
+            },
+            "capacity_version": "1",
+            "owner_department": "finance",
+            "shared_with": ["sales"],
+            "constraint_id": "finance_budget"
+          },
+          {
+            "source": "synthetic_demo",
+            "approved": true,
+            "version": "1",
+            "unit": "unit",
+            "id": "logistics_resource",
+            "name": "logistics_resource",
+            "capacity": {
+              "parameter": "delivery_capacity_units"
+            },
+            "capacity_version": "1",
+            "owner_department": "logistics",
+            "shared_with": ["sales"],
+            "constraint_id": "logistics_delivery"
+          },
+          {
+            "source": "synthetic_demo",
+            "approved": true,
+            "version": "1",
+            "unit": "hour",
+            "id": "production_resource",
+            "name": "production_resource",
+            "capacity": {
+              "parameter": "machine_capacity_hours"
+            },
+            "capacity_version": "1",
+            "owner_department": "production",
+            "shared_with": ["sales"],
+            "constraint_id": "production_machine"
+          }
+        ],
+        "edges": [
+          {
+            "id": "finance_uses",
+            "source_id": "finance",
+            "target_id": "finance_resource",
+            "type": "USES_RESOURCE"
+          },
+          {
+            "id": "logistics_uses",
+            "source_id": "logistics",
+            "target_id": "logistics_resource",
+            "type": "USES_RESOURCE"
+          },
+          {
+            "id": "production_depends_sales",
+            "source_id": "production",
+            "target_id": "sales",
+            "type": "DEPENDS_ON"
+          },
+          {
+            "id": "production_uses",
+            "source_id": "production",
+            "target_id": "production_resource",
+            "type": "USES_RESOURCE"
+          }
+        ]
+      },
+      "shared_parameters": {
+        "delivery_capacity_units": {
+          "source": "synthetic_demo",
+          "approved": true,
+          "version": "1",
+          "unit": "unit",
+          "value": "55"
+        },
+        "machine_capacity_hours": {
+          "source": "synthetic_demo",
+          "approved": true,
+          "version": "1",
+          "unit": "hour",
+          "value": "100"
+        },
+        "operating_cash_budget_eur": {
+          "source": "synthetic_demo",
+          "approved": true,
+          "version": "1",
+          "unit": "EUR",
+          "value": "8000"
+        }
+      }
+    }
+  },
+  "model": {
+    "id": "b9ac4e96-0e7a-42ec-a06a-e909152413b3",
+    "organization_id": "14957d28-5d73-4428-bad6-b6a9cc6545b0",
+    "created_at": 1795356923,
+    "created_by": "63f204b5-81e2-458c-b233-b217e99fc144",
+    "content_hash": "b58ae33296d979578ccf3d8c2fa4ffcabb94268510d155e89777d7e45c131191",
+    "key": "demo_cross_department",
+    "version": "1.0.0",
+    "state": "PUBLISHED",
+    "published_by": "63f204b5-81e2-458c-b233-b217e99fc144",
+    "published_at": 1795356923,
+    "graph_snapshot_id": "b051e556-e2ed-4866-aa65-c36d94c6bf4f",
+    "model_hash": "6067a4939fd2c2b42ade6387c12e72cf4df95c5581ab0375babdc134b0108ba0",
+    "data_snapshot_id": "synthetic_demo_v1",
+    "model_version_id": null,
+    "status": null,
+    "document": {
+      "organization_model": {
+        "schema_version": "1.0",
+        "model_id": "demo_cross_department",
+        "model_name": "Allocation synthétique à deux variables",
+        "model_version": "1.0.0",
+        "scenario_id": "base",
+        "currency": "EUR",
+        "dimensions": {},
+        "shared_parameters": {
+          "delivery_capacity_units": {
+            "source": "synthetic_demo",
+            "approved": true,
+            "version": "1",
+            "unit": "unit",
+            "value": "55"
+          },
+          "machine_capacity_hours": {
+            "source": "synthetic_demo",
+            "approved": true,
+            "version": "1",
+            "unit": "hour",
+            "value": "100"
+          },
+          "operating_cash_budget_eur": {
+            "source": "synthetic_demo",
+            "approved": true,
+            "version": "1",
+            "unit": "EUR",
+            "value": "8000"
+          }
+        },
+        "objective": {
+          "source": "synthetic_demo",
+          "approved": true,
+          "version": "1",
+          "unit": "EUR",
+          "id": "maximize_contribution",
+          "owner_department": "finance",
+          "sense": "MAX",
+          "priority": 1,
+          "terms": [
+            {
+              "variable": "qty_B",
+              "coefficient": "60",
+              "coefficient_unit": "EUR/unit"
+            },
+            {
+              "variable": "qty_A",
+              "coefficient": "80",
+              "coefficient_unit": "EUR/unit"
+            }
+          ]
+        },
+        "graph": {
+          "schema_version": "1.0",
+          "organization": {
+            "source": "synthetic_organization",
+            "approved": true,
+            "version": "1",
+            "id": "synthetic_factory",
+            "name": "Usine fictive",
+            "data_snapshot_id": "synthetic_demo_v1"
+          },
+          "departments": [
+            {
+              "source": "synthetic_organization",
+              "approved": true,
+              "version": "1",
+              "id": "finance",
+              "name": "Finance",
+              "owner_id": "demo_owner_finance"
+            },
+            {
+              "source": "synthetic_organization",
+              "approved": true,
+              "version": "1",
+              "id": "logistics",
+              "name": "Logistics",
+              "owner_id": "demo_owner_logistics"
+            },
+            {
+              "source": "synthetic_organization",
+              "approved": true,
+              "version": "1",
+              "id": "production",
+              "name": "Production",
+              "owner_id": "demo_owner_production"
+            },
+            {
+              "source": "synthetic_organization",
+              "approved": true,
+              "version": "1",
+              "id": "sales",
+              "name": "Sales",
+              "owner_id": "demo_owner_sales"
+            }
+          ],
+          "resources": [
+            {
+              "source": "synthetic_demo",
+              "approved": true,
+              "version": "1",
+              "unit": "EUR",
+              "id": "finance_resource",
+              "name": "finance_resource",
+              "capacity": {
+                "parameter": "operating_cash_budget_eur"
+              },
+              "capacity_version": "1",
+              "owner_department": "finance",
+              "shared_with": ["sales"],
+              "constraint_id": "finance_budget"
+            },
+            {
+              "source": "synthetic_demo",
+              "approved": true,
+              "version": "1",
+              "unit": "unit",
+              "id": "logistics_resource",
+              "name": "logistics_resource",
+              "capacity": {
+                "parameter": "delivery_capacity_units"
+              },
+              "capacity_version": "1",
+              "owner_department": "logistics",
+              "shared_with": ["sales"],
+              "constraint_id": "logistics_delivery"
+            },
+            {
+              "source": "synthetic_demo",
+              "approved": true,
+              "version": "1",
+              "unit": "hour",
+              "id": "production_resource",
+              "name": "production_resource",
+              "capacity": {
+                "parameter": "machine_capacity_hours"
+              },
+              "capacity_version": "1",
+              "owner_department": "production",
+              "shared_with": ["sales"],
+              "constraint_id": "production_machine"
+            }
+          ],
+          "edges": [
+            {
+              "id": "finance_uses",
+              "source_id": "finance",
+              "target_id": "finance_resource",
+              "type": "USES_RESOURCE"
+            },
+            {
+              "id": "logistics_uses",
+              "source_id": "logistics",
+              "target_id": "logistics_resource",
+              "type": "USES_RESOURCE"
+            },
+            {
+              "id": "production_depends_sales",
+              "source_id": "production",
+              "target_id": "sales",
+              "type": "DEPENDS_ON"
+            },
+            {
+              "id": "production_uses",
+              "source_id": "production",
+              "target_id": "production_resource",
+              "type": "USES_RESOURCE"
+            }
+          ]
+        },
+        "fragments": [
+          {
+            "source": "synthetic_organization",
+            "approved": true,
+            "version": "1",
+            "id": "finance_fragment",
+            "organization_id": "synthetic_factory",
+            "organization_version": "1",
+            "department_id": "finance",
+            "department_version": "1",
+            "parameters": {},
+            "parameter_refs": [],
+            "variables": [],
+            "variable_refs": [
+              {
+                "unit": "unit",
+                "variable": "qty_A",
+                "owner_department": "sales",
+                "declaration_version": "1"
+              },
+              {
+                "unit": "unit",
+                "variable": "qty_B",
+                "owner_department": "sales",
+                "declaration_version": "1"
+              }
+            ],
+            "constraints": [],
+            "resource_uses": [
+              {
+                "source": "synthetic_organization",
+                "approved": true,
+                "version": "1",
+                "id": "finance_consumption",
+                "resource_id": "finance_resource",
+                "terms": [
+                  {
+                    "variable": "qty_A",
+                    "coefficient": "100",
+                    "coefficient_unit": "EUR/unit"
+                  },
+                  {
+                    "variable": "qty_B",
+                    "coefficient": "200",
+                    "coefficient_unit": "EUR/unit"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "source": "synthetic_organization",
+            "approved": true,
+            "version": "1",
+            "id": "logistics_fragment",
+            "organization_id": "synthetic_factory",
+            "organization_version": "1",
+            "department_id": "logistics",
+            "department_version": "1",
+            "parameters": {},
+            "parameter_refs": [],
+            "variables": [],
+            "variable_refs": [
+              {
+                "unit": "unit",
+                "variable": "qty_A",
+                "owner_department": "sales",
+                "declaration_version": "1"
+              },
+              {
+                "unit": "unit",
+                "variable": "qty_B",
+                "owner_department": "sales",
+                "declaration_version": "1"
+              }
+            ],
+            "constraints": [],
+            "resource_uses": [
+              {
+                "source": "synthetic_organization",
+                "approved": true,
+                "version": "1",
+                "id": "logistics_consumption",
+                "resource_id": "logistics_resource",
+                "terms": [
+                  {
+                    "variable": "qty_A",
+                    "coefficient": "1",
+                    "coefficient_unit": "unit/unit"
+                  },
+                  {
+                    "variable": "qty_B",
+                    "coefficient": "1",
+                    "coefficient_unit": "unit/unit"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "source": "synthetic_organization",
+            "approved": true,
+            "version": "1",
+            "id": "production_fragment",
+            "organization_id": "synthetic_factory",
+            "organization_version": "1",
+            "department_id": "production",
+            "department_version": "1",
+            "parameters": {},
+            "parameter_refs": [],
+            "variables": [],
+            "variable_refs": [
+              {
+                "unit": "unit",
+                "variable": "qty_A",
+                "owner_department": "sales",
+                "declaration_version": "1"
+              },
+              {
+                "unit": "unit",
+                "variable": "qty_B",
+                "owner_department": "sales",
+                "declaration_version": "1"
+              }
+            ],
+            "constraints": [],
+            "resource_uses": [
+              {
+                "source": "synthetic_organization",
+                "approved": true,
+                "version": "1",
+                "id": "production_consumption",
+                "resource_id": "production_resource",
+                "terms": [
+                  {
+                    "variable": "qty_B",
+                    "coefficient": "1",
+                    "coefficient_unit": "hour/unit"
+                  },
+                  {
+                    "variable": "qty_A",
+                    "coefficient": "2",
+                    "coefficient_unit": "hour/unit"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "source": "synthetic_organization",
+            "approved": true,
+            "version": "1",
+            "id": "sales_fragment",
+            "organization_id": "synthetic_factory",
+            "organization_version": "1",
+            "department_id": "sales",
+            "department_version": "1",
+            "parameters": {},
+            "parameter_refs": [],
+            "variables": [
+              {
+                "unit": "unit",
+                "id": "qty_A",
+                "type": "INTEGER",
+                "lb": "0",
+                "ub": "40",
+                "department": "sales",
+                "indices": {}
+              },
+              {
+                "unit": "unit",
+                "id": "qty_B",
+                "type": "INTEGER",
+                "lb": "0",
+                "ub": "35",
+                "department": "sales",
+                "indices": {}
+              }
+            ],
+            "variable_refs": [],
+            "constraints": [],
+            "resource_uses": []
+          }
+        ]
+      },
+      "dsl": {
+        "schema_version": "1.0",
+        "id": "demo_cross_department",
+        "name": "Allocation synthétique à deux variables",
+        "model_version": "1.0.0",
+        "data_snapshot_id": "synthetic_demo_v1",
+        "scenario_id": "base",
+        "currency": "EUR",
+        "dimensions": {},
+        "departments": [
+          {
+            "id": "finance",
+            "name": "Finance"
+          },
+          {
+            "id": "logistics",
+            "name": "Logistics"
+          },
+          {
+            "id": "production",
+            "name": "Production"
+          },
+          {
+            "id": "sales",
+            "name": "Sales"
+          }
+        ],
+        "parameters": {
+          "delivery_capacity_units": {
+            "source": "synthetic_demo",
+            "approved": true,
+            "version": "1",
+            "unit": "unit",
+            "value": "55"
+          },
+          "machine_capacity_hours": {
+            "source": "synthetic_demo",
+            "approved": true,
+            "version": "1",
+            "unit": "hour",
+            "value": "100"
+          },
+          "operating_cash_budget_eur": {
+            "source": "synthetic_demo",
+            "approved": true,
+            "version": "1",
+            "unit": "EUR",
+            "value": "8000"
+          }
+        },
+        "variables": [
+          {
+            "unit": "unit",
+            "id": "qty_A",
+            "type": "INTEGER",
+            "lb": "0",
+            "ub": "40",
+            "department": "sales",
+            "indices": {}
+          },
+          {
+            "unit": "unit",
+            "id": "qty_B",
+            "type": "INTEGER",
+            "lb": "0",
+            "ub": "35",
+            "department": "sales",
+            "indices": {}
+          }
+        ],
+        "constraints": [
+          {
+            "source": "synthetic_demo",
+            "approved": true,
+            "version": "1",
+            "unit": "EUR",
+            "id": "finance_budget",
+            "owner_department": "finance",
+            "kind": "HARD",
+            "terms": [
+              {
+                "variable": "qty_A",
+                "coefficient": "100",
+                "coefficient_unit": "EUR/unit"
+              },
+              {
+                "variable": "qty_B",
+                "coefficient": "200",
+                "coefficient_unit": "EUR/unit"
+              }
+            ],
+            "operator": "<=",
+            "rhs": {
+              "parameter": "operating_cash_budget_eur"
+            }
+          },
+          {
+            "source": "synthetic_demo",
+            "approved": true,
+            "version": "1",
+            "unit": "unit",
+            "id": "logistics_delivery",
+            "owner_department": "logistics",
+            "kind": "HARD",
+            "terms": [
+              {
+                "variable": "qty_A",
+                "coefficient": "1",
+                "coefficient_unit": "unit/unit"
+              },
+              {
+                "variable": "qty_B",
+                "coefficient": "1",
+                "coefficient_unit": "unit/unit"
+              }
+            ],
+            "operator": "<=",
+            "rhs": {
+              "parameter": "delivery_capacity_units"
+            }
+          },
+          {
+            "source": "synthetic_demo",
+            "approved": true,
+            "version": "1",
+            "unit": "hour",
+            "id": "production_machine",
+            "owner_department": "production",
+            "kind": "HARD",
+            "terms": [
+              {
+                "variable": "qty_A",
+                "coefficient": "2",
+                "coefficient_unit": "hour/unit"
+              },
+              {
+                "variable": "qty_B",
+                "coefficient": "1",
+                "coefficient_unit": "hour/unit"
+              }
+            ],
+            "operator": "<=",
+            "rhs": {
+              "parameter": "machine_capacity_hours"
+            }
+          }
+        ],
+        "objectives": [
+          {
+            "source": "synthetic_demo",
+            "approved": true,
+            "version": "1",
+            "unit": "EUR",
+            "id": "maximize_contribution",
+            "owner_department": "finance",
+            "sense": "MAX",
+            "priority": 1,
+            "terms": [
+              {
+                "variable": "qty_A",
+                "coefficient": "80",
+                "coefficient_unit": "EUR/unit"
+              },
+              {
+                "variable": "qty_B",
+                "coefficient": "60",
+                "coefficient_unit": "EUR/unit"
+              }
+            ]
+          }
+        ]
+      },
+      "ir": {
+        "constraints": [
+          {
+            "id": "finance_budget",
+            "operator": "<=",
+            "origin": {
+              "approved": true,
+              "source": "synthetic_demo",
+              "version": "1"
+            },
+            "owner_department": "finance",
+            "rhs": "8000",
+            "terms": [
+              {
+                "coefficient": "100",
+                "variable": "qty_A"
+              },
+              {
+                "coefficient": "200",
+                "variable": "qty_B"
+              }
+            ],
+            "unit": {
+              "dimensions": [["EUR", 1]],
+              "scale": "1"
+            }
+          },
+          {
+            "id": "logistics_delivery",
+            "operator": "<=",
+            "origin": {
+              "approved": true,
+              "source": "synthetic_demo",
+              "version": "1"
+            },
+            "owner_department": "logistics",
+            "rhs": "55",
+            "terms": [
+              {
+                "coefficient": "1",
+                "variable": "qty_A"
+              },
+              {
+                "coefficient": "1",
+                "variable": "qty_B"
+              }
+            ],
+            "unit": {
+              "dimensions": [["count", 1]],
+              "scale": "1"
+            }
+          },
+          {
+            "id": "production_machine",
+            "operator": "<=",
+            "origin": {
+              "approved": true,
+              "source": "synthetic_demo",
+              "version": "1"
+            },
+            "owner_department": "production",
+            "rhs": "100",
+            "terms": [
+              {
+                "coefficient": "2",
+                "variable": "qty_A"
+              },
+              {
+                "coefficient": "1",
+                "variable": "qty_B"
+              }
+            ],
+            "unit": {
+              "dimensions": [["time", 1]],
+              "scale": "1"
+            }
+          }
+        ],
+        "data_snapshot_id": "synthetic_demo_v1",
+        "manifest_hash": "e62c93a3cfba022a659f8278df82888c4216544ab010af859a40719f46f9eb4f",
+        "model_hash": "6067a4939fd2c2b42ade6387c12e72cf4df95c5581ab0375babdc134b0108ba0",
+        "model_id": "demo_cross_department",
+        "model_version": "1.0.0",
+        "objectives": [
+          {
+            "id": "maximize_contribution",
+            "origin": {
+              "approved": true,
+              "source": "synthetic_demo",
+              "version": "1"
+            },
+            "owner_department": "finance",
+            "priority": 1,
+            "sense": "MAX",
+            "terms": [
+              {
+                "coefficient": "80",
+                "variable": "qty_A"
+              },
+              {
+                "coefficient": "60",
+                "variable": "qty_B"
+              }
+            ],
+            "unit": {
+              "dimensions": [["EUR", 1]],
+              "scale": "1"
+            }
+          }
+        ],
+        "parameters": [
+          {
+            "id": "delivery_capacity_units",
+            "origin": {
+              "approved": true,
+              "source": "synthetic_demo",
+              "version": "1"
+            },
+            "unit": {
+              "dimensions": [["count", 1]],
+              "scale": "1"
+            },
+            "value": "55"
+          },
+          {
+            "id": "machine_capacity_hours",
+            "origin": {
+              "approved": true,
+              "source": "synthetic_demo",
+              "version": "1"
+            },
+            "unit": {
+              "dimensions": [["time", 1]],
+              "scale": "1"
+            },
+            "value": "100"
+          },
+          {
+            "id": "operating_cash_budget_eur",
+            "origin": {
+              "approved": true,
+              "source": "synthetic_demo",
+              "version": "1"
+            },
+            "unit": {
+              "dimensions": [["EUR", 1]],
+              "scale": "1"
+            },
+            "value": "8000"
+          }
+        ],
+        "scenario_id": "base",
+        "schema_version": "1.0",
+        "transformations": [
+          "Resolved parameter references and explicit unit scales",
+          "Aggregated terms, removed zeros, sorted identifiers"
+        ],
+        "variables": [
+          {
+            "department": "sales",
+            "domain": "INTEGER",
+            "id": "qty_A",
+            "indices": [],
+            "lb": "0",
+            "ub": "40",
+            "unit": {
+              "dimensions": [["count", 1]],
+              "scale": "1"
+            }
+          },
+          {
+            "department": "sales",
+            "domain": "INTEGER",
+            "id": "qty_B",
+            "indices": [],
+            "lb": "0",
+            "ub": "35",
+            "unit": {
+              "dimensions": [["count", 1]],
+              "scale": "1"
+            }
+          }
+        ],
+        "warnings": []
+      },
+      "model_hash": "6067a4939fd2c2b42ade6387c12e72cf4df95c5581ab0375babdc134b0108ba0",
+      "model_manifest_hash": "e62c93a3cfba022a659f8278df82888c4216544ab010af859a40719f46f9eb4f",
+      "composition_manifest_hash": "813a89981df66c0fc05b75778951684e1b6f4cf042fe5ecd374d623b00b41d92",
+      "constraint_traces": [
+        {
+          "constraint_id": "finance_budget",
+          "owner_department": "finance",
+          "fragment_ids": ["finance_fragment"],
+          "contribution_ids": ["finance_fragment/finance_consumption"],
+          "parameter_ids": ["operating_cash_budget_eur"],
+          "resource_id": "finance_resource",
+          "source_paths": [
+            "fragments[finance_fragment].resource_uses[finance_consumption]"
+          ]
+        },
+        {
+          "constraint_id": "logistics_delivery",
+          "owner_department": "logistics",
+          "fragment_ids": ["logistics_fragment"],
+          "contribution_ids": ["logistics_fragment/logistics_consumption"],
+          "parameter_ids": ["delivery_capacity_units"],
+          "resource_id": "logistics_resource",
+          "source_paths": [
+            "fragments[logistics_fragment].resource_uses[logistics_consumption]"
+          ]
+        },
+        {
+          "constraint_id": "production_machine",
+          "owner_department": "production",
+          "fragment_ids": ["production_fragment"],
+          "contribution_ids": ["production_fragment/production_consumption"],
+          "parameter_ids": ["machine_capacity_hours"],
+          "resource_id": "production_resource",
+          "source_paths": [
+            "fragments[production_fragment].resource_uses[production_consumption]"
+          ]
+        }
+      ],
+      "resource_traces": [
+        {
+          "resource_id": "finance_resource",
+          "parameter_id": "operating_cash_budget_eur",
+          "constraint_id": "finance_budget",
+          "fragment_ids": ["finance_fragment"],
+          "contribution_ids": ["finance_fragment/finance_consumption"]
+        },
+        {
+          "resource_id": "logistics_resource",
+          "parameter_id": "delivery_capacity_units",
+          "constraint_id": "logistics_delivery",
+          "fragment_ids": ["logistics_fragment"],
+          "contribution_ids": ["logistics_fragment/logistics_consumption"]
+        },
+        {
+          "resource_id": "production_resource",
+          "parameter_id": "machine_capacity_hours",
+          "constraint_id": "production_machine",
+          "fragment_ids": ["production_fragment"],
+          "contribution_ids": ["production_fragment/production_consumption"]
+        }
+      ]
+    }
+  },
+  "run": {
+    "id": "6a638b8a-b9df-4279-8e86-2390dd7f7295",
+    "organization_id": "14957d28-5d73-4428-bad6-b6a9cc6545b0",
+    "created_at": 1795356924,
+    "created_by": "63f204b5-81e2-458c-b233-b217e99fc144",
+    "content_hash": "1a3d2e677092125b16c6b8ea8268781bd6bdc5544e085bf19c9b3f14ff86bffc",
+    "key": null,
+    "version": null,
+    "state": null,
+    "published_by": null,
+    "published_at": null,
+    "graph_snapshot_id": null,
+    "model_hash": null,
+    "data_snapshot_id": null,
+    "model_version_id": "b9ac4e96-0e7a-42ec-a06a-e909152413b3",
+    "status": "OPTIMAL",
+    "document": {
+      "solve": {
+        "absolute_gap": "0",
+        "audit_actor_id": null,
+        "backend_defaults": {
+          "dual_feasibility_tolerance": 1e-7,
+          "infinite_bound": 1e20,
+          "infinite_cost": 1e20,
+          "large_matrix_value": 1000000000000000.0,
+          "mip_abs_gap": 1e-6,
+          "mip_feasibility_tolerance": 1e-6,
+          "primal_feasibility_tolerance": 1e-7,
+          "small_matrix_value": 1e-9
+        },
+        "best_bound": 4100.0,
+        "certificate_scope": "solver_tolerances",
+        "conversion_report": {
+          "converted_count": 15,
+          "max_absolute_error": "0",
+          "max_relative_error": "0",
+          "policy": "binary64; abs(value)<=1e12; nonzero coefficients>1e-9; relative conversion error<=1e-12",
+          "rounded_count": 0
+        },
+        "data_snapshot_id": "synthetic_demo_v1",
+        "decision_values": {
+          "qty_A": 40.0,
+          "qty_B": 15.0
+        },
+        "duration_ms": 6.608800031244755,
+        "gap_scope": "binary64_backend_model",
+        "integrality_residual_max": "0",
+        "interface_name": "scipy.optimize.milp",
+        "interface_version": "1.17.0",
+        "manifest_hash": "e62c93a3cfba022a659f8278df82888c4216544ab010af859a40719f46f9eb4f",
+        "model_hash": "6067a4939fd2c2b42ade6387c12e72cf4df95c5581ab0375babdc134b0108ba0",
+        "model_id": "demo_cross_department",
+        "model_version": "1.0.0",
+        "objective_unit": {
+          "dimensions": [["EUR", 1]],
+          "scale": "1"
+        },
+        "objective_value": "4100",
+        "optimality_label": "optimal à tolérance près (modèle binary64, sans certificat rationnel strict)",
+        "primal_residual_max": "0",
+        "public_status": "OPTIMAL",
+        "relative_gap": 0.0,
+        "run_id": "6a638b8a-b9df-4279-8e86-2390dd7f7295",
+        "scenario_id": "base",
+        "settings": {
+          "mip_rel_gap": 0.0,
+          "node_limit": null,
+          "presolve": true,
+          "time_limit_seconds": 20.0,
+          "verification": {
+            "bound_tolerance": "1E-7",
+            "constraint_tolerance": "1E-7",
+            "integrality_tolerance": "1E-7",
+            "objective_absolute_tolerance": "0.000001",
+            "objective_relative_tolerance": "1E-9"
+          }
+        },
+        "solver_message": "Optimization terminated successfully. (HiGHS Status 7: Optimal)",
+        "solver_name": "highs",
+        "solver_objective_value": 4100.0,
+        "solver_options": {
+          "disp": false,
+          "mip_rel_gap": 0.0,
+          "presolve": true,
+          "time_limit": 20.0
+        },
+        "solver_status_raw": 0,
+        "solver_version": "1.8.0",
+        "started_at": "2026-11-22T14:15:24.652431+00:00",
+        "status": "OPTIMAL",
+        "termination_reason": "optimal",
+        "validation_report": {
+          "arithmetic": "exact_rationals_of_binary64_values",
+          "integrality_residual_max": "0",
+          "issues": [],
+          "objective_difference": "0",
+          "objective_tolerance": "51/10000000",
+          "objective_value": "4100",
+          "plan": {
+            "bound_tolerance": "1/10000000",
+            "constraint_tolerance": "1/10000000",
+            "constraints": [
+              {
+                "id": "finance_budget",
+                "lhs": "7000",
+                "rhs": "8000",
+                "slack": "1000",
+                "unit": {
+                  "dimensions": [["EUR", 1]],
+                  "scale": "1"
+                },
+                "valid": true,
+                "violation": "0"
+              },
+              {
+                "id": "logistics_delivery",
+                "lhs": "55",
+                "rhs": "55",
+                "slack": "0",
+                "unit": {
+                  "dimensions": [["count", 1]],
+                  "scale": "1"
+                },
+                "valid": true,
+                "violation": "0"
+              },
+              {
+                "id": "production_machine",
+                "lhs": "95",
+                "rhs": "100",
+                "slack": "5",
+                "unit": {
+                  "dimensions": [["time", 1]],
+                  "scale": "1"
+                },
+                "valid": true,
+                "violation": "0"
+              }
+            ],
+            "data_snapshot_id": "synthetic_demo_v1",
+            "feasible": true,
+            "integrality_tolerance": "1/10000000",
+            "issues": [],
+            "manifest_hash": "e62c93a3cfba022a659f8278df82888c4216544ab010af859a40719f46f9eb4f",
+            "model_hash": "6067a4939fd2c2b42ade6387c12e72cf4df95c5581ab0375babdc134b0108ba0",
+            "model_id": "demo_cross_department",
+            "model_version": "1.0.0",
+            "objectives": [
+              {
+                "id": "maximize_contribution",
+                "unit": {
+                  "dimensions": [["EUR", 1]],
+                  "scale": "1"
+                },
+                "value": "4100"
+              }
+            ],
+            "scenario_id": "base",
+            "variables": [
+              {
+                "bound_violation": "0",
+                "id": "qty_A",
+                "integrality_residual": "0",
+                "valid": true,
+                "value": "40"
+              },
+              {
+                "bound_violation": "0",
+                "id": "qty_B",
+                "integrality_residual": "0",
+                "valid": true,
+                "value": "15"
+              }
+            ]
+          },
+          "primal_residual_max": "0",
+          "solver_objective_value": "4100",
+          "valid": true
+        },
+        "warnings": []
+      },
+      "report": {
+        "composition_manifest_hash": "813a89981df66c0fc05b75778951684e1b6f4cf042fe5ecd374d623b00b41d92",
+        "constraints": [
+          {
+            "id": "finance_budget",
+            "lhs": "7000",
+            "owner_department": "finance",
+            "provenance": {
+              "approved": true,
+              "source": "synthetic_demo",
+              "version": "1"
+            },
+            "rhs": "8000",
+            "slack": "1000",
+            "state": "SATISFIED",
+            "tolerance": "1/10000000",
+            "trace": {
+              "constraint_id": "finance_budget",
+              "contribution_ids": ["finance_fragment/finance_consumption"],
+              "fragment_ids": ["finance_fragment"],
+              "owner_department": "finance",
+              "parameter_ids": ["operating_cash_budget_eur"],
+              "resource_id": "finance_resource",
+              "source_paths": [
+                "fragments[finance_fragment].resource_uses[finance_consumption]"
+              ]
+            },
+            "unit": "EUR",
+            "violation": "0"
+          },
+          {
+            "id": "logistics_delivery",
+            "lhs": "55",
+            "owner_department": "logistics",
+            "provenance": {
+              "approved": true,
+              "source": "synthetic_demo",
+              "version": "1"
+            },
+            "rhs": "55",
+            "slack": "0",
+            "state": "SATURATED",
+            "tolerance": "1/10000000",
+            "trace": {
+              "constraint_id": "logistics_delivery",
+              "contribution_ids": ["logistics_fragment/logistics_consumption"],
+              "fragment_ids": ["logistics_fragment"],
+              "owner_department": "logistics",
+              "parameter_ids": ["delivery_capacity_units"],
+              "resource_id": "logistics_resource",
+              "source_paths": [
+                "fragments[logistics_fragment].resource_uses[logistics_consumption]"
+              ]
+            },
+            "unit": "unit",
+            "violation": "0"
+          },
+          {
+            "id": "production_machine",
+            "lhs": "95",
+            "owner_department": "production",
+            "provenance": {
+              "approved": true,
+              "source": "synthetic_demo",
+              "version": "1"
+            },
+            "rhs": "100",
+            "slack": "5",
+            "state": "SATISFIED",
+            "tolerance": "1/10000000",
+            "trace": {
+              "constraint_id": "production_machine",
+              "contribution_ids": [
+                "production_fragment/production_consumption"
+              ],
+              "fragment_ids": ["production_fragment"],
+              "owner_department": "production",
+              "parameter_ids": ["machine_capacity_hours"],
+              "resource_id": "production_resource",
+              "source_paths": [
+                "fragments[production_fragment].resource_uses[production_consumption]"
+              ]
+            },
+            "unit": "hour",
+            "violation": "0"
+          }
+        ],
+        "departments": [
+          {
+            "constraint_ids": ["finance_budget"],
+            "decisions": [
+              {
+                "id": "qty_A",
+                "owner_department": "sales",
+                "unit": "unit",
+                "value": 40.0
+              },
+              {
+                "id": "qty_B",
+                "owner_department": "sales",
+                "unit": "unit",
+                "value": 15.0
+              }
+            ],
+            "fragment_id": "finance_fragment",
+            "fragment_version": "1",
+            "id": "finance",
+            "name": "Finance",
+            "owner_id": "demo_owner_finance",
+            "source": "synthetic_organization"
+          },
+          {
+            "constraint_ids": ["logistics_delivery"],
+            "decisions": [
+              {
+                "id": "qty_A",
+                "owner_department": "sales",
+                "unit": "unit",
+                "value": 40.0
+              },
+              {
+                "id": "qty_B",
+                "owner_department": "sales",
+                "unit": "unit",
+                "value": 15.0
+              }
+            ],
+            "fragment_id": "logistics_fragment",
+            "fragment_version": "1",
+            "id": "logistics",
+            "name": "Logistics",
+            "owner_id": "demo_owner_logistics",
+            "source": "synthetic_organization"
+          },
+          {
+            "constraint_ids": ["production_machine"],
+            "decisions": [
+              {
+                "id": "qty_A",
+                "owner_department": "sales",
+                "unit": "unit",
+                "value": 40.0
+              },
+              {
+                "id": "qty_B",
+                "owner_department": "sales",
+                "unit": "unit",
+                "value": 15.0
+              }
+            ],
+            "fragment_id": "production_fragment",
+            "fragment_version": "1",
+            "id": "production",
+            "name": "Production",
+            "owner_id": "demo_owner_production",
+            "source": "synthetic_organization"
+          },
+          {
+            "constraint_ids": [],
+            "decisions": [
+              {
+                "id": "qty_A",
+                "owner_department": "sales",
+                "unit": "unit",
+                "value": 40.0
+              },
+              {
+                "id": "qty_B",
+                "owner_department": "sales",
+                "unit": "unit",
+                "value": 15.0
+              }
+            ],
+            "fragment_id": "sales_fragment",
+            "fragment_version": "1",
+            "id": "sales",
+            "name": "Sales",
+            "owner_id": "demo_owner_sales",
+            "source": "synthetic_organization"
+          }
+        ],
+        "has_verified_plan": true,
+        "model_hash": "6067a4939fd2c2b42ade6387c12e72cf4df95c5581ab0375babdc134b0108ba0",
+        "organization_id": "synthetic_factory",
+        "resources": [
+          {
+            "capacity": "8000",
+            "capacity_parameter": "operating_cash_budget_eur",
+            "constraint_ids": ["finance_budget"],
+            "consumption": "7000",
+            "id": "finance_resource",
+            "name": "finance_resource",
+            "owner_department": "finance",
+            "remaining": "1000",
+            "shared_with": ["sales"],
+            "state": "SATISFIED",
+            "unit": "EUR"
+          },
+          {
+            "capacity": "55",
+            "capacity_parameter": "delivery_capacity_units",
+            "constraint_ids": ["logistics_delivery"],
+            "consumption": "55",
+            "id": "logistics_resource",
+            "name": "logistics_resource",
+            "owner_department": "logistics",
+            "remaining": "0",
+            "shared_with": ["sales"],
+            "state": "SATURATED",
+            "unit": "unit"
+          },
+          {
+            "capacity": "100",
+            "capacity_parameter": "machine_capacity_hours",
+            "constraint_ids": ["production_machine"],
+            "consumption": "95",
+            "id": "production_resource",
+            "name": "production_resource",
+            "owner_department": "production",
+            "remaining": "5",
+            "shared_with": ["sales"],
+            "state": "SATISFIED",
+            "unit": "hour"
+          }
+        ],
+        "run_id": "6a638b8a-b9df-4279-8e86-2390dd7f7295",
+        "status": "OPTIMAL",
+        "warnings": []
+      }
+    }
+  }
+}
