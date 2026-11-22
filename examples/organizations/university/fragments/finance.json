@@ -1,0 +1,10 @@
+{
+  "id": "finance_fragment",
+  "organization_id": "synthetic_university",
+  "organization_version": "1",
+  "department_id": "finance",
+  "department_version": "1",
+  "source": "synthetic_organization",
+  "approved": true,
+  "version": "1"
+}

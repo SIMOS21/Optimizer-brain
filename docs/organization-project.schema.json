@@ -1,0 +1,296 @@
+{
+  "$defs": {
+    "Objective": {
+      "additionalProperties": false,
+      "properties": {
+        "source": {
+          "maxLength": 500,
+          "minLength": 1,
+          "title": "Source",
+          "type": "string"
+        },
+        "approved": {
+          "title": "Approved",
+          "type": "boolean"
+        },
+        "version": {
+          "maxLength": 500,
+          "minLength": 1,
+          "title": "Version",
+          "type": "string"
+        },
+        "unit": {
+          "maxLength": 128,
+          "title": "Unit",
+          "type": "string"
+        },
+        "id": {
+          "maxLength": 100,
+          "pattern": "^[A-Za-z][A-Za-z0-9_]*$",
+          "title": "Id",
+          "type": "string"
+        },
+        "owner_department": {
+          "maxLength": 100,
+          "pattern": "^[A-Za-z][A-Za-z0-9_]*$",
+          "title": "Owner Department",
+          "type": "string"
+        },
+        "sense": {
+          "enum": [
+            "MAX",
+            "MIN"
+          ],
+          "title": "Sense",
+          "type": "string"
+        },
+        "priority": {
+          "default": 1,
+          "minimum": 1,
+          "title": "Priority",
+          "type": "integer"
+        },
+        "terms": {
+          "items": {
+            "$ref": "#/$defs/Term"
+          },
+          "maxItems": 10000,
+          "title": "Terms",
+          "type": "array"
+        }
+      },
+      "required": [
+        "source",
+        "approved",
+        "version",
+        "unit",
+        "id",
+        "owner_department",
+        "sense",
+        "terms"
+      ],
+      "title": "Objective",
+      "type": "object"
+    },
+    "Parameter": {
+      "additionalProperties": false,
+      "properties": {
+        "source": {
+          "maxLength": 500,
+          "minLength": 1,
+          "title": "Source",
+          "type": "string"
+        },
+        "approved": {
+          "title": "Approved",
+          "type": "boolean"
+        },
+        "version": {
+          "maxLength": 500,
+          "minLength": 1,
+          "title": "Version",
+          "type": "string"
+        },
+        "unit": {
+          "maxLength": 128,
+          "title": "Unit",
+          "type": "string"
+        },
+        "value": {
+          "anyOf": [
+            {
+              "maxLength": 128,
+              "pattern": "^[+-]?(?:[0-9]+(?:\\.[0-9]*)?|\\.[0-9]+)(?:[eE][+-]?[0-9]+)?$",
+              "type": "string"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "description": "Décimal fini ; 100 chiffres, exposant [-100,100]. Chaîne recommandée.",
+          "title": "Value"
+        }
+      },
+      "required": [
+        "source",
+        "approved",
+        "version",
+        "unit",
+        "value"
+      ],
+      "title": "Parameter",
+      "type": "object"
+    },
+    "ParameterRef": {
+      "additionalProperties": false,
+      "properties": {
+        "parameter": {
+          "maxLength": 100,
+          "pattern": "^[A-Za-z][A-Za-z0-9_]*$",
+          "title": "Parameter",
+          "type": "string"
+        }
+      },
+      "required": [
+        "parameter"
+      ],
+      "title": "ParameterRef",
+      "type": "object"
+    },
+    "Term": {
+      "additionalProperties": false,
+      "properties": {
+        "variable": {
+          "maxLength": 100,
+          "pattern": "^[A-Za-z][A-Za-z0-9_]*$",
+          "title": "Variable",
+          "type": "string"
+        },
+        "coefficient": {
+          "anyOf": [
+            {
+              "anyOf": [
+                {
+                  "maxLength": 128,
+                  "pattern": "^[+-]?(?:[0-9]+(?:\\.[0-9]*)?|\\.[0-9]+)(?:[eE][+-]?[0-9]+)?$",
+                  "type": "string"
+                },
+                {
+                  "type": "number"
+                }
+              ],
+              "description": "Décimal fini ; 100 chiffres, exposant [-100,100]. Chaîne recommandée."
+            },
+            {
+              "$ref": "#/$defs/ParameterRef"
+            }
+          ],
+          "title": "Coefficient"
+        },
+        "coefficient_unit": {
+          "maxLength": 128,
+          "title": "Coefficient Unit",
+          "type": "string"
+        }
+      },
+      "required": [
+        "variable",
+        "coefficient",
+        "coefficient_unit"
+      ],
+      "title": "Term",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "model_id": {
+      "maxLength": 100,
+      "pattern": "^[A-Za-z][A-Za-z0-9_]*$",
+      "title": "Model Id",
+      "type": "string"
+    },
+    "model_name": {
+      "maxLength": 500,
+      "minLength": 1,
+      "title": "Model Name",
+      "type": "string"
+    },
+    "model_version": {
+      "maxLength": 500,
+      "minLength": 1,
+      "title": "Model Version",
+      "type": "string"
+    },
+    "scenario_id": {
+      "maxLength": 100,
+      "pattern": "^[A-Za-z][A-Za-z0-9_]*$",
+      "title": "Scenario Id",
+      "type": "string"
+    },
+    "currency": {
+      "anyOf": [
+        {
+          "enum": [
+            "EUR",
+            "MAD",
+            "USD"
+          ],
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Currency"
+    },
+    "dimensions": {
+      "patternProperties": {
+        "^[A-Za-z][A-Za-z0-9_]*$": {
+          "items": {
+            "maxLength": 100,
+            "pattern": "^[A-Za-z][A-Za-z0-9_]*$",
+            "type": "string"
+          },
+          "type": "array"
+        }
+      },
+      "propertyNames": {
+        "maxLength": 100
+      },
+      "title": "Dimensions",
+      "type": "object"
+    },
+    "shared_parameters": {
+      "maxProperties": 10000,
+      "patternProperties": {
+        "^[A-Za-z][A-Za-z0-9_]*$": {
+          "$ref": "#/$defs/Parameter"
+        }
+      },
+      "propertyNames": {
+        "maxLength": 100
+      },
+      "title": "Shared Parameters",
+      "type": "object"
+    },
+    "objective": {
+      "$ref": "#/$defs/Objective"
+    },
+    "graph_file": {
+      "maxLength": 500,
+      "minLength": 1,
+      "title": "Graph File",
+      "type": "string"
+    },
+    "fragment_files": {
+      "items": {
+        "maxLength": 500,
+        "minLength": 1,
+        "type": "string"
+      },
+      "maxItems": 1000,
+      "minItems": 1,
+      "title": "Fragment Files",
+      "type": "array"
+    }
+  },
+  "required": [
+    "schema_version",
+    "model_id",
+    "model_name",
+    "model_version",
+    "scenario_id",
+    "objective",
+    "graph_file",
+    "fragment_files"
+  ],
+  "title": "OrganizationProject",
+  "type": "object"
+}

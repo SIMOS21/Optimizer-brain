@@ -1,0 +1,189 @@
+{
+  "run_id": "18b8520c-3326-4139-867f-05e49fb4dc5e",
+  "status": "OPTIMAL",
+  "public_status": "OPTIMAL",
+  "termination_reason": "optimal",
+  "model_id": "generic_allocation",
+  "model_version": "1.0.0",
+  "data_snapshot_id": "synthetic_allocation_v1",
+  "scenario_id": "base",
+  "model_hash": "71f75fd72d7bcbab8da07b29a806738e6a8252349d383d4fccee583384c82b71",
+  "manifest_hash": "49bf86089a785a69643aa67e2edc4b0009a81568fb7f42689ed87211e8c0c0b5",
+  "solver_name": "highs",
+  "solver_version": "1.8.0",
+  "interface_name": "scipy.optimize.milp",
+  "interface_version": "1.17.0",
+  "solver_status_raw": 0,
+  "solver_message": "Optimization terminated successfully. (HiGHS Status 7: Optimal)",
+  "solver_options": {
+    "disp": false,
+    "mip_rel_gap": 0.0,
+    "presolve": true,
+    "time_limit": 20.0
+  },
+  "backend_defaults": {
+    "primal_feasibility_tolerance": 1e-07,
+    "dual_feasibility_tolerance": 1e-07,
+    "mip_feasibility_tolerance": 1e-06,
+    "mip_abs_gap": 1e-06,
+    "small_matrix_value": 1e-09,
+    "large_matrix_value": 1000000000000000.0,
+    "infinite_bound": 1e+20,
+    "infinite_cost": 1e+20
+  },
+  "settings": {
+    "time_limit_seconds": 20.0,
+    "mip_rel_gap": 0.0,
+    "presolve": true,
+    "node_limit": null,
+    "verification": {
+      "bound_tolerance": "1E-7",
+      "constraint_tolerance": "1E-7",
+      "integrality_tolerance": "1E-7",
+      "objective_absolute_tolerance": "0.000001",
+      "objective_relative_tolerance": "1E-9"
+    }
+  },
+  "started_at": "2026-11-22T04:20:10.683093+00:00",
+  "duration_ms": 8.233999949879944,
+  "decision_values": {
+    "qty_A": 40.0,
+    "qty_B": 15.0
+  },
+  "objective_value": "4100",
+  "objective_unit": {
+    "dimensions": [
+      [
+        "EUR",
+        1
+      ]
+    ],
+    "scale": "1"
+  },
+  "solver_objective_value": 4100.0,
+  "best_bound": 4100.0,
+  "absolute_gap": "0",
+  "relative_gap": 0.0,
+  "gap_scope": "binary64_backend_model",
+  "certificate_scope": "solver_tolerances",
+  "optimality_label": "optimal à tolérance près (modèle binary64, sans certificat rationnel strict)",
+  "primal_residual_max": "0",
+  "integrality_residual_max": "0",
+  "validation_report": {
+    "valid": true,
+    "plan": {
+      "model_id": "generic_allocation",
+      "model_hash": "71f75fd72d7bcbab8da07b29a806738e6a8252349d383d4fccee583384c82b71",
+      "manifest_hash": "49bf86089a785a69643aa67e2edc4b0009a81568fb7f42689ed87211e8c0c0b5",
+      "model_version": "1.0.0",
+      "data_snapshot_id": "synthetic_allocation_v1",
+      "scenario_id": "base",
+      "feasible": true,
+      "issues": [],
+      "bound_tolerance": "1/10000000",
+      "constraint_tolerance": "1/10000000",
+      "integrality_tolerance": "1/10000000",
+      "variables": [
+        {
+          "id": "qty_A",
+          "value": "40",
+          "bound_violation": "0",
+          "integrality_residual": "0",
+          "valid": true
+        },
+        {
+          "id": "qty_B",
+          "value": "15",
+          "bound_violation": "0",
+          "integrality_residual": "0",
+          "valid": true
+        }
+      ],
+      "constraints": [
+        {
+          "id": "capacity_1",
+          "lhs": "95",
+          "rhs": "100",
+          "slack": "5",
+          "violation": "0",
+          "unit": {
+            "dimensions": [
+              [
+                "time",
+                1
+              ]
+            ],
+            "scale": "1"
+          },
+          "valid": true
+        },
+        {
+          "id": "capacity_2",
+          "lhs": "7000",
+          "rhs": "8000",
+          "slack": "1000",
+          "violation": "0",
+          "unit": {
+            "dimensions": [
+              [
+                "EUR",
+                1
+              ]
+            ],
+            "scale": "1"
+          },
+          "valid": true
+        },
+        {
+          "id": "capacity_3",
+          "lhs": "55",
+          "rhs": "55",
+          "slack": "0",
+          "violation": "0",
+          "unit": {
+            "dimensions": [
+              [
+                "count",
+                1
+              ]
+            ],
+            "scale": "1"
+          },
+          "valid": true
+        }
+      ],
+      "objectives": [
+        {
+          "id": "value",
+          "value": "4100",
+          "unit": {
+            "dimensions": [
+              [
+                "EUR",
+                1
+              ]
+            ],
+            "scale": "1"
+          }
+        }
+      ]
+    },
+    "issues": [],
+    "objective_value": "4100",
+    "solver_objective_value": "4100",
+    "objective_difference": "0",
+    "objective_tolerance": "51/10000000",
+    "primal_residual_max": "0",
+    "integrality_residual_max": "0",
+    "arithmetic": "exact_rationals_of_binary64_values"
+  },
+  "conversion_report": {
+    "converted_count": 15,
+    "rounded_count": 0,
+    "max_absolute_error": "0",
+    "max_relative_error": "0",
+    "policy": "binary64; abs(value)<=1e12; nonzero coefficients>1e-9; relative conversion error<=1e-12"
+  },
+  "warnings": [],
+  "audit_actor_id": null
+}

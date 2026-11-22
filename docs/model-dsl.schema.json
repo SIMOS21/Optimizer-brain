@@ -339,6 +339,9 @@
             },
             {
               "$ref": "#/$defs/ParameterRef"
+            },
+            {
+              "type": "null"
             }
           ],
           "title": "Lb"
@@ -360,6 +363,9 @@
             },
             {
               "$ref": "#/$defs/ParameterRef"
+            },
+            {
+              "type": "null"
             }
           ],
           "title": "Ub"

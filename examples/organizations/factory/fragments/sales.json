@@ -1,0 +1,28 @@
+{
+  "id": "sales_fragment",
+  "organization_id": "synthetic_factory",
+  "organization_version": "1",
+  "department_id": "sales",
+  "department_version": "1",
+  "source": "synthetic_organization",
+  "approved": true,
+  "version": "1",
+  "variables": [
+    {
+      "id": "qty_A",
+      "type": "INTEGER",
+      "lb": "0",
+      "ub": "40",
+      "unit": "unit",
+      "department": "sales"
+    },
+    {
+      "id": "qty_B",
+      "type": "INTEGER",
+      "lb": "0",
+      "ub": "35",
+      "unit": "unit",
+      "department": "sales"
+    }
+  ]
+}

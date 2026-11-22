@@ -1,0 +1,1408 @@
+{
+  "composition": {
+    "organization_model": {
+      "currency": null,
+      "dimensions": {},
+      "fragments": [
+        {
+          "approved": true,
+          "constraints": [
+            {
+              "approved": true,
+              "id": "at_least_one_course",
+              "kind": "HARD",
+              "operator": ">=",
+              "owner_department": "facilities",
+              "rhs": "1",
+              "source": "synthetic_organization",
+              "terms": [
+                {
+                  "coefficient": "1",
+                  "coefficient_unit": "1",
+                  "variable": "course_languages"
+                },
+                {
+                  "coefficient": "1",
+                  "coefficient_unit": "1",
+                  "variable": "course_mathematics"
+                },
+                {
+                  "coefficient": "1",
+                  "coefficient_unit": "1",
+                  "variable": "course_science"
+                }
+              ],
+              "unit": "1",
+              "version": "1"
+            }
+          ],
+          "department_id": "facilities",
+          "department_version": "1",
+          "id": "facilities_fragment",
+          "organization_id": "synthetic_university",
+          "organization_version": "1",
+          "parameter_refs": [],
+          "parameters": {},
+          "resource_uses": [],
+          "source": "synthetic_organization",
+          "variable_refs": [
+            {
+              "declaration_version": "1",
+              "owner_department": "languages",
+              "unit": "1",
+              "variable": "course_languages"
+            },
+            {
+              "declaration_version": "1",
+              "owner_department": "mathematics",
+              "unit": "1",
+              "variable": "course_mathematics"
+            },
+            {
+              "declaration_version": "1",
+              "owner_department": "science",
+              "unit": "1",
+              "variable": "course_science"
+            }
+          ],
+          "variables": [],
+          "version": "1"
+        },
+        {
+          "approved": true,
+          "constraints": [],
+          "department_id": "finance",
+          "department_version": "1",
+          "id": "finance_fragment",
+          "organization_id": "synthetic_university",
+          "organization_version": "1",
+          "parameter_refs": [],
+          "parameters": {},
+          "resource_uses": [],
+          "source": "synthetic_organization",
+          "variable_refs": [],
+          "variables": [],
+          "version": "1"
+        },
+        {
+          "approved": true,
+          "constraints": [],
+          "department_id": "languages",
+          "department_version": "1",
+          "id": "languages_fragment",
+          "organization_id": "synthetic_university",
+          "organization_version": "1",
+          "parameter_refs": [],
+          "parameters": {},
+          "resource_uses": [
+            {
+              "approved": true,
+              "id": "budget_load",
+              "resource_id": "budget",
+              "source": "synthetic_organization",
+              "terms": [
+                {
+                  "coefficient": "4",
+                  "coefficient_unit": "EUR",
+                  "variable": "course_languages"
+                }
+              ],
+              "version": "1"
+            },
+            {
+              "approved": true,
+              "id": "room_load",
+              "resource_id": "rooms",
+              "source": "synthetic_organization",
+              "terms": [
+                {
+                  "coefficient": "1",
+                  "coefficient_unit": "unit",
+                  "variable": "course_languages"
+                }
+              ],
+              "version": "1"
+            }
+          ],
+          "source": "synthetic_organization",
+          "variable_refs": [],
+          "variables": [
+            {
+              "department": "languages",
+              "id": "course_languages",
+              "indices": {},
+              "lb": "0",
+              "type": "BINARY",
+              "ub": "1",
+              "unit": "1"
+            }
+          ],
+          "version": "1"
+        },
+        {
+          "approved": true,
+          "constraints": [],
+          "department_id": "mathematics",
+          "department_version": "1",
+          "id": "mathematics_fragment",
+          "organization_id": "synthetic_university",
+          "organization_version": "1",
+          "parameter_refs": [],
+          "parameters": {},
+          "resource_uses": [
+            {
+              "approved": true,
+              "id": "budget_load",
+              "resource_id": "budget",
+              "source": "synthetic_organization",
+              "terms": [
+                {
+                  "coefficient": "6",
+                  "coefficient_unit": "EUR",
+                  "variable": "course_mathematics"
+                }
+              ],
+              "version": "1"
+            },
+            {
+              "approved": true,
+              "id": "room_load",
+              "resource_id": "rooms",
+              "source": "synthetic_organization",
+              "terms": [
+                {
+                  "coefficient": "1",
+                  "coefficient_unit": "unit",
+                  "variable": "course_mathematics"
+                }
+              ],
+              "version": "1"
+            }
+          ],
+          "source": "synthetic_organization",
+          "variable_refs": [],
+          "variables": [
+            {
+              "department": "mathematics",
+              "id": "course_mathematics",
+              "indices": {},
+              "lb": "0",
+              "type": "BINARY",
+              "ub": "1",
+              "unit": "1"
+            }
+          ],
+          "version": "1"
+        },
+        {
+          "approved": true,
+          "constraints": [],
+          "department_id": "science",
+          "department_version": "1",
+          "id": "science_fragment",
+          "organization_id": "synthetic_university",
+          "organization_version": "1",
+          "parameter_refs": [],
+          "parameters": {},
+          "resource_uses": [
+            {
+              "approved": true,
+              "id": "budget_load",
+              "resource_id": "budget",
+              "source": "synthetic_organization",
+              "terms": [
+                {
+                  "coefficient": "3",
+                  "coefficient_unit": "EUR",
+                  "variable": "course_science"
+                }
+              ],
+              "version": "1"
+            },
+            {
+              "approved": true,
+              "id": "room_load",
+              "resource_id": "rooms",
+              "source": "synthetic_organization",
+              "terms": [
+                {
+                  "coefficient": "1",
+                  "coefficient_unit": "unit",
+                  "variable": "course_science"
+                }
+              ],
+              "version": "1"
+            }
+          ],
+          "source": "synthetic_organization",
+          "variable_refs": [],
+          "variables": [
+            {
+              "department": "science",
+              "id": "course_science",
+              "indices": {},
+              "lb": "0",
+              "type": "BINARY",
+              "ub": "1",
+              "unit": "1"
+            }
+          ],
+          "version": "1"
+        }
+      ],
+      "graph": {
+        "departments": [
+          {
+            "approved": true,
+            "id": "facilities",
+            "name": "Facilities",
+            "owner_id": "demo_owner_facilities",
+            "source": "synthetic_organization",
+            "version": "1"
+          },
+          {
+            "approved": true,
+            "id": "finance",
+            "name": "Finance",
+            "owner_id": "demo_owner_finance",
+            "source": "synthetic_organization",
+            "version": "1"
+          },
+          {
+            "approved": true,
+            "id": "languages",
+            "name": "Languages",
+            "owner_id": "demo_owner_languages",
+            "source": "synthetic_organization",
+            "version": "1"
+          },
+          {
+            "approved": true,
+            "id": "mathematics",
+            "name": "Mathematics",
+            "owner_id": "demo_owner_mathematics",
+            "source": "synthetic_organization",
+            "version": "1"
+          },
+          {
+            "approved": true,
+            "id": "science",
+            "name": "Science",
+            "owner_id": "demo_owner_science",
+            "source": "synthetic_organization",
+            "version": "1"
+          }
+        ],
+        "edges": [
+          {
+            "id": "languages_budget",
+            "source_id": "languages",
+            "target_id": "budget",
+            "type": "USES_RESOURCE"
+          },
+          {
+            "id": "languages_rooms",
+            "source_id": "languages",
+            "target_id": "rooms",
+            "type": "USES_RESOURCE"
+          },
+          {
+            "id": "mathematics_budget",
+            "source_id": "mathematics",
+            "target_id": "budget",
+            "type": "USES_RESOURCE"
+          },
+          {
+            "id": "mathematics_rooms",
+            "source_id": "mathematics",
+            "target_id": "rooms",
+            "type": "USES_RESOURCE"
+          },
+          {
+            "id": "science_budget",
+            "source_id": "science",
+            "target_id": "budget",
+            "type": "USES_RESOURCE"
+          },
+          {
+            "id": "science_rooms",
+            "source_id": "science",
+            "target_id": "rooms",
+            "type": "USES_RESOURCE"
+          }
+        ],
+        "organization": {
+          "approved": true,
+          "data_snapshot_id": "synthetic_university_v1",
+          "id": "synthetic_university",
+          "name": "Université fictive",
+          "source": "synthetic_organization",
+          "version": "1"
+        },
+        "resources": [
+          {
+            "approved": true,
+            "capacity": {
+              "parameter": "teaching_budget"
+            },
+            "capacity_version": "1",
+            "constraint_id": "budget_capacity",
+            "id": "budget",
+            "name": "Budget fictif",
+            "owner_department": "finance",
+            "shared_with": [
+              "languages",
+              "mathematics",
+              "science"
+            ],
+            "source": "synthetic_organization",
+            "unit": "EUR",
+            "version": "1"
+          },
+          {
+            "approved": true,
+            "capacity": {
+              "parameter": "room_slots"
+            },
+            "capacity_version": "1",
+            "constraint_id": "rooms_capacity",
+            "id": "rooms",
+            "name": "Créneaux de salle fictifs",
+            "owner_department": "facilities",
+            "shared_with": [
+              "languages",
+              "mathematics",
+              "science"
+            ],
+            "source": "synthetic_organization",
+            "unit": "unit",
+            "version": "1"
+          }
+        ],
+        "schema_version": "1.0"
+      },
+      "model_id": "course_selection",
+      "model_name": "Sélection synthétique de cours",
+      "model_version": "1",
+      "objective": {
+        "approved": true,
+        "id": "synthetic_coverage",
+        "owner_department": "facilities",
+        "priority": 1,
+        "sense": "MAX",
+        "source": "synthetic_organization",
+        "terms": [
+          {
+            "coefficient": "10",
+            "coefficient_unit": "unit",
+            "variable": "course_mathematics"
+          },
+          {
+            "coefficient": "7",
+            "coefficient_unit": "unit",
+            "variable": "course_science"
+          },
+          {
+            "coefficient": "8",
+            "coefficient_unit": "unit",
+            "variable": "course_languages"
+          }
+        ],
+        "unit": "unit",
+        "version": "1"
+      },
+      "scenario_id": "base",
+      "schema_version": "1.0",
+      "shared_parameters": {
+        "room_slots": {
+          "approved": true,
+          "source": "synthetic_organization",
+          "unit": "unit",
+          "value": "2",
+          "version": "1"
+        },
+        "teaching_budget": {
+          "approved": true,
+          "source": "synthetic_organization",
+          "unit": "EUR",
+          "value": "9",
+          "version": "1"
+        }
+      }
+    },
+    "dsl": {
+      "constraints": [
+        {
+          "approved": true,
+          "id": "at_least_one_course",
+          "kind": "HARD",
+          "operator": ">=",
+          "owner_department": "facilities",
+          "rhs": "1",
+          "source": "synthetic_organization",
+          "terms": [
+            {
+              "coefficient": "1",
+              "coefficient_unit": "1",
+              "variable": "course_languages"
+            },
+            {
+              "coefficient": "1",
+              "coefficient_unit": "1",
+              "variable": "course_mathematics"
+            },
+            {
+              "coefficient": "1",
+              "coefficient_unit": "1",
+              "variable": "course_science"
+            }
+          ],
+          "unit": "1",
+          "version": "1"
+        },
+        {
+          "approved": true,
+          "id": "budget_capacity",
+          "kind": "HARD",
+          "operator": "<=",
+          "owner_department": "finance",
+          "rhs": {
+            "parameter": "teaching_budget"
+          },
+          "source": "synthetic_organization",
+          "terms": [
+            {
+              "coefficient": "4",
+              "coefficient_unit": "EUR",
+              "variable": "course_languages"
+            },
+            {
+              "coefficient": "6",
+              "coefficient_unit": "EUR",
+              "variable": "course_mathematics"
+            },
+            {
+              "coefficient": "3",
+              "coefficient_unit": "EUR",
+              "variable": "course_science"
+            }
+          ],
+          "unit": "EUR",
+          "version": "1"
+        },
+        {
+          "approved": true,
+          "id": "rooms_capacity",
+          "kind": "HARD",
+          "operator": "<=",
+          "owner_department": "facilities",
+          "rhs": {
+            "parameter": "room_slots"
+          },
+          "source": "synthetic_organization",
+          "terms": [
+            {
+              "coefficient": "1",
+              "coefficient_unit": "unit",
+              "variable": "course_languages"
+            },
+            {
+              "coefficient": "1",
+              "coefficient_unit": "unit",
+              "variable": "course_mathematics"
+            },
+            {
+              "coefficient": "1",
+              "coefficient_unit": "unit",
+              "variable": "course_science"
+            }
+          ],
+          "unit": "unit",
+          "version": "1"
+        }
+      ],
+      "currency": null,
+      "data_snapshot_id": "synthetic_university_v1",
+      "departments": [
+        {
+          "id": "facilities",
+          "name": "Facilities"
+        },
+        {
+          "id": "finance",
+          "name": "Finance"
+        },
+        {
+          "id": "languages",
+          "name": "Languages"
+        },
+        {
+          "id": "mathematics",
+          "name": "Mathematics"
+        },
+        {
+          "id": "science",
+          "name": "Science"
+        }
+      ],
+      "dimensions": {},
+      "id": "course_selection",
+      "model_version": "1",
+      "name": "Sélection synthétique de cours",
+      "objectives": [
+        {
+          "approved": true,
+          "id": "synthetic_coverage",
+          "owner_department": "facilities",
+          "priority": 1,
+          "sense": "MAX",
+          "source": "synthetic_organization",
+          "terms": [
+            {
+              "coefficient": "8",
+              "coefficient_unit": "unit",
+              "variable": "course_languages"
+            },
+            {
+              "coefficient": "10",
+              "coefficient_unit": "unit",
+              "variable": "course_mathematics"
+            },
+            {
+              "coefficient": "7",
+              "coefficient_unit": "unit",
+              "variable": "course_science"
+            }
+          ],
+          "unit": "unit",
+          "version": "1"
+        }
+      ],
+      "parameters": {
+        "room_slots": {
+          "approved": true,
+          "source": "synthetic_organization",
+          "unit": "unit",
+          "value": "2",
+          "version": "1"
+        },
+        "teaching_budget": {
+          "approved": true,
+          "source": "synthetic_organization",
+          "unit": "EUR",
+          "value": "9",
+          "version": "1"
+        }
+      },
+      "scenario_id": "base",
+      "schema_version": "1.0",
+      "variables": [
+        {
+          "department": "languages",
+          "id": "course_languages",
+          "indices": {},
+          "lb": "0",
+          "type": "BINARY",
+          "ub": "1",
+          "unit": "1"
+        },
+        {
+          "department": "mathematics",
+          "id": "course_mathematics",
+          "indices": {},
+          "lb": "0",
+          "type": "BINARY",
+          "ub": "1",
+          "unit": "1"
+        },
+        {
+          "department": "science",
+          "id": "course_science",
+          "indices": {},
+          "lb": "0",
+          "type": "BINARY",
+          "ub": "1",
+          "unit": "1"
+        }
+      ]
+    },
+    "ir": {
+      "schema_version": "1.0",
+      "model_id": "course_selection",
+      "model_version": "1",
+      "data_snapshot_id": "synthetic_university_v1",
+      "scenario_id": "base",
+      "model_hash": "309b55d1d67a09260b66e45632e84e78bbfd3cf356031530360364b8181bbbf9",
+      "manifest_hash": "8f3976fe2726893e454490fa5feccb72e544c51da96dce435ebbb6d00b431822",
+      "parameters": [
+        {
+          "id": "room_slots",
+          "value": "2",
+          "unit": {
+            "dimensions": [
+              [
+                "count",
+                1
+              ]
+            ],
+            "scale": "1"
+          },
+          "origin": {
+            "source": "synthetic_organization",
+            "approved": true,
+            "version": "1"
+          }
+        },
+        {
+          "id": "teaching_budget",
+          "value": "9",
+          "unit": {
+            "dimensions": [
+              [
+                "EUR",
+                1
+              ]
+            ],
+            "scale": "1"
+          },
+          "origin": {
+            "source": "synthetic_organization",
+            "approved": true,
+            "version": "1"
+          }
+        }
+      ],
+      "variables": [
+        {
+          "id": "course_languages",
+          "domain": "BINARY",
+          "lb": "0",
+          "ub": "1",
+          "unit": {
+            "dimensions": [],
+            "scale": "1"
+          },
+          "department": "languages",
+          "indices": []
+        },
+        {
+          "id": "course_mathematics",
+          "domain": "BINARY",
+          "lb": "0",
+          "ub": "1",
+          "unit": {
+            "dimensions": [],
+            "scale": "1"
+          },
+          "department": "mathematics",
+          "indices": []
+        },
+        {
+          "id": "course_science",
+          "domain": "BINARY",
+          "lb": "0",
+          "ub": "1",
+          "unit": {
+            "dimensions": [],
+            "scale": "1"
+          },
+          "department": "science",
+          "indices": []
+        }
+      ],
+      "constraints": [
+        {
+          "id": "at_least_one_course",
+          "terms": [
+            {
+              "variable": "course_languages",
+              "coefficient": "1"
+            },
+            {
+              "variable": "course_mathematics",
+              "coefficient": "1"
+            },
+            {
+              "variable": "course_science",
+              "coefficient": "1"
+            }
+          ],
+          "operator": ">=",
+          "rhs": "1",
+          "unit": {
+            "dimensions": [],
+            "scale": "1"
+          },
+          "owner_department": "facilities",
+          "origin": {
+            "source": "synthetic_organization",
+            "approved": true,
+            "version": "1"
+          }
+        },
+        {
+          "id": "budget_capacity",
+          "terms": [
+            {
+              "variable": "course_languages",
+              "coefficient": "4"
+            },
+            {
+              "variable": "course_mathematics",
+              "coefficient": "6"
+            },
+            {
+              "variable": "course_science",
+              "coefficient": "3"
+            }
+          ],
+          "operator": "<=",
+          "rhs": "9",
+          "unit": {
+            "dimensions": [
+              [
+                "EUR",
+                1
+              ]
+            ],
+            "scale": "1"
+          },
+          "owner_department": "finance",
+          "origin": {
+            "source": "synthetic_organization",
+            "approved": true,
+            "version": "1"
+          }
+        },
+        {
+          "id": "rooms_capacity",
+          "terms": [
+            {
+              "variable": "course_languages",
+              "coefficient": "1"
+            },
+            {
+              "variable": "course_mathematics",
+              "coefficient": "1"
+            },
+            {
+              "variable": "course_science",
+              "coefficient": "1"
+            }
+          ],
+          "operator": "<=",
+          "rhs": "2",
+          "unit": {
+            "dimensions": [
+              [
+                "count",
+                1
+              ]
+            ],
+            "scale": "1"
+          },
+          "owner_department": "facilities",
+          "origin": {
+            "source": "synthetic_organization",
+            "approved": true,
+            "version": "1"
+          }
+        }
+      ],
+      "objectives": [
+        {
+          "id": "synthetic_coverage",
+          "terms": [
+            {
+              "variable": "course_languages",
+              "coefficient": "8"
+            },
+            {
+              "variable": "course_mathematics",
+              "coefficient": "10"
+            },
+            {
+              "variable": "course_science",
+              "coefficient": "7"
+            }
+          ],
+          "sense": "MAX",
+          "priority": 1,
+          "unit": {
+            "dimensions": [
+              [
+                "count",
+                1
+              ]
+            ],
+            "scale": "1"
+          },
+          "owner_department": "facilities",
+          "origin": {
+            "source": "synthetic_organization",
+            "approved": true,
+            "version": "1"
+          }
+        }
+      ],
+      "transformations": [
+        "Resolved parameter references and explicit unit scales",
+        "Aggregated terms, removed zeros, sorted identifiers"
+      ],
+      "warnings": []
+    },
+    "model_hash": "309b55d1d67a09260b66e45632e84e78bbfd3cf356031530360364b8181bbbf9",
+    "model_manifest_hash": "8f3976fe2726893e454490fa5feccb72e544c51da96dce435ebbb6d00b431822",
+    "composition_manifest_hash": "76d573b1174c5e4772a652ef09b57ec0f2d33035dc26040d343d9b226dcfabf0",
+    "constraint_traces": [
+      {
+        "constraint_id": "at_least_one_course",
+        "owner_department": "facilities",
+        "fragment_ids": [
+          "facilities_fragment"
+        ],
+        "contribution_ids": [],
+        "parameter_ids": [],
+        "resource_id": null,
+        "source_paths": [
+          "fragments[facilities_fragment].constraints[at_least_one_course]"
+        ]
+      },
+      {
+        "constraint_id": "budget_capacity",
+        "owner_department": "finance",
+        "fragment_ids": [
+          "languages_fragment",
+          "mathematics_fragment",
+          "science_fragment"
+        ],
+        "contribution_ids": [
+          "languages_fragment/budget_load",
+          "mathematics_fragment/budget_load",
+          "science_fragment/budget_load"
+        ],
+        "parameter_ids": [
+          "teaching_budget"
+        ],
+        "resource_id": "budget",
+        "source_paths": [
+          "fragments[languages_fragment].resource_uses[budget_load]",
+          "fragments[mathematics_fragment].resource_uses[budget_load]",
+          "fragments[science_fragment].resource_uses[budget_load]"
+        ]
+      },
+      {
+        "constraint_id": "rooms_capacity",
+        "owner_department": "facilities",
+        "fragment_ids": [
+          "languages_fragment",
+          "mathematics_fragment",
+          "science_fragment"
+        ],
+        "contribution_ids": [
+          "languages_fragment/room_load",
+          "mathematics_fragment/room_load",
+          "science_fragment/room_load"
+        ],
+        "parameter_ids": [
+          "room_slots"
+        ],
+        "resource_id": "rooms",
+        "source_paths": [
+          "fragments[languages_fragment].resource_uses[room_load]",
+          "fragments[mathematics_fragment].resource_uses[room_load]",
+          "fragments[science_fragment].resource_uses[room_load]"
+        ]
+      }
+    ],
+    "resource_traces": [
+      {
+        "resource_id": "budget",
+        "parameter_id": "teaching_budget",
+        "constraint_id": "budget_capacity",
+        "fragment_ids": [
+          "languages_fragment",
+          "mathematics_fragment",
+          "science_fragment"
+        ],
+        "contribution_ids": [
+          "languages_fragment/budget_load",
+          "mathematics_fragment/budget_load",
+          "science_fragment/budget_load"
+        ]
+      },
+      {
+        "resource_id": "rooms",
+        "parameter_id": "room_slots",
+        "constraint_id": "rooms_capacity",
+        "fragment_ids": [
+          "languages_fragment",
+          "mathematics_fragment",
+          "science_fragment"
+        ],
+        "contribution_ids": [
+          "languages_fragment/room_load",
+          "mathematics_fragment/room_load",
+          "science_fragment/room_load"
+        ]
+      }
+    ]
+  },
+  "solve": {
+    "run_id": "ca125220-2412-43ff-bea5-37beca0f617a",
+    "status": "OPTIMAL",
+    "public_status": "OPTIMAL",
+    "termination_reason": "optimal",
+    "model_id": "course_selection",
+    "model_version": "1",
+    "data_snapshot_id": "synthetic_university_v1",
+    "scenario_id": "base",
+    "model_hash": "309b55d1d67a09260b66e45632e84e78bbfd3cf356031530360364b8181bbbf9",
+    "manifest_hash": "8f3976fe2726893e454490fa5feccb72e544c51da96dce435ebbb6d00b431822",
+    "solver_name": "highs",
+    "solver_version": "1.8.0",
+    "interface_name": "scipy.optimize.milp",
+    "interface_version": "1.17.0",
+    "solver_status_raw": 0,
+    "solver_message": "Optimization terminated successfully. (HiGHS Status 7: Optimal)",
+    "solver_options": {
+      "disp": false,
+      "mip_rel_gap": 0.0,
+      "presolve": true,
+      "time_limit": 20.0
+    },
+    "backend_defaults": {
+      "primal_feasibility_tolerance": 1e-07,
+      "dual_feasibility_tolerance": 1e-07,
+      "mip_feasibility_tolerance": 1e-06,
+      "mip_abs_gap": 1e-06,
+      "small_matrix_value": 1e-09,
+      "large_matrix_value": 1000000000000000.0,
+      "infinite_bound": 1e+20,
+      "infinite_cost": 1e+20
+    },
+    "settings": {
+      "time_limit_seconds": 20.0,
+      "mip_rel_gap": 0.0,
+      "presolve": true,
+      "node_limit": null,
+      "verification": {
+        "bound_tolerance": "1E-7",
+        "constraint_tolerance": "1E-7",
+        "integrality_tolerance": "1E-7",
+        "objective_absolute_tolerance": "0.000001",
+        "objective_relative_tolerance": "1E-9"
+      }
+    },
+    "started_at": "2026-11-22T12:47:23.963028+00:00",
+    "duration_ms": 4.114800016395748,
+    "decision_values": {
+      "course_languages": 0.0,
+      "course_mathematics": 1.0,
+      "course_science": 1.0
+    },
+    "objective_value": "17",
+    "objective_unit": {
+      "dimensions": [
+        [
+          "count",
+          1
+        ]
+      ],
+      "scale": "1"
+    },
+    "solver_objective_value": 17.0,
+    "best_bound": 17.0,
+    "absolute_gap": "0",
+    "relative_gap": 0.0,
+    "gap_scope": "binary64_backend_model",
+    "certificate_scope": "solver_tolerances",
+    "optimality_label": "optimal à tolérance près (modèle binary64, sans certificat rationnel strict)",
+    "primal_residual_max": "0",
+    "integrality_residual_max": "0",
+    "validation_report": {
+      "valid": true,
+      "plan": {
+        "model_id": "course_selection",
+        "model_hash": "309b55d1d67a09260b66e45632e84e78bbfd3cf356031530360364b8181bbbf9",
+        "manifest_hash": "8f3976fe2726893e454490fa5feccb72e544c51da96dce435ebbb6d00b431822",
+        "model_version": "1",
+        "data_snapshot_id": "synthetic_university_v1",
+        "scenario_id": "base",
+        "feasible": true,
+        "issues": [],
+        "bound_tolerance": "1/10000000",
+        "constraint_tolerance": "1/10000000",
+        "integrality_tolerance": "1/10000000",
+        "variables": [
+          {
+            "id": "course_languages",
+            "value": "0",
+            "bound_violation": "0",
+            "integrality_residual": "0",
+            "valid": true
+          },
+          {
+            "id": "course_mathematics",
+            "value": "1",
+            "bound_violation": "0",
+            "integrality_residual": "0",
+            "valid": true
+          },
+          {
+            "id": "course_science",
+            "value": "1",
+            "bound_violation": "0",
+            "integrality_residual": "0",
+            "valid": true
+          }
+        ],
+        "constraints": [
+          {
+            "id": "at_least_one_course",
+            "lhs": "2",
+            "rhs": "1",
+            "slack": "1",
+            "violation": "0",
+            "unit": {
+              "dimensions": [],
+              "scale": "1"
+            },
+            "valid": true
+          },
+          {
+            "id": "budget_capacity",
+            "lhs": "9",
+            "rhs": "9",
+            "slack": "0",
+            "violation": "0",
+            "unit": {
+              "dimensions": [
+                [
+                  "EUR",
+                  1
+                ]
+              ],
+              "scale": "1"
+            },
+            "valid": true
+          },
+          {
+            "id": "rooms_capacity",
+            "lhs": "2",
+            "rhs": "2",
+            "slack": "0",
+            "violation": "0",
+            "unit": {
+              "dimensions": [
+                [
+                  "count",
+                  1
+                ]
+              ],
+              "scale": "1"
+            },
+            "valid": true
+          }
+        ],
+        "objectives": [
+          {
+            "id": "synthetic_coverage",
+            "value": "17",
+            "unit": {
+              "dimensions": [
+                [
+                  "count",
+                  1
+                ]
+              ],
+              "scale": "1"
+            }
+          }
+        ]
+      },
+      "issues": [],
+      "objective_value": "17",
+      "solver_objective_value": "17",
+      "objective_difference": "0",
+      "objective_tolerance": "1017/1000000000",
+      "primal_residual_max": "0",
+      "integrality_residual_max": "0",
+      "arithmetic": "exact_rationals_of_binary64_values"
+    },
+    "conversion_report": {
+      "converted_count": 21,
+      "rounded_count": 0,
+      "max_absolute_error": "0",
+      "max_relative_error": "0",
+      "policy": "binary64; abs(value)<=1e12; nonzero coefficients>1e-9; relative conversion error<=1e-12"
+    },
+    "warnings": [],
+    "audit_actor_id": null
+  },
+  "report": {
+    "organization_id": "synthetic_university",
+    "composition_manifest_hash": "76d573b1174c5e4772a652ef09b57ec0f2d33035dc26040d343d9b226dcfabf0",
+    "model_hash": "309b55d1d67a09260b66e45632e84e78bbfd3cf356031530360364b8181bbbf9",
+    "run_id": "ca125220-2412-43ff-bea5-37beca0f617a",
+    "status": "OPTIMAL",
+    "has_verified_plan": true,
+    "constraints": [
+      {
+        "id": "at_least_one_course",
+        "owner_department": "facilities",
+        "state": "SATISFIED",
+        "lhs": "2",
+        "rhs": "1",
+        "slack": "1",
+        "violation": "0",
+        "unit": "1",
+        "tolerance": "1/10000000",
+        "provenance": {
+          "source": "synthetic_organization",
+          "approved": true,
+          "version": "1"
+        },
+        "trace": {
+          "constraint_id": "at_least_one_course",
+          "owner_department": "facilities",
+          "fragment_ids": [
+            "facilities_fragment"
+          ],
+          "contribution_ids": [],
+          "parameter_ids": [],
+          "resource_id": null,
+          "source_paths": [
+            "fragments[facilities_fragment].constraints[at_least_one_course]"
+          ]
+        }
+      },
+      {
+        "id": "budget_capacity",
+        "owner_department": "finance",
+        "state": "SATURATED",
+        "lhs": "9",
+        "rhs": "9",
+        "slack": "0",
+        "violation": "0",
+        "unit": "EUR",
+        "tolerance": "1/10000000",
+        "provenance": {
+          "source": "synthetic_organization",
+          "approved": true,
+          "version": "1"
+        },
+        "trace": {
+          "constraint_id": "budget_capacity",
+          "owner_department": "finance",
+          "fragment_ids": [
+            "languages_fragment",
+            "mathematics_fragment",
+            "science_fragment"
+          ],
+          "contribution_ids": [
+            "languages_fragment/budget_load",
+            "mathematics_fragment/budget_load",
+            "science_fragment/budget_load"
+          ],
+          "parameter_ids": [
+            "teaching_budget"
+          ],
+          "resource_id": "budget",
+          "source_paths": [
+            "fragments[languages_fragment].resource_uses[budget_load]",
+            "fragments[mathematics_fragment].resource_uses[budget_load]",
+            "fragments[science_fragment].resource_uses[budget_load]"
+          ]
+        }
+      },
+      {
+        "id": "rooms_capacity",
+        "owner_department": "facilities",
+        "state": "SATURATED",
+        "lhs": "2",
+        "rhs": "2",
+        "slack": "0",
+        "violation": "0",
+        "unit": "unit",
+        "tolerance": "1/10000000",
+        "provenance": {
+          "source": "synthetic_organization",
+          "approved": true,
+          "version": "1"
+        },
+        "trace": {
+          "constraint_id": "rooms_capacity",
+          "owner_department": "facilities",
+          "fragment_ids": [
+            "languages_fragment",
+            "mathematics_fragment",
+            "science_fragment"
+          ],
+          "contribution_ids": [
+            "languages_fragment/room_load",
+            "mathematics_fragment/room_load",
+            "science_fragment/room_load"
+          ],
+          "parameter_ids": [
+            "room_slots"
+          ],
+          "resource_id": "rooms",
+          "source_paths": [
+            "fragments[languages_fragment].resource_uses[room_load]",
+            "fragments[mathematics_fragment].resource_uses[room_load]",
+            "fragments[science_fragment].resource_uses[room_load]"
+          ]
+        }
+      }
+    ],
+    "resources": [
+      {
+        "id": "budget",
+        "name": "Budget fictif",
+        "owner_department": "finance",
+        "shared_with": [
+          "languages",
+          "mathematics",
+          "science"
+        ],
+        "capacity_parameter": "teaching_budget",
+        "capacity": "9",
+        "consumption": "9",
+        "remaining": "0",
+        "unit": "EUR",
+        "constraint_ids": [
+          "budget_capacity"
+        ],
+        "state": "SATURATED"
+      },
+      {
+        "id": "rooms",
+        "name": "Créneaux de salle fictifs",
+        "owner_department": "facilities",
+        "shared_with": [
+          "languages",
+          "mathematics",
+          "science"
+        ],
+        "capacity_parameter": "room_slots",
+        "capacity": "2",
+        "consumption": "2",
+        "remaining": "0",
+        "unit": "unit",
+        "constraint_ids": [
+          "rooms_capacity"
+        ],
+        "state": "SATURATED"
+      }
+    ],
+    "departments": [
+      {
+        "id": "facilities",
+        "name": "Facilities",
+        "owner_id": "demo_owner_facilities",
+        "fragment_id": "facilities_fragment",
+        "fragment_version": "1",
+        "source": "synthetic_organization",
+        "constraint_ids": [
+          "at_least_one_course",
+          "rooms_capacity"
+        ],
+        "decisions": [
+          {
+            "id": "course_languages",
+            "value": 0.0,
+            "unit": "1",
+            "owner_department": "languages"
+          },
+          {
+            "id": "course_mathematics",
+            "value": 1.0,
+            "unit": "1",
+            "owner_department": "mathematics"
+          },
+          {
+            "id": "course_science",
+            "value": 1.0,
+            "unit": "1",
+            "owner_department": "science"
+          }
+        ]
+      },
+      {
+        "id": "finance",
+        "name": "Finance",
+        "owner_id": "demo_owner_finance",
+        "fragment_id": "finance_fragment",
+        "fragment_version": "1",
+        "source": "synthetic_organization",
+        "constraint_ids": [
+          "budget_capacity"
+        ],
+        "decisions": []
+      },
+      {
+        "id": "languages",
+        "name": "Languages",
+        "owner_id": "demo_owner_languages",
+        "fragment_id": "languages_fragment",
+        "fragment_version": "1",
+        "source": "synthetic_organization",
+        "constraint_ids": [
+          "budget_capacity",
+          "rooms_capacity"
+        ],
+        "decisions": [
+          {
+            "id": "course_languages",
+            "value": 0.0,
+            "unit": "1",
+            "owner_department": "languages"
+          }
+        ]
+      },
+      {
+        "id": "mathematics",
+        "name": "Mathematics",
+        "owner_id": "demo_owner_mathematics",
+        "fragment_id": "mathematics_fragment",
+        "fragment_version": "1",
+        "source": "synthetic_organization",
+        "constraint_ids": [
+          "budget_capacity",
+          "rooms_capacity"
+        ],
+        "decisions": [
+          {
+            "id": "course_mathematics",
+            "value": 1.0,
+            "unit": "1",
+            "owner_department": "mathematics"
+          }
+        ]
+      },
+      {
+        "id": "science",
+        "name": "Science",
+        "owner_id": "demo_owner_science",
+        "fragment_id": "science_fragment",
+        "fragment_version": "1",
+        "source": "synthetic_organization",
+        "constraint_ids": [
+          "budget_capacity",
+          "rooms_capacity"
+        ],
+        "decisions": [
+          {
+            "id": "course_science",
+            "value": 1.0,
+            "unit": "1",
+            "owner_department": "science"
+          }
+        ]
+      }
+    ],
+    "warnings": []
+  },
+  "mermaid": "flowchart LR\n  n0[\"Budget fictif\"]\n  n1[\"Facilities\"]\n  n2[\"Finance\"]\n  n3[\"Languages\"]\n  n4[\"Mathematics\"]\n  n5[\"Créneaux de salle fictifs\"]\n  n6[\"Science\"]\n  n7[\"Université fictive\"]\n  n3 -->|USES_RESOURCE| n0\n  n3 -->|USES_RESOURCE| n5\n  n4 -->|USES_RESOURCE| n0\n  n4 -->|USES_RESOURCE| n5\n  n6 -->|USES_RESOURCE| n0\n  n6 -->|USES_RESOURCE| n5\n"
+}

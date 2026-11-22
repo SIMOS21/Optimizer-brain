@@ -76,13 +76,17 @@ class _Compiler:
             if label not in self.model.dimensions[dimension]:
                 _fail(path + ".indices", "UNKNOWN_INDEX", f"Index inconnu : {dimension}.{label}")
         unit = parse_unit(value.unit)
-        lower = self.scalar(value.lb, unit, path + ".lb")
-        upper = self.scalar(value.ub, unit, path + ".ub")
-        if lower > upper:
+        lower = self.scalar(value.lb, unit, path + ".lb") if value.lb is not None else None
+        upper = self.scalar(value.ub, unit, path + ".ub") if value.ub is not None else None
+        if lower is not None and upper is not None and lower > upper:
             _fail(path, "INVALID_BOUNDS", "La borne inférieure dépasse la borne supérieure")
-        if value.type != "CONTINUOUS" and (lower.denominator != 1 or upper.denominator != 1):
+        if value.type != "CONTINUOUS" and any(
+            bound is not None and bound.denominator != 1 for bound in (lower, upper)
+        ):
             _fail(path, "INVALID_DOMAIN", "Bornes entières requises pour un domaine discret")
-        if value.type == "BINARY" and (lower < 0 or upper > 1 or unit != Unit(())):
+        if value.type == "BINARY" and (
+            lower is None or upper is None or lower < 0 or upper > 1 or unit != Unit(())
+        ):
             _fail(path, "INVALID_DOMAIN", "Variable binaire sans dimension, bornée dans [0,1]")
         return IRVariable(
             value.id,
@@ -147,17 +151,28 @@ class _Compiler:
             )
             constraints.append(row)
             # Interval bound check is a sufficient warning, never a feasibility certificate.
-            minimum = maximum = Fraction(0)
+            minimum: Fraction | None = Fraction(0)
+            maximum: Fraction | None = Fraction(0)
             for term in terms:
                 ir_variable = self.variables[term.variable]
-                a, b = term.coefficient * ir_variable.lb, term.coefficient * ir_variable.ub
-                minimum += min(a, b)
-                maximum += max(a, b)
+                lo, hi = (
+                    (ir_variable.lb, ir_variable.ub)
+                    if term.coefficient > 0
+                    else (ir_variable.ub, ir_variable.lb)
+                )
+                minimum = (
+                    minimum + term.coefficient * lo
+                    if minimum is not None and lo is not None
+                    else None
+                )
+                maximum = (
+                    maximum + term.coefficient * hi
+                    if maximum is not None and hi is not None
+                    else None
+                )
             impossible = (
-                (row.operator == "<=" and minimum > rhs)
-                or (row.operator == ">=" and maximum < rhs)
-                or (row.operator == "==" and not minimum <= rhs <= maximum)
-            )
+                row.operator in ("<=", "==") and minimum is not None and minimum > rhs
+            ) or (row.operator in (">=", "==") and maximum is not None and maximum < rhs)
             if impossible:
                 warnings.append(
                     CompilationIssue(

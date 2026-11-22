@@ -30,6 +30,7 @@ Construire progressivement une plateforme universelle d'optimisation décisionne
 - Écrire du code typé, modulaire, lisible ; séparer modèles métier, compilation, backend solveur et validation.
 - Ajouter les tests lors de chaque fonctionnalité, incluant erreur/infeasible/timeout quand pertinent.
 - Exécuter les tests et communiquer leurs résultats réels ; ne pas affirmer une réussite non testée.
+- Après chaque tâche ou phase livrée et validée, créer un commit puis pousser la branche de travail vers GitHub (`origin`), sans attendre une nouvelle demande.
 - Mettre à jour documentation, commandes de lancement et statut implémenté/non implémenté.
 - Ne jamais multiplier les dépendances/services sans gain concret prouvé.
 - Noter les choix majeurs dans `docs/decision-records/` lorsque ce dossier existe.

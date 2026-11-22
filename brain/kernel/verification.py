@@ -3,9 +3,15 @@
 from collections.abc import Mapping
 from dataclasses import dataclass
 from fractions import Fraction
+from decimal import Decimal
+import math
+
+from pydantic import model_validator
+from typing import Self
 
 from .ir import IRTerm, OptimizationIR
-from .numbers import rational
+from .numbers import Number, rational
+from .schema import StrictModel
 from .units import Unit
 
 
@@ -65,6 +71,7 @@ def verify_plan(
     bound_tolerance: object = "0",
     constraint_tolerance: object = "0",
     integrality_tolerance: object = "0",
+    exact_binary_floats: bool = False,
 ) -> PlanVerification:
     """Exact rational evaluation. Tolerances are explicit and default to zero.
 
@@ -85,7 +92,11 @@ def verify_plan(
     values: dict[str, Fraction] = {}
     for key in sorted(expected.intersection(plan)):
         try:
-            values[key] = rational(plan[key])
+            candidate = plan[key]
+            if exact_binary_floats and isinstance(candidate, float) and math.isfinite(candidate):
+                values[key] = Fraction.from_float(candidate)
+            else:
+                values[key] = rational(candidate)
         except ValueError as exc:
             issues.append(f"{key}: {exc}")
 
@@ -116,7 +127,11 @@ def verify_plan(
     variable_checks = []
     for variable in model.variables:
         value = values[variable.id]
-        bounds = max(variable.lb - value, value - variable.ub, Fraction(0))
+        bounds = max(
+            variable.lb - value if variable.lb is not None else Fraction(0),
+            value - variable.ub if variable.ub is not None else Fraction(0),
+            Fraction(0),
+        )
         integrality = abs(value - round(value)) if variable.domain != "CONTINUOUS" else Fraction(0)
         valid = bounds <= bt and integrality <= it
         variable_checks.append(VariableCheck(variable.id, value, bounds, integrality, valid))
@@ -143,3 +158,99 @@ def verify_plan(
         for goal in model.objectives
     )
     return report(tuple(variable_checks), tuple(constraint_checks), objectives)
+
+
+class VerificationSettings(StrictModel):
+    bound_tolerance: Number = Decimal("1e-7")
+    constraint_tolerance: Number = Decimal("1e-7")
+    integrality_tolerance: Number = Decimal("1e-7")
+    objective_absolute_tolerance: Number = Decimal("1e-6")
+    objective_relative_tolerance: Number = Decimal("1e-9")
+
+    @model_validator(mode="after")
+    def valid_tolerances(self) -> Self:
+        if any(
+            value < 0
+            for value in (
+                self.bound_tolerance,
+                self.constraint_tolerance,
+                self.integrality_tolerance,
+                self.objective_absolute_tolerance,
+                self.objective_relative_tolerance,
+            )
+        ) or self.integrality_tolerance >= Decimal("0.5"):
+            raise ValueError("Tolérances non négatives ; intégralité strictement < 0.5")
+        if max(
+            self.bound_tolerance, self.constraint_tolerance, self.integrality_tolerance
+        ) > Decimal("1e-4"):
+            raise ValueError("Politique phase 2 : tolérances de faisabilité <= 1e-4")
+        if self.objective_absolute_tolerance > Decimal(
+            "1e-3"
+        ) or self.objective_relative_tolerance > Decimal("1e-6"):
+            raise ValueError(
+                "Politique phase 2 : tolérances d'objectif absolue <= 1e-3, relative <= 1e-6"
+            )
+        return self
+
+
+@dataclass(frozen=True)
+class SolutionVerification:
+    valid: bool
+    plan: PlanVerification
+    issues: tuple[str, ...]
+    objective_value: Fraction | None
+    solver_objective_value: Fraction | None
+    objective_difference: Fraction | None
+    objective_tolerance: Fraction | None
+    primal_residual_max: Fraction | None
+    integrality_residual_max: Fraction | None
+    arithmetic: str = "exact_rationals_of_binary64_values"
+
+
+class SolutionVerifier:
+    """Re-evaluate raw decisions on the original IR, including the claimed objective."""
+
+    def verify(
+        self,
+        model: OptimizationIR,
+        decisions: Mapping[str, object],
+        solver_objective: float | None,
+        settings: VerificationSettings,
+    ) -> SolutionVerification:
+        plan = verify_plan(
+            model,
+            decisions,
+            bound_tolerance=settings.bound_tolerance,
+            constraint_tolerance=settings.constraint_tolerance,
+            integrality_tolerance=settings.integrality_tolerance,
+            exact_binary_floats=True,
+        )
+        issues = list(plan.issues)
+        computed = plan.objectives[0].value if plan.objectives else None
+        claimed = difference = tolerance = None
+        if solver_objective is not None:
+            if not math.isfinite(solver_objective):
+                issues.append("Objectif solveur non fini")
+            else:
+                claimed = Fraction.from_float(solver_objective)
+                if computed is not None:
+                    difference = abs(claimed - computed)
+                    tolerance = Fraction(settings.objective_absolute_tolerance) + Fraction(
+                        settings.objective_relative_tolerance
+                    ) * max(abs(claimed), abs(computed))
+                    if difference > tolerance:
+                        issues.append("Objectif solveur incompatible avec l'IR originale")
+        residuals = [check.bound_violation for check in plan.variables] + [
+            check.violation for check in plan.constraints
+        ]
+        return SolutionVerification(
+            not issues,
+            plan,
+            tuple(issues),
+            computed,
+            claimed,
+            difference,
+            tolerance,
+            max(residuals) if residuals else None,
+            max((check.integrality_residual for check in plan.variables), default=None),
+        )

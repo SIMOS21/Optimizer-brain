@@ -1,0 +1,13 @@
+flowchart LR
+  n0["Finance"]
+  n1["finance_resource"]
+  n2["Logistics"]
+  n3["logistics_resource"]
+  n4["Production"]
+  n5["production_resource"]
+  n6["Sales"]
+  n7["Usine fictive"]
+  n0 -->|USES_RESOURCE| n1
+  n2 -->|USES_RESOURCE| n3
+  n4 -->|DEPENDS_ON| n6
+  n4 -->|USES_RESOURCE| n5

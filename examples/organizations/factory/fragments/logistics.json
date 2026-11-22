@@ -1,0 +1,45 @@
+{
+  "id": "logistics_fragment",
+  "organization_id": "synthetic_factory",
+  "organization_version": "1",
+  "department_id": "logistics",
+  "department_version": "1",
+  "source": "synthetic_organization",
+  "approved": true,
+  "version": "1",
+  "variable_refs": [
+    {
+      "variable": "qty_A",
+      "owner_department": "sales",
+      "declaration_version": "1",
+      "unit": "unit"
+    },
+    {
+      "variable": "qty_B",
+      "owner_department": "sales",
+      "declaration_version": "1",
+      "unit": "unit"
+    }
+  ],
+  "resource_uses": [
+    {
+      "id": "logistics_consumption",
+      "resource_id": "logistics_resource",
+      "terms": [
+        {
+          "variable": "qty_A",
+          "coefficient": "1",
+          "coefficient_unit": "unit/unit"
+        },
+        {
+          "variable": "qty_B",
+          "coefficient": "1",
+          "coefficient_unit": "unit/unit"
+        }
+      ],
+      "source": "synthetic_organization",
+      "approved": true,
+      "version": "1"
+    }
+  ]
+}

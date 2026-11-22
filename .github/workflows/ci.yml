@@ -14,7 +14,10 @@ jobs:
       - run: python -m pip install -r requirements-dev.txt
       - run: python -m pytest -q
       - run: python -m ruff check brain tests
-      - run: python -m ruff format --check brain/kernel tests/test_kernel.py
+      - run: python -m ruff format --check brain/kernel brain/solvers brain/organization tests/test_kernel.py tests/test_generic_solver.py tests/test_organization.py
       - run: python -m mypy
       - run: python -m brain.demo
       - run: python -m brain.kernel verify examples/demo_cross_department.json --plan examples/golden_plan.json
+      - run: python -m brain.kernel solve examples/demo_cross_department.json
+      - run: python -m brain.organization solve examples/organizations/factory/project.json --output results/organization_factory.json
+      - run: python -m brain.organization solve examples/organizations/university/project.json --output results/organization_university.json

@@ -4,8 +4,10 @@ from pydantic import BaseModel, ConfigDict, Field
 
 from .models import Scenario
 from .optimizer import solve
+from .solvers.api import router as generic_router
 
 app = FastAPI(title='Optimization Brain API', version='0.1.0')
+app.include_router(generic_router)
 
 
 class OptimizationRequest(BaseModel):

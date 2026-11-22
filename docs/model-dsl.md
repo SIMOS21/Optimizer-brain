@@ -1,9 +1,9 @@
 # DSL v1 — Universal Model Kernel (phase 1)
 
-Le kernel valide un problème linéaire borné, le compile en IR et vérifie un plan
+Le kernel valide un problème linéaire, le compile en IR et vérifie un plan
 fourni. Il fonctionne en local, sans LLM, réseau, SciPy ni serveur HTTP.
 Le solveur industriel historique conserve son contrat. Le solveur générique
-DSL/IR sera ajouté en phase 2.
+DSL/IR est désormais livré en phase 2 : voir [contrat solveur](solver-contract.md).
 
 ## Contrat d'entrée
 
@@ -27,7 +27,7 @@ Les données de tous ces fichiers sont synthétiques.
 | Modèle | `schema_version="1.0"`, `id`, `name`, `model_version`, `data_snapshot_id`, `scenario_id` obligatoires |
 | Départements | Registre explicite `id`, `name` ; chaque variable/règle référence un département déclaré |
 | Dimensions | Dictionnaire facultatif de dimensions vers listes finies de labels distincts |
-| Variable | `id`, `type`, `lb`, `ub`, `unit`, `department`, `indices` facultatifs ; bornes finies explicites |
+| Variable | `id`, `type`, `lb`, `ub`, `unit`, `department`, `indices` facultatifs ; bornes explicites, finies ou null |
 | Paramètre | Registre par identifiant ; `value`, `unit`, `source`, `approved`, `version` |
 | Contrainte | `id`, `owner_department`, `kind="HARD"`, `terms`, `operator`, `rhs`, `unit`, provenance |
 | Objectif | Une seule entrée ; `sense="MAX"` ou `"MIN"`, `priority` entier positif (défaut 1), termes, unité, propriétaire, provenance |
@@ -41,6 +41,10 @@ sont rejetées par le chargeur, y compris dans les objets imbriqués.
 Domaines : `CONTINUOUS`, `INTEGER`, `BINARY`. Les bornes d'un domaine discret
 doivent être entières ; une binaire est sans dimension (`1`), bornée dans `[0,1]`.
 Les bornes négatives et coefficients négatifs sont autorisés.
+Depuis la phase 2, une borne explicitement `null` signifie absence de borne de ce
+côté (hors binaires). Les champs `lb`/`ub` restent obligatoires ; aucun infini n'est
+accepté comme nombre ou coefficient. Cette extension additive permet les LP/MILP
+non bornés et conserve les modèles finis de phase 1.
 Les variables indexées sont **développées explicitement** : chaque entrée a son
 identifiant stable et ses indices validés dans `dimensions`. Les termes et plans
 référencent cet identifiant. Il n'y a pas de générateur `forall`, de somme symbolique,
@@ -176,8 +180,8 @@ quantité 55/55. L'énumération appartient aux tests et n'est pas un solveur de
 
 ## Hors périmètre livré
 
-Pas d'adaptateur solveur générique, de normalisation des statuts/timeout, de preuve
-HiGHS attachée à l'IR, de comparaison à un objectif annoncé par un solveur, d'API
-DSL, de contraintes souples, multiobjectif, non-linéaire, LLM, base de données ou
+La phase 2 ajoute l'adaptateur HiGHS, la qualification des statuts/limites, la
+comparaison à l'objectif annoncé et les routes DSL locales, décrits séparément.
+Pas de contraintes souples, multiobjectif, non-linéaire, LLM, base de données ou
 approbation authentifiée. Le registre d'unités est volontairement petit et fermé.
 L'identifiant de snapshot est requis, mais sa conservation durable reste à construire.

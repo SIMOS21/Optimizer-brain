@@ -60,8 +60,8 @@ Scalar = Number | ParameterRef
 class Variable(UnitModel):
     id: Identifier
     type: Literal["BINARY", "INTEGER", "CONTINUOUS"]
-    lb: Scalar
-    ub: Scalar
+    lb: Scalar | None
+    ub: Scalar | None
     department: Identifier
     indices: Annotated[dict[Identifier, Identifier], Field(max_length=100)] = Field(
         default_factory=dict

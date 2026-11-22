@@ -3,6 +3,7 @@
 from dataclasses import dataclass, fields, is_dataclass
 from fractions import Fraction
 from typing import Literal
+from pydantic import BaseModel
 
 from .units import Unit
 
@@ -30,8 +31,8 @@ class IRParameter:
 class IRVariable:
     id: str
     domain: Domain
-    lb: Fraction
-    ub: Fraction
+    lb: Fraction | None
+    ub: Fraction | None
     unit: Unit
     department: str
     indices: tuple[tuple[str, str], ...]
@@ -93,6 +94,8 @@ def to_data(value: object) -> object:
     """Canonical JSON-compatible export; rational numbers are never rounded."""
     if isinstance(value, Fraction):
         return str(value)
+    if isinstance(value, BaseModel):
+        return value.model_dump(mode="json")
     if is_dataclass(value) and not isinstance(value, type):
         return {field.name: to_data(getattr(value, field.name)) for field in fields(value)}
     if isinstance(value, (tuple, list)):

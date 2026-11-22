@@ -1,0 +1,60 @@
+{
+  "schema_version": "1.0",
+  "model_id": "demo_cross_department",
+  "model_name": "Allocation synthétique à deux variables",
+  "model_version": "1.0.0",
+  "scenario_id": "base",
+  "currency": "EUR",
+  "shared_parameters": {
+    "machine_capacity_hours": {
+      "value": "100",
+      "unit": "hour",
+      "source": "synthetic_demo",
+      "approved": true,
+      "version": "1"
+    },
+    "operating_cash_budget_eur": {
+      "value": "8000",
+      "unit": "EUR",
+      "source": "synthetic_demo",
+      "approved": true,
+      "version": "1"
+    },
+    "delivery_capacity_units": {
+      "value": "55",
+      "unit": "unit",
+      "source": "synthetic_demo",
+      "approved": true,
+      "version": "1"
+    }
+  },
+  "objective": {
+    "id": "maximize_contribution",
+    "owner_department": "finance",
+    "sense": "MAX",
+    "priority": 1,
+    "source": "synthetic_demo",
+    "approved": true,
+    "version": "1",
+    "unit": "EUR",
+    "terms": [
+      {
+        "variable": "qty_A",
+        "coefficient": "80",
+        "coefficient_unit": "EUR/unit"
+      },
+      {
+        "variable": "qty_B",
+        "coefficient": "60",
+        "coefficient_unit": "EUR/unit"
+      }
+    ]
+  },
+  "graph_file": "graph.json",
+  "fragment_files": [
+    "fragments/sales.json",
+    "fragments/production.json",
+    "fragments/finance.json",
+    "fragments/logistics.json"
+  ]
+}

@@ -1,0 +1,124 @@
+{
+  "schema_version": "1.0",
+  "organization": {
+    "id": "synthetic_factory",
+    "name": "Usine fictive",
+    "data_snapshot_id": "synthetic_demo_v1",
+    "source": "synthetic_organization",
+    "approved": true,
+    "version": "1"
+  },
+  "departments": [
+    {
+      "id": "sales",
+      "name": "Sales",
+      "owner_id": "demo_owner_sales",
+      "source": "synthetic_organization",
+      "approved": true,
+      "version": "1"
+    },
+    {
+      "id": "production",
+      "name": "Production",
+      "owner_id": "demo_owner_production",
+      "source": "synthetic_organization",
+      "approved": true,
+      "version": "1"
+    },
+    {
+      "id": "finance",
+      "name": "Finance",
+      "owner_id": "demo_owner_finance",
+      "source": "synthetic_organization",
+      "approved": true,
+      "version": "1"
+    },
+    {
+      "id": "logistics",
+      "name": "Logistics",
+      "owner_id": "demo_owner_logistics",
+      "source": "synthetic_organization",
+      "approved": true,
+      "version": "1"
+    }
+  ],
+  "resources": [
+    {
+      "id": "production_resource",
+      "name": "production_resource",
+      "unit": "hour",
+      "capacity": {
+        "parameter": "machine_capacity_hours"
+      },
+      "capacity_version": "1",
+      "owner_department": "production",
+      "shared_with": [
+        "sales"
+      ],
+      "constraint_id": "production_machine",
+      "source": "synthetic_demo",
+      "approved": true,
+      "version": "1"
+    },
+    {
+      "id": "finance_resource",
+      "name": "finance_resource",
+      "unit": "EUR",
+      "capacity": {
+        "parameter": "operating_cash_budget_eur"
+      },
+      "capacity_version": "1",
+      "owner_department": "finance",
+      "shared_with": [
+        "sales"
+      ],
+      "constraint_id": "finance_budget",
+      "source": "synthetic_demo",
+      "approved": true,
+      "version": "1"
+    },
+    {
+      "id": "logistics_resource",
+      "name": "logistics_resource",
+      "unit": "unit",
+      "capacity": {
+        "parameter": "delivery_capacity_units"
+      },
+      "capacity_version": "1",
+      "owner_department": "logistics",
+      "shared_with": [
+        "sales"
+      ],
+      "constraint_id": "logistics_delivery",
+      "source": "synthetic_demo",
+      "approved": true,
+      "version": "1"
+    }
+  ],
+  "edges": [
+    {
+      "id": "production_uses",
+      "source_id": "production",
+      "target_id": "production_resource",
+      "type": "USES_RESOURCE"
+    },
+    {
+      "id": "finance_uses",
+      "source_id": "finance",
+      "target_id": "finance_resource",
+      "type": "USES_RESOURCE"
+    },
+    {
+      "id": "logistics_uses",
+      "source_id": "logistics",
+      "target_id": "logistics_resource",
+      "type": "USES_RESOURCE"
+    },
+    {
+      "id": "production_depends_sales",
+      "source_id": "production",
+      "target_id": "sales",
+      "type": "DEPENDS_ON"
+    }
+  ]
+}

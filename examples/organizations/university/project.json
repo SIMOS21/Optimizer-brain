@@ -1,0 +1,57 @@
+{
+  "schema_version": "1.0",
+  "model_id": "course_selection",
+  "model_name": "Sélection synthétique de cours",
+  "model_version": "1",
+  "scenario_id": "base",
+  "shared_parameters": {
+    "room_slots": {
+      "value": "2",
+      "unit": "unit",
+      "source": "synthetic_organization",
+      "approved": true,
+      "version": "1"
+    },
+    "teaching_budget": {
+      "value": "9",
+      "unit": "EUR",
+      "source": "synthetic_organization",
+      "approved": true,
+      "version": "1"
+    }
+  },
+  "objective": {
+    "id": "synthetic_coverage",
+    "owner_department": "facilities",
+    "sense": "MAX",
+    "terms": [
+      {
+        "variable": "course_mathematics",
+        "coefficient": "10",
+        "coefficient_unit": "unit"
+      },
+      {
+        "variable": "course_languages",
+        "coefficient": "8",
+        "coefficient_unit": "unit"
+      },
+      {
+        "variable": "course_science",
+        "coefficient": "7",
+        "coefficient_unit": "unit"
+      }
+    ],
+    "unit": "unit",
+    "source": "synthetic_organization",
+    "approved": true,
+    "version": "1"
+  },
+  "graph_file": "graph.json",
+  "fragment_files": [
+    "fragments/mathematics.json",
+    "fragments/languages.json",
+    "fragments/science.json",
+    "fragments/facilities.json",
+    "fragments/finance.json"
+  ]
+}

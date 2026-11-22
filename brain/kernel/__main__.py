@@ -27,12 +27,36 @@ def main(argv: list[str] | None = None) -> int:
     verify.add_argument("--output", type=Path)
     schema = commands.add_parser("schema")
     schema.add_argument("--output", type=Path)
+    solve = commands.add_parser("solve")
+    solve.add_argument("model", type=Path)
+    solve.add_argument("--time-limit", type=float, default=20.0)
+    solve.add_argument("--mip-rel-gap", type=float, default=0.0)
+    solve.add_argument("--output", type=Path)
     args = parser.parse_args(argv)
     exit_code = 0
     result: object
     try:
         if args.command == "schema":
             result = ModelDSL.model_json_schema()
+        elif args.command == "solve":
+            # Keep validation/compilation commands independent of SciPy imports.
+            from brain.solvers.contracts import SolveSettings
+            from brain.solvers.orchestrator import SolverOrchestrator
+
+            solved = SolverOrchestrator().run(
+                args.model.read_text(encoding="utf-8"),
+                SolveSettings(time_limit_seconds=args.time_limit, mip_rel_gap=args.mip_rel_gap),
+            )
+            result = solved.to_dict()
+            exit_code = (
+                0
+                if solved.decision_values is not None
+                else (
+                    2
+                    if solved.status in ("INVALID_MODEL", "ERROR", "SOLUTION_FAILED_VALIDATION")
+                    else 1
+                )
+            )
         else:
             model = compile_model(load_model_json(args.model.read_text(encoding="utf-8")))
             if args.command == "verify":

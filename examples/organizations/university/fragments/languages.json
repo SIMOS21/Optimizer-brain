@@ -1,0 +1,50 @@
+{
+  "id": "languages_fragment",
+  "organization_id": "synthetic_university",
+  "organization_version": "1",
+  "department_id": "languages",
+  "department_version": "1",
+  "source": "synthetic_organization",
+  "approved": true,
+  "version": "1",
+  "variables": [
+    {
+      "id": "course_languages",
+      "type": "BINARY",
+      "lb": "0",
+      "ub": "1",
+      "unit": "1",
+      "department": "languages"
+    }
+  ],
+  "resource_uses": [
+    {
+      "id": "room_load",
+      "resource_id": "rooms",
+      "terms": [
+        {
+          "variable": "course_languages",
+          "coefficient": "1",
+          "coefficient_unit": "unit"
+        }
+      ],
+      "source": "synthetic_organization",
+      "approved": true,
+      "version": "1"
+    },
+    {
+      "id": "budget_load",
+      "resource_id": "budget",
+      "terms": [
+        {
+          "variable": "course_languages",
+          "coefficient": "4",
+          "coefficient_unit": "EUR"
+        }
+      ],
+      "source": "synthetic_organization",
+      "approved": true,
+      "version": "1"
+    }
+  ]
+}

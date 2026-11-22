@@ -1,0 +1,45 @@
+{
+  "id": "finance_fragment",
+  "organization_id": "synthetic_factory",
+  "organization_version": "1",
+  "department_id": "finance",
+  "department_version": "1",
+  "source": "synthetic_organization",
+  "approved": true,
+  "version": "1",
+  "variable_refs": [
+    {
+      "variable": "qty_A",
+      "owner_department": "sales",
+      "declaration_version": "1",
+      "unit": "unit"
+    },
+    {
+      "variable": "qty_B",
+      "owner_department": "sales",
+      "declaration_version": "1",
+      "unit": "unit"
+    }
+  ],
+  "resource_uses": [
+    {
+      "id": "finance_consumption",
+      "resource_id": "finance_resource",
+      "terms": [
+        {
+          "variable": "qty_A",
+          "coefficient": "100",
+          "coefficient_unit": "EUR/unit"
+        },
+        {
+          "variable": "qty_B",
+          "coefficient": "200",
+          "coefficient_unit": "EUR/unit"
+        }
+      ],
+      "source": "synthetic_organization",
+      "approved": true,
+      "version": "1"
+    }
+  ]
+}

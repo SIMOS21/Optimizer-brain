@@ -1,0 +1,857 @@
+{
+  "organization_model": {
+    "currency": "EUR",
+    "dimensions": {},
+    "fragments": [
+      {
+        "approved": true,
+        "constraints": [],
+        "department_id": "finance",
+        "department_version": "1",
+        "id": "finance_fragment",
+        "organization_id": "synthetic_factory",
+        "organization_version": "1",
+        "parameter_refs": [],
+        "parameters": {},
+        "resource_uses": [
+          {
+            "approved": true,
+            "id": "finance_consumption",
+            "resource_id": "finance_resource",
+            "source": "synthetic_organization",
+            "terms": [
+              {
+                "coefficient": "100",
+                "coefficient_unit": "EUR/unit",
+                "variable": "qty_A"
+              },
+              {
+                "coefficient": "200",
+                "coefficient_unit": "EUR/unit",
+                "variable": "qty_B"
+              }
+            ],
+            "version": "1"
+          }
+        ],
+        "source": "synthetic_organization",
+        "variable_refs": [
+          {
+            "declaration_version": "1",
+            "owner_department": "sales",
+            "unit": "unit",
+            "variable": "qty_A"
+          },
+          {
+            "declaration_version": "1",
+            "owner_department": "sales",
+            "unit": "unit",
+            "variable": "qty_B"
+          }
+        ],
+        "variables": [],
+        "version": "1"
+      },
+      {
+        "approved": true,
+        "constraints": [],
+        "department_id": "logistics",
+        "department_version": "1",
+        "id": "logistics_fragment",
+        "organization_id": "synthetic_factory",
+        "organization_version": "1",
+        "parameter_refs": [],
+        "parameters": {},
+        "resource_uses": [
+          {
+            "approved": true,
+            "id": "logistics_consumption",
+            "resource_id": "logistics_resource",
+            "source": "synthetic_organization",
+            "terms": [
+              {
+                "coefficient": "1",
+                "coefficient_unit": "unit/unit",
+                "variable": "qty_A"
+              },
+              {
+                "coefficient": "1",
+                "coefficient_unit": "unit/unit",
+                "variable": "qty_B"
+              }
+            ],
+            "version": "1"
+          }
+        ],
+        "source": "synthetic_organization",
+        "variable_refs": [
+          {
+            "declaration_version": "1",
+            "owner_department": "sales",
+            "unit": "unit",
+            "variable": "qty_A"
+          },
+          {
+            "declaration_version": "1",
+            "owner_department": "sales",
+            "unit": "unit",
+            "variable": "qty_B"
+          }
+        ],
+        "variables": [],
+        "version": "1"
+      },
+      {
+        "approved": true,
+        "constraints": [],
+        "department_id": "production",
+        "department_version": "1",
+        "id": "production_fragment",
+        "organization_id": "synthetic_factory",
+        "organization_version": "1",
+        "parameter_refs": [],
+        "parameters": {},
+        "resource_uses": [
+          {
+            "approved": true,
+            "id": "production_consumption",
+            "resource_id": "production_resource",
+            "source": "synthetic_organization",
+            "terms": [
+              {
+                "coefficient": "1",
+                "coefficient_unit": "hour/unit",
+                "variable": "qty_B"
+              },
+              {
+                "coefficient": "2",
+                "coefficient_unit": "hour/unit",
+                "variable": "qty_A"
+              }
+            ],
+            "version": "1"
+          }
+        ],
+        "source": "synthetic_organization",
+        "variable_refs": [
+          {
+            "declaration_version": "1",
+            "owner_department": "sales",
+            "unit": "unit",
+            "variable": "qty_A"
+          },
+          {
+            "declaration_version": "1",
+            "owner_department": "sales",
+            "unit": "unit",
+            "variable": "qty_B"
+          }
+        ],
+        "variables": [],
+        "version": "1"
+      },
+      {
+        "approved": true,
+        "constraints": [],
+        "department_id": "sales",
+        "department_version": "1",
+        "id": "sales_fragment",
+        "organization_id": "synthetic_factory",
+        "organization_version": "1",
+        "parameter_refs": [],
+        "parameters": {},
+        "resource_uses": [],
+        "source": "synthetic_organization",
+        "variable_refs": [],
+        "variables": [
+          {
+            "department": "sales",
+            "id": "qty_A",
+            "indices": {},
+            "lb": "0",
+            "type": "INTEGER",
+            "ub": "40",
+            "unit": "unit"
+          },
+          {
+            "department": "sales",
+            "id": "qty_B",
+            "indices": {},
+            "lb": "0",
+            "type": "INTEGER",
+            "ub": "35",
+            "unit": "unit"
+          }
+        ],
+        "version": "1"
+      }
+    ],
+    "graph": {
+      "departments": [
+        {
+          "approved": true,
+          "id": "finance",
+          "name": "Finance",
+          "owner_id": "demo_owner_finance",
+          "source": "synthetic_organization",
+          "version": "1"
+        },
+        {
+          "approved": true,
+          "id": "logistics",
+          "name": "Logistics",
+          "owner_id": "demo_owner_logistics",
+          "source": "synthetic_organization",
+          "version": "1"
+        },
+        {
+          "approved": true,
+          "id": "production",
+          "name": "Production",
+          "owner_id": "demo_owner_production",
+          "source": "synthetic_organization",
+          "version": "1"
+        },
+        {
+          "approved": true,
+          "id": "sales",
+          "name": "Sales",
+          "owner_id": "demo_owner_sales",
+          "source": "synthetic_organization",
+          "version": "1"
+        }
+      ],
+      "edges": [
+        {
+          "id": "finance_uses",
+          "source_id": "finance",
+          "target_id": "finance_resource",
+          "type": "USES_RESOURCE"
+        },
+        {
+          "id": "logistics_uses",
+          "source_id": "logistics",
+          "target_id": "logistics_resource",
+          "type": "USES_RESOURCE"
+        },
+        {
+          "id": "production_depends_sales",
+          "source_id": "production",
+          "target_id": "sales",
+          "type": "DEPENDS_ON"
+        },
+        {
+          "id": "production_uses",
+          "source_id": "production",
+          "target_id": "production_resource",
+          "type": "USES_RESOURCE"
+        }
+      ],
+      "organization": {
+        "approved": true,
+        "data_snapshot_id": "synthetic_demo_v1",
+        "id": "synthetic_factory",
+        "name": "Usine fictive",
+        "source": "synthetic_organization",
+        "version": "1"
+      },
+      "resources": [
+        {
+          "approved": true,
+          "capacity": {
+            "parameter": "operating_cash_budget_eur"
+          },
+          "capacity_version": "1",
+          "constraint_id": "finance_budget",
+          "id": "finance_resource",
+          "name": "finance_resource",
+          "owner_department": "finance",
+          "shared_with": [
+            "sales"
+          ],
+          "source": "synthetic_demo",
+          "unit": "EUR",
+          "version": "1"
+        },
+        {
+          "approved": true,
+          "capacity": {
+            "parameter": "delivery_capacity_units"
+          },
+          "capacity_version": "1",
+          "constraint_id": "logistics_delivery",
+          "id": "logistics_resource",
+          "name": "logistics_resource",
+          "owner_department": "logistics",
+          "shared_with": [
+            "sales"
+          ],
+          "source": "synthetic_demo",
+          "unit": "unit",
+          "version": "1"
+        },
+        {
+          "approved": true,
+          "capacity": {
+            "parameter": "machine_capacity_hours"
+          },
+          "capacity_version": "1",
+          "constraint_id": "production_machine",
+          "id": "production_resource",
+          "name": "production_resource",
+          "owner_department": "production",
+          "shared_with": [
+            "sales"
+          ],
+          "source": "synthetic_demo",
+          "unit": "hour",
+          "version": "1"
+        }
+      ],
+      "schema_version": "1.0"
+    },
+    "model_id": "demo_cross_department",
+    "model_name": "Allocation synthétique à deux variables",
+    "model_version": "1.0.0",
+    "objective": {
+      "approved": true,
+      "id": "maximize_contribution",
+      "owner_department": "finance",
+      "priority": 1,
+      "sense": "MAX",
+      "source": "synthetic_demo",
+      "terms": [
+        {
+          "coefficient": "60",
+          "coefficient_unit": "EUR/unit",
+          "variable": "qty_B"
+        },
+        {
+          "coefficient": "80",
+          "coefficient_unit": "EUR/unit",
+          "variable": "qty_A"
+        }
+      ],
+      "unit": "EUR",
+      "version": "1"
+    },
+    "scenario_id": "base",
+    "schema_version": "1.0",
+    "shared_parameters": {
+      "delivery_capacity_units": {
+        "approved": true,
+        "source": "synthetic_demo",
+        "unit": "unit",
+        "value": "55",
+        "version": "1"
+      },
+      "machine_capacity_hours": {
+        "approved": true,
+        "source": "synthetic_demo",
+        "unit": "hour",
+        "value": "100",
+        "version": "1"
+      },
+      "operating_cash_budget_eur": {
+        "approved": true,
+        "source": "synthetic_demo",
+        "unit": "EUR",
+        "value": "8000",
+        "version": "1"
+      }
+    }
+  },
+  "dsl": {
+    "constraints": [
+      {
+        "approved": true,
+        "id": "finance_budget",
+        "kind": "HARD",
+        "operator": "<=",
+        "owner_department": "finance",
+        "rhs": {
+          "parameter": "operating_cash_budget_eur"
+        },
+        "source": "synthetic_demo",
+        "terms": [
+          {
+            "coefficient": "100",
+            "coefficient_unit": "EUR/unit",
+            "variable": "qty_A"
+          },
+          {
+            "coefficient": "200",
+            "coefficient_unit": "EUR/unit",
+            "variable": "qty_B"
+          }
+        ],
+        "unit": "EUR",
+        "version": "1"
+      },
+      {
+        "approved": true,
+        "id": "logistics_delivery",
+        "kind": "HARD",
+        "operator": "<=",
+        "owner_department": "logistics",
+        "rhs": {
+          "parameter": "delivery_capacity_units"
+        },
+        "source": "synthetic_demo",
+        "terms": [
+          {
+            "coefficient": "1",
+            "coefficient_unit": "unit/unit",
+            "variable": "qty_A"
+          },
+          {
+            "coefficient": "1",
+            "coefficient_unit": "unit/unit",
+            "variable": "qty_B"
+          }
+        ],
+        "unit": "unit",
+        "version": "1"
+      },
+      {
+        "approved": true,
+        "id": "production_machine",
+        "kind": "HARD",
+        "operator": "<=",
+        "owner_department": "production",
+        "rhs": {
+          "parameter": "machine_capacity_hours"
+        },
+        "source": "synthetic_demo",
+        "terms": [
+          {
+            "coefficient": "2",
+            "coefficient_unit": "hour/unit",
+            "variable": "qty_A"
+          },
+          {
+            "coefficient": "1",
+            "coefficient_unit": "hour/unit",
+            "variable": "qty_B"
+          }
+        ],
+        "unit": "hour",
+        "version": "1"
+      }
+    ],
+    "currency": "EUR",
+    "data_snapshot_id": "synthetic_demo_v1",
+    "departments": [
+      {
+        "id": "finance",
+        "name": "Finance"
+      },
+      {
+        "id": "logistics",
+        "name": "Logistics"
+      },
+      {
+        "id": "production",
+        "name": "Production"
+      },
+      {
+        "id": "sales",
+        "name": "Sales"
+      }
+    ],
+    "dimensions": {},
+    "id": "demo_cross_department",
+    "model_version": "1.0.0",
+    "name": "Allocation synthétique à deux variables",
+    "objectives": [
+      {
+        "approved": true,
+        "id": "maximize_contribution",
+        "owner_department": "finance",
+        "priority": 1,
+        "sense": "MAX",
+        "source": "synthetic_demo",
+        "terms": [
+          {
+            "coefficient": "80",
+            "coefficient_unit": "EUR/unit",
+            "variable": "qty_A"
+          },
+          {
+            "coefficient": "60",
+            "coefficient_unit": "EUR/unit",
+            "variable": "qty_B"
+          }
+        ],
+        "unit": "EUR",
+        "version": "1"
+      }
+    ],
+    "parameters": {
+      "delivery_capacity_units": {
+        "approved": true,
+        "source": "synthetic_demo",
+        "unit": "unit",
+        "value": "55",
+        "version": "1"
+      },
+      "machine_capacity_hours": {
+        "approved": true,
+        "source": "synthetic_demo",
+        "unit": "hour",
+        "value": "100",
+        "version": "1"
+      },
+      "operating_cash_budget_eur": {
+        "approved": true,
+        "source": "synthetic_demo",
+        "unit": "EUR",
+        "value": "8000",
+        "version": "1"
+      }
+    },
+    "scenario_id": "base",
+    "schema_version": "1.0",
+    "variables": [
+      {
+        "department": "sales",
+        "id": "qty_A",
+        "indices": {},
+        "lb": "0",
+        "type": "INTEGER",
+        "ub": "40",
+        "unit": "unit"
+      },
+      {
+        "department": "sales",
+        "id": "qty_B",
+        "indices": {},
+        "lb": "0",
+        "type": "INTEGER",
+        "ub": "35",
+        "unit": "unit"
+      }
+    ]
+  },
+  "ir": {
+    "schema_version": "1.0",
+    "model_id": "demo_cross_department",
+    "model_version": "1.0.0",
+    "data_snapshot_id": "synthetic_demo_v1",
+    "scenario_id": "base",
+    "model_hash": "6067a4939fd2c2b42ade6387c12e72cf4df95c5581ab0375babdc134b0108ba0",
+    "manifest_hash": "e62c93a3cfba022a659f8278df82888c4216544ab010af859a40719f46f9eb4f",
+    "parameters": [
+      {
+        "id": "delivery_capacity_units",
+        "value": "55",
+        "unit": {
+          "dimensions": [
+            [
+              "count",
+              1
+            ]
+          ],
+          "scale": "1"
+        },
+        "origin": {
+          "source": "synthetic_demo",
+          "approved": true,
+          "version": "1"
+        }
+      },
+      {
+        "id": "machine_capacity_hours",
+        "value": "100",
+        "unit": {
+          "dimensions": [
+            [
+              "time",
+              1
+            ]
+          ],
+          "scale": "1"
+        },
+        "origin": {
+          "source": "synthetic_demo",
+          "approved": true,
+          "version": "1"
+        }
+      },
+      {
+        "id": "operating_cash_budget_eur",
+        "value": "8000",
+        "unit": {
+          "dimensions": [
+            [
+              "EUR",
+              1
+            ]
+          ],
+          "scale": "1"
+        },
+        "origin": {
+          "source": "synthetic_demo",
+          "approved": true,
+          "version": "1"
+        }
+      }
+    ],
+    "variables": [
+      {
+        "id": "qty_A",
+        "domain": "INTEGER",
+        "lb": "0",
+        "ub": "40",
+        "unit": {
+          "dimensions": [
+            [
+              "count",
+              1
+            ]
+          ],
+          "scale": "1"
+        },
+        "department": "sales",
+        "indices": []
+      },
+      {
+        "id": "qty_B",
+        "domain": "INTEGER",
+        "lb": "0",
+        "ub": "35",
+        "unit": {
+          "dimensions": [
+            [
+              "count",
+              1
+            ]
+          ],
+          "scale": "1"
+        },
+        "department": "sales",
+        "indices": []
+      }
+    ],
+    "constraints": [
+      {
+        "id": "finance_budget",
+        "terms": [
+          {
+            "variable": "qty_A",
+            "coefficient": "100"
+          },
+          {
+            "variable": "qty_B",
+            "coefficient": "200"
+          }
+        ],
+        "operator": "<=",
+        "rhs": "8000",
+        "unit": {
+          "dimensions": [
+            [
+              "EUR",
+              1
+            ]
+          ],
+          "scale": "1"
+        },
+        "owner_department": "finance",
+        "origin": {
+          "source": "synthetic_demo",
+          "approved": true,
+          "version": "1"
+        }
+      },
+      {
+        "id": "logistics_delivery",
+        "terms": [
+          {
+            "variable": "qty_A",
+            "coefficient": "1"
+          },
+          {
+            "variable": "qty_B",
+            "coefficient": "1"
+          }
+        ],
+        "operator": "<=",
+        "rhs": "55",
+        "unit": {
+          "dimensions": [
+            [
+              "count",
+              1
+            ]
+          ],
+          "scale": "1"
+        },
+        "owner_department": "logistics",
+        "origin": {
+          "source": "synthetic_demo",
+          "approved": true,
+          "version": "1"
+        }
+      },
+      {
+        "id": "production_machine",
+        "terms": [
+          {
+            "variable": "qty_A",
+            "coefficient": "2"
+          },
+          {
+            "variable": "qty_B",
+            "coefficient": "1"
+          }
+        ],
+        "operator": "<=",
+        "rhs": "100",
+        "unit": {
+          "dimensions": [
+            [
+              "time",
+              1
+            ]
+          ],
+          "scale": "1"
+        },
+        "owner_department": "production",
+        "origin": {
+          "source": "synthetic_demo",
+          "approved": true,
+          "version": "1"
+        }
+      }
+    ],
+    "objectives": [
+      {
+        "id": "maximize_contribution",
+        "terms": [
+          {
+            "variable": "qty_A",
+            "coefficient": "80"
+          },
+          {
+            "variable": "qty_B",
+            "coefficient": "60"
+          }
+        ],
+        "sense": "MAX",
+        "priority": 1,
+        "unit": {
+          "dimensions": [
+            [
+              "EUR",
+              1
+            ]
+          ],
+          "scale": "1"
+        },
+        "owner_department": "finance",
+        "origin": {
+          "source": "synthetic_demo",
+          "approved": true,
+          "version": "1"
+        }
+      }
+    ],
+    "transformations": [
+      "Resolved parameter references and explicit unit scales",
+      "Aggregated terms, removed zeros, sorted identifiers"
+    ],
+    "warnings": []
+  },
+  "model_hash": "6067a4939fd2c2b42ade6387c12e72cf4df95c5581ab0375babdc134b0108ba0",
+  "model_manifest_hash": "e62c93a3cfba022a659f8278df82888c4216544ab010af859a40719f46f9eb4f",
+  "composition_manifest_hash": "813a89981df66c0fc05b75778951684e1b6f4cf042fe5ecd374d623b00b41d92",
+  "constraint_traces": [
+    {
+      "constraint_id": "finance_budget",
+      "owner_department": "finance",
+      "fragment_ids": [
+        "finance_fragment"
+      ],
+      "contribution_ids": [
+        "finance_fragment/finance_consumption"
+      ],
+      "parameter_ids": [
+        "operating_cash_budget_eur"
+      ],
+      "resource_id": "finance_resource",
+      "source_paths": [
+        "fragments[finance_fragment].resource_uses[finance_consumption]"
+      ]
+    },
+    {
+      "constraint_id": "logistics_delivery",
+      "owner_department": "logistics",
+      "fragment_ids": [
+        "logistics_fragment"
+      ],
+      "contribution_ids": [
+        "logistics_fragment/logistics_consumption"
+      ],
+      "parameter_ids": [
+        "delivery_capacity_units"
+      ],
+      "resource_id": "logistics_resource",
+      "source_paths": [
+        "fragments[logistics_fragment].resource_uses[logistics_consumption]"
+      ]
+    },
+    {
+      "constraint_id": "production_machine",
+      "owner_department": "production",
+      "fragment_ids": [
+        "production_fragment"
+      ],
+      "contribution_ids": [
+        "production_fragment/production_consumption"
+      ],
+      "parameter_ids": [
+        "machine_capacity_hours"
+      ],
+      "resource_id": "production_resource",
+      "source_paths": [
+        "fragments[production_fragment].resource_uses[production_consumption]"
+      ]
+    }
+  ],
+  "resource_traces": [
+    {
+      "resource_id": "finance_resource",
+      "parameter_id": "operating_cash_budget_eur",
+      "constraint_id": "finance_budget",
+      "fragment_ids": [
+        "finance_fragment"
+      ],
+      "contribution_ids": [
+        "finance_fragment/finance_consumption"
+      ]
+    },
+    {
+      "resource_id": "logistics_resource",
+      "parameter_id": "delivery_capacity_units",
+      "constraint_id": "logistics_delivery",
+      "fragment_ids": [
+        "logistics_fragment"
+      ],
+      "contribution_ids": [
+        "logistics_fragment/logistics_consumption"
+      ]
+    },
+    {
+      "resource_id": "production_resource",
+      "parameter_id": "machine_capacity_hours",
+      "constraint_id": "production_machine",
+      "fragment_ids": [
+        "production_fragment"
+      ],
+      "contribution_ids": [
+        "production_fragment/production_consumption"
+      ]
+    }
+  ]
+}
