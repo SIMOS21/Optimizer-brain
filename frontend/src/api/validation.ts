@@ -25,8 +25,16 @@ const ajv = new Ajv({
   validateFormats: false,
   allErrors: false,
 });
-// OpenAPI 3.1 component schemas are JSON Schema; preserve the original contract.
-ajv.addSchema({ $id: "urn:brain:contract", components: contract.components });
+// Pydantic emits Decimal("1e-7") as "1E-7", while its generated output
+// pattern excludes exponents. Accept that exact textual notation only for
+// recorded verification tolerances. No input schema or numeric value changes.
+const runtimeComponents = structuredClone(contract.components);
+for (const field of Object.values(
+  runtimeComponents.schemas["VerificationSettings-Output"].properties,
+)) {
+  field.pattern = "^[+-]?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:[eE][+-]?\\d+)?$";
+}
+ajv.addSchema({ $id: "urn:brain:contract", components: runtimeComponents });
 
 export function decode<K extends keyof Schemas>(
   schema: K,

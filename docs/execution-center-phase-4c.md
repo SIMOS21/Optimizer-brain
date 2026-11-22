@@ -1,4 +1,9 @@
-# Centre d'exécution asynchrone — Phase 4C, tranche backend
+# Centre d'exécution asynchrone — Phase 4C
+
+La tranche backend décrite ci-dessous est désormais complétée par
+l'[Optimization Center React](frontend-execution-phase-4c.md). Le Studio utilise
+exclusivement les quatre contrats de jobs ci-dessous et la consultation des runs.
+Voir [validation frontend 4C](validation-phase-4c.md) et l'ADR 0007.
 
 ## Périmètre livré
 
@@ -57,8 +62,8 @@ la transition vers `SUCCEEDED`.
   `ceil(time_limit_seconds + hard_timeout_grace_seconds)` est aussi imposé au
   Job Object Windows et via `RLIMIT_CPU` sous Linux.
 
-La tranche n'ajoute pas encore l'interface React d'exécution, un endpoint de
-retry, une limite de concurrence globale entre plusieurs instances worker, ni
+La tranche backend n'ajoute pas d'endpoint de
+retry, de limite de concurrence globale entre plusieurs instances worker, ni
 des métriques de progression. Un crash/expiration est explicitement visible
 comme échec et nécessite une nouvelle soumission avec une nouvelle clé.
 

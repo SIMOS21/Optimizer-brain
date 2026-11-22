@@ -8,7 +8,7 @@
 | 3 — Multi-department Model Builder | Livrée : graphe typé, fragments, partage explicite, composition globale, rapports mesurés, snapshots SQLite locaux ; deux secteurs synthétiques validés |
 | 4A — Persistence, Identity & Governance Foundations | Livrée : PostgreSQL/Alembic, identités, sessions révocables, RBAC, RLS, publications et historiques immuables, API v1 distincte ; voir validation-phase-4a.md |
 | 4B — Visual Organization Studio | Livrée : React/TypeScript, canvas fidèle aux snapshots, import/édition versionnée, publication, inspecteurs et historique ; parcours API réelle usine/université validés, voir validation-phase-4b.md |
-| 4C — Asynchronous Optimization Execution Center | Tranche backend livrée : jobs PostgreSQL idempotents, API tenant-scoped, worker indépendant, processus enfant terminable, vérification avant run immuable ; interface dédiée et validation CI/PostgreSQL distante à finaliser |
+| 4C — Asynchronous Optimization Execution Center | Backend et frontend livrés : modèles publiés, lancement idempotent, suivi et annulation serveur, cockpit et historique immuables ; parcours réels usine/université, INFEASIBLE et TIME_LIMIT ; voir validation-phase-4c.md |
 | 5 à 8 | Non implémentées |
 
 La phase 2 livre IR → matrices → résultat brut → vérification indépendante →
@@ -27,7 +27,9 @@ présente aucun objectif sans run enregistré. Le guide studio-phase-4b.md décr
 ses commandes, les contrats typés et ses limites de navigateur.
 La tranche 4C ajoute des contrats API distincts pour les jobs et le statut du
 solveur ; détails, configuration et limites figurent dans
-execution-center-phase-4c.md et l'ADR 0006. L'interface React 4C reste à réaliser.
+execution-center-phase-4c.md et l'ADR 0006. L'interface React réutilise ces contrats
+sans modifier le kernel, HiGHS ni la vérification ; voir frontend-execution-phase-4c.md
+et l'ADR 0007 pour la confiance des résultats et les limites de reprise navigateur.
 
 Les contrôles Linux/Windows Python 3.11 sont configurés dans le workflow CI,
 mais ne sont pas réputés exécutés avant une exécution réelle du workflow.

@@ -1,4 +1,4 @@
-> **Développement :** lire `AGENTS.md` et `OPTIMIZATION_BRAIN_SPEC.md`. Les phases 0 à 3, 4A, 4B et la première tranche backend 4C sont livrées ; le centre d'exécution reste sans interface dédiée.
+> **Développement :** lire `AGENTS.md` et `OPTIMIZATION_BRAIN_SPEC.md`. Les phases 0 à 3, 4A, 4B et le centre d'exécution backend/frontend 4C sont livrés. La Phase 5 reste hors périmètre.
 
 # Optimization Brain — MVP conservé et Universal Model Kernel
 
@@ -28,6 +28,19 @@ Phase 4C : [centre d'exécution backend](docs/execution-center-phase-4c.md),
 [ADR jobs et concurrence](docs/decision-records/0006-asynchronous-execution-center.md).
 La [revue backend et le plan frontend 4C](docs/review-phase-4c-backend.md)
 documentent la reprise, les preuves de validation et le préalable d'intégration.
+Frontend 4C : [guide utilisateur et lancement](docs/frontend-execution-phase-4c.md),
+[ADR navigateur](docs/decision-records/0007-frontend-execution-and-result-trust.md),
+[validation](docs/validation-phase-4c.md).
+
+## Optimization Center (phase 4C)
+
+Dans le Studio, sélectionner une organisation puis **Optimization Center** :
+choisir une version publiée, configurer SolveSettings et lancer le job. Un worker
+runtime distinct doit tourner avec `python -m brain.platform.worker`. Le centre
+suit l'état technique, accepte une demande d'annulation autorisée et présente le
+run immuable avec son statut mathématique et sa vérification indépendante.
+Les références synthétiques restent **4100 EUR** pour l'usine et **17** pour
+l'université. Aucun gain sans baseline, progression ou certificat n'est inventé.
 
 ## Studio organisationnel interactif (phase 4B)
 
@@ -64,8 +77,8 @@ après la [configuration et les migrations](docs/platform-phase-4a.md).
 L'application legacy `brain.api:app` reste une démonstration locale séparée,
 sans authentification. Les snapshots SQLite de Phase 3 et le Brain hors ligne
 restent disponibles. La Phase 4C ajoute une file PostgreSQL et un worker autonome :
-`python -m brain.platform.worker`. Son API lance et suit les jobs, mais aucune
-interface d'exécution n'est encore livrée.
+`python -m brain.platform.worker`. Son API sécurisée est consommée par
+l'Optimization Center React ; l'API legacy anonyme reste séparée.
 
 ## Composition multi-départements (phase 3)
 
@@ -253,9 +266,8 @@ optimization_brain_mvp/
 ## Suite du développement
 
 La [roadmap](docs/roadmap.md) suit désormais les phases de la spécification.
-Les phases 3, 4A, 4B et la tranche backend 4C sont livrées. Le centre 4C persiste
-les jobs et les runs vérifiés ; la prochaine tranche pourra ajouter son interface
-après revue/validation de ce backend. La Phase 5, le LLM et les optimisations
+Les phases 3, 4A, 4B et 4C sont livrées. Le centre 4C lance, suit et annule les
+jobs autorisés et consulte leurs résultats historiques vérifiés. La Phase 5, le LLM et les optimisations
 avancées restent hors périmètre.
 
 **Règle de conception :** benchmarker et prouver l'apport de chaque couche algorithmique avant de l'ajouter. Un algorithme complexe n'est utile que s'il améliore la qualité, la vitesse de résolution, la robustesse ou l'explicabilité.

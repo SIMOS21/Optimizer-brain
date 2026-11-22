@@ -11,6 +11,7 @@ it("decodes decimal JSON solver settings without rounding model or result decima
   const decoded = decode("OptimizationJobResponse", parsePrecise(value));
   expect(decoded.settings.time_limit_seconds).toBe(20);
   expect(decoded.settings.mip_rel_gap).toBe(0.001);
+  expect(decoded.settings.verification?.bound_tolerance).toBe("1E-7");
   expect(parsePrecise('{"coefficient":1.1234567890123456789}')).toEqual({
     coefficient: "1.1234567890123456789",
   });
@@ -21,6 +22,14 @@ it("decodes decimal JSON solver settings without rounding model or result decima
     ).items[0]?.settings.mip_rel_gap,
   ).toBe(0.001);
 });
+it.each(["NaN", "e-7", "1e", "not-a-decimal"])(
+  "rejects invalid textual verification tolerance %s",
+  (value) => {
+    const record = job();
+    record.settings.verification!.bound_tolerance = value;
+    expect(() => decode("OptimizationJobResponse", record)).toThrow("contrat");
+  },
+);
 it("sends the supplied idempotency key and encoded scoped model to the secured API", async () => {
   const record = job();
   const fetch = vi.fn(async () => new Response(JSON.stringify(record)));
@@ -128,4 +137,45 @@ it("supports cancelling a single monitor read without aborting other components"
   );
   controller.abort();
   await expect(request).rejects.toMatchObject({ name: "AbortError" });
+});
+it("does not expire a new session because an aborted old request returns 401 late", async () => {
+  let complete!: (response: Response) => void;
+  let sessions = 0;
+  const fetch = vi.fn<(url: string, options: RequestInit) => Promise<Response>>(
+    async (url) => {
+      if (url.endsWith("/login"))
+        return new Response(
+          JSON.stringify({
+            access_token: `synthetic-${++sessions}`,
+            expires_at: 9999999999,
+            token_type: "bearer",
+          }),
+        );
+      if (url.endsWith("/me"))
+        return new Response(
+          JSON.stringify({
+            id: "user",
+            username: "synthetic",
+            display_name: "Test",
+          }),
+        );
+      return new Promise((resolve) => {
+        complete = resolve;
+      });
+    },
+  );
+  vi.stubGlobal("fetch", fetch);
+  const expired = vi.fn();
+  const client = new ApiClient(expired);
+  await client.login("synthetic", "synthetic-password");
+  const stale = client.job(job().organization_id, job().id);
+  await client.login("synthetic", "synthetic-password");
+  complete(new Response("private", { status: 401 }));
+  await expect(stale).rejects.toMatchObject({ name: "AbortError" });
+  expect(expired).not.toHaveBeenCalled();
+  await client.request("/auth/me", "UserResponse");
+  expect(fetch.mock.calls.at(-1)?.[1].headers).toHaveProperty(
+    "Authorization",
+    "Bearer synthetic-2",
+  );
 });

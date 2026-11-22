@@ -13,6 +13,13 @@ export function job(overrides: Partial<OptimizationJob> = {}): OptimizationJob {
       mip_rel_gap: 0,
       presolve: true,
       node_limit: null,
+      verification: {
+        bound_tolerance: "1E-7",
+        constraint_tolerance: "1E-7",
+        integrality_tolerance: "1E-7",
+        objective_absolute_tolerance: "0.000001",
+        objective_relative_tolerance: "1E-9",
+      },
     },
     solver_status: null,
     run_id: null,
