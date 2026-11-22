@@ -20,6 +20,8 @@ Références primaires consultées : [React Flow / TypeScript](https://reactflow
 [accessibilité](https://reactflow.dev/learn/advanced-use/accessibility),
 [Vite](https://vite.dev/guide/), [openapi-typescript](https://openapi-ts.dev/introduction).
 Les versions effectivement testées sont épinglées dans package.json et package-lock.json.
+Le verrou complet est généré sans node_modules préexistant et vérifié par une
+installation Linux propre, y compris les dépendances optionnelles d'autres plateformes.
 
 ## Une seule sémantique mathématique
 

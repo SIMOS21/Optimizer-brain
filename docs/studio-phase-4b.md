@@ -132,6 +132,8 @@ le proxy sécurisé ; c'est une vérification locale, pas un serveur de producti
 Les tests réels créent des versions et une organisation synthétique supplémentaire.
 Utiliser une base de démonstration, pas une base de données métier. Traces/vidéos
 sont désactivées ; les captures explicites n'incluent ni formulaire de login ni jeton.
+STUDIO_SCREENSHOT_DIR permet de changer leur répertoire ; la CI utilise
+frontend/test-results/screenshots pour ne publier que les images de son exécution.
 
 Les contrôles Python restent ceux de 4A avec les variables BRAIN_TEST_* :
 `python -m pytest -q`, `python -m ruff check brain tests scripts migrations`,

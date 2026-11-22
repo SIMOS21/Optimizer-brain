@@ -35,12 +35,22 @@ sont figés aux versions de génération testées.
 | Lint frontend | `npm run lint` réussi |
 | Contrat généré | Export OpenAPI comparé au serveur par pytest ; `openapi-typescript --check` réussi |
 | Ruff et mypy | Sans erreur ; mypy contrôle **32 fichiers** |
+| Installation Linux propre du verrou corrigé | Node 24/npm 11.19.1 dans Docker, `npm ci --ignore-scripts` réussi |
+| Installation Windows propre du verrou corrigé | `npm ci`, build, lint et **37 tests** réussis dans une copie isolée |
 
 La suite Python utilise le harnais local ignoré de 4A : variables BRAIN_TEST_*
 chargées sans les afficher, TEMP/TMP dans `%LOCALAPPDATA%/OptimizerBrain/temp`,
 basetemp neuf et `-p no:cacheprovider`. Seule optimizer_brain_test est réinitialisée.
 La démonstration et les parcours web utilisent une autre base, sans effacer ses
 historiques. Les tests réels ajoutent des versions et des espaces synthétiques.
+
+La première CI [45037758981](https://github.com/SIMOS21/Optimizer-brain/actions/runs/45037758981)
+a validé les jobs Python Ubuntu/Windows et **311 tests PostgreSQL** ; l'installation
+Node y a révélé deux dépendances optionnelles Rolldown absentes du premier lockfile
+produit sous Windows. Le verrou a été régénéré depuis le manifeste seul, sans
+node_modules existant, puis les installations Linux/Windows ci-dessus ont réussi.
+Les nouvelles captures CI sont écrites dans test-results/screenshots, séparément
+des captures versionnées, afin qu'un artifact ne soit pas confondu avec un ancien rendu.
 
 Les sept tests Python ajoutés vérifient OpenAPI, l'identité des compositions
 canoniques, les décimaux précis et les espaces de noms distincts nœud/arête.

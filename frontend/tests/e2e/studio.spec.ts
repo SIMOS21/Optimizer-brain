@@ -7,6 +7,8 @@ const examples = [
   ["factory", factory, "4100"],
   ["university", university, "17"],
 ] as const;
+const screenshotDirectory =
+  process.env.STUDIO_SCREENSHOT_DIR || "../docs/screenshots";
 async function login(page: Page, role = "admin") {
   const password = process.env.BRAIN_DEMO_PASSWORD;
   if (!password)
@@ -97,7 +99,7 @@ for (const [name, fixture, objective] of examples) {
       ),
     ).toBe(true);
     await page.screenshot({
-      path: `../docs/screenshots/studio-${name}.png`,
+      path: `${screenshotDirectory}/studio-${name}.png`,
       fullPage: true,
     });
     const version = `ui_${Date.now()}_${name}`;
@@ -280,7 +282,7 @@ test("layout mobile sans débordement horizontal du workspace", async ({
     ),
   ).toBe(true);
   await page.screenshot({
-    path: "../docs/screenshots/studio-mobile.png",
+    path: `${screenshotDirectory}/studio-mobile.png`,
     fullPage: true,
   });
 });

@@ -41,6 +41,7 @@ jobs:
       BRAIN_MIGRATION_DATABASE_URL: postgresql+psycopg://brain_migrator:ci-only-migrator-password@127.0.0.1:5432/optimizer_brain_studio
       BRAIN_DEMO_PASSWORD: ci-only-synthetic-studio-password
       STUDIO_BASE_URL: http://127.0.0.1:5180
+      STUDIO_SCREENSHOT_DIR: test-results/screenshots
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -80,4 +81,4 @@ jobs:
         if: always()
         with:
           name: studio-screenshots
-          path: docs/screenshots/*.png
+          path: frontend/test-results/screenshots/*.png
