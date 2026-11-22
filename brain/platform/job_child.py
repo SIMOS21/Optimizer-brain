@@ -42,9 +42,7 @@ def _install_parent_death_signal(expected_parent: int) -> bool:
     return True
 
 
-def execute_job(
-    organization_id: str, job_id: str, attempt_id: str, parent_pid: int
-) -> int:
+def execute_job(organization_id: str, job_id: str, attempt_id: str, parent_pid: int) -> int:
     if not _install_parent_death_signal(parent_pid):
         return 10
     if sys.stdin.buffer.readline(64) != b"START\n":
@@ -85,9 +83,7 @@ def execute_job(
         result = solve_organization(raw_model, settings).solve
 
         with factory.begin() as session:
-            service.tenant(
-                session, user, organization_id, roles=("ADMIN", "BUILDER"), lock=True
-            )
+            service.tenant(session, user, organization_id, roles=("ADMIN", "BUILDER"), lock=True)
             job = session.scalar(
                 select(OptimizationJob)
                 .where(
@@ -106,9 +102,7 @@ def execute_job(
                 or job.lease_expires_at <= current
             ):
                 return 10
-            run = service.record_run(
-                session, user, organization_id, model_version_id, result
-            )
+            run = service.record_run(session, user, organization_id, model_version_id, result)
             current = database_now(session)
             if job.lease_expires_at is None or job.lease_expires_at <= current:
                 raise TimeoutError("Le bail du job a expiré avant la persistance")

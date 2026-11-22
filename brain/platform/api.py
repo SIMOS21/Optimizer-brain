@@ -438,9 +438,7 @@ def optimization_job_create(
     body: OptimizationJobCreate,
     session: DB,
     actor: Actor,
-    idempotency_key: Annotated[
-        str, Header(alias="Idempotency-Key", min_length=16, max_length=128)
-    ],
+    idempotency_key: Annotated[str, Header(alias="Idempotency-Key", min_length=16, max_length=128)],
 ) -> object:
     job = service.create_optimization_job(
         session, actor, organization_id, identity, idempotency_key, body
@@ -474,9 +472,7 @@ def optimization_jobs(
     "/organizations/{organization_id}/optimization-jobs/{identity}",
     response_model=OptimizationJobResponse,
 )
-def optimization_job_get(
-    organization_id: str, identity: str, session: DB, actor: Actor
-) -> object:
+def optimization_job_get(organization_id: str, identity: str, session: DB, actor: Actor) -> object:
     service.tenant(session, actor, organization_id)
     return optimization_job_view(service.get_optimization_job(session, organization_id, identity))
 
@@ -488,9 +484,7 @@ def optimization_job_get(
 def optimization_job_cancel(
     organization_id: str, identity: str, session: DB, actor: Actor
 ) -> object:
-    job = service.request_optimization_job_cancellation(
-        session, actor, organization_id, identity
-    )
+    job = service.request_optimization_job_cancellation(session, actor, organization_id, identity)
     return optimization_job_view(job)
 
 

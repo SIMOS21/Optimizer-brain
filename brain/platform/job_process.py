@@ -25,14 +25,17 @@ if os.name == "nt":
         ]
 
     class _IoCounters(ctypes.Structure):
-        _fields_ = [(name, ctypes.c_ulonglong) for name in (
-            "ReadOperationCount",
-            "WriteOperationCount",
-            "OtherOperationCount",
-            "ReadTransferCount",
-            "WriteTransferCount",
-            "OtherTransferCount",
-        )]
+        _fields_ = [
+            (name, ctypes.c_ulonglong)
+            for name in (
+                "ReadOperationCount",
+                "WriteOperationCount",
+                "OtherOperationCount",
+                "ReadTransferCount",
+                "WriteTransferCount",
+                "OtherTransferCount",
+            )
+        ]
 
     class _ExtendedLimitInformation(ctypes.Structure):
         _fields_ = [
@@ -80,7 +83,9 @@ class ManagedProcess:
         if os.name == "nt":
             return cls._launch_windows(command, env, memory_limit_bytes)
         if sys.platform != "linux":
-            raise RuntimeError("Les workers d'optimisation sont pris en charge sous Linux et Windows")
+            raise RuntimeError(
+                "Les workers d'optimisation sont pris en charge sous Linux et Windows"
+            )
         enable_child_subreaper()
         process = subprocess.Popen(
             command,
@@ -254,9 +259,7 @@ class ManagedProcess:
     def _reap_adopted_children(self) -> None:
         while True:
             try:
-                child_pid, _ = os.waitpid(
-                    -self.process_group_id, getattr(os, "WNOHANG", 1)
-                )
+                child_pid, _ = os.waitpid(-self.process_group_id, getattr(os, "WNOHANG", 1))
             except ChildProcessError:
                 return
             if child_pid == 0:

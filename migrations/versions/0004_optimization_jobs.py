@@ -227,9 +227,7 @@ def upgrade() -> None:
 
 def downgrade() -> None:
     if op.get_bind().dialect.name == "postgresql":
-        op.execute(
-            "DROP TRIGGER IF EXISTS optimization_jobs_transition_guard ON optimization_jobs"
-        )
+        op.execute("DROP TRIGGER IF EXISTS optimization_jobs_transition_guard ON optimization_jobs")
         op.execute("DROP FUNCTION IF EXISTS guard_optimization_job_transition()")
         op.execute("DROP POLICY IF EXISTS optimization_jobs_tenant_scope ON optimization_jobs")
         op.execute("ALTER TABLE optimization_jobs DISABLE ROW LEVEL SECURITY")

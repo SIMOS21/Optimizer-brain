@@ -100,9 +100,9 @@ class OptimizationWorker:
             ).one()
             if role[0] or role[1]:
                 raise ValueError("Le worker refuse un rôle PostgreSQL superuser/BYPASSRLS")
-            revision = connection.execute(
-                text("SELECT version_num FROM alembic_version")
-            ).scalars().all()
+            revision = (
+                connection.execute(text("SELECT version_num FROM alembic_version")).scalars().all()
+            )
             if revision != ["0004_4c"]:
                 raise ValueError("Migration Phase 4C requise avant le démarrage du worker")
             if connection.scalar(
@@ -119,8 +119,7 @@ class OptimizationWorker:
         worker_ids = [str(uuid4()) for _ in range(self.settings.max_concurrency)]
         with ThreadPoolExecutor(max_workers=len(worker_ids)) as executor:
             futures = [
-                executor.submit(self._run_slot, worker_id, stop_event)
-                for worker_id in worker_ids
+                executor.submit(self._run_slot, worker_id, stop_event) for worker_id in worker_ids
             ]
             try:
                 for future in futures:
@@ -232,9 +231,7 @@ class OptimizationWorker:
         }
         env["BRAIN_DATABASE_URL"] = self.database_url
         env["BRAIN_JOB_MEMORY_LIMIT_BYTES"] = str(self.settings.memory_limit_bytes)
-        env["BRAIN_JOB_TERMINATION_GRACE_SECONDS"] = str(
-            self.settings.termination_grace_seconds
-        )
+        env["BRAIN_JOB_TERMINATION_GRACE_SECONDS"] = str(self.settings.termination_grace_seconds)
         env["BRAIN_JOB_CPU_LIMIT_SECONDS"] = str(
             math.ceil(time_limit_seconds + self.settings.hard_timeout_grace_seconds)
         )
@@ -328,14 +325,18 @@ class OptimizationWorker:
                         else:
                             self._finish_failed(claim, "EXECUTION_TIMEOUT")
                         return
-                    logger.error("Could not confirm timed-out process-tree exit for job %s", claim.id)
+                    logger.error(
+                        "Could not confirm timed-out process-tree exit for job %s", claim.id
+                    )
                     time.sleep(self.settings.poll_seconds)
                     continue
                 if time.monotonic() >= next_heartbeat:
                     if not self._heartbeat(claim):
                         if self._terminate_and_release(process):
                             return
-                        logger.error("Could not confirm process-tree exit after lost lease for %s", claim.id)
+                        logger.error(
+                            "Could not confirm process-tree exit after lost lease for %s", claim.id
+                        )
                         time.sleep(self.settings.poll_seconds)
                         continue
                     next_heartbeat = time.monotonic() + self.settings.heartbeat_seconds

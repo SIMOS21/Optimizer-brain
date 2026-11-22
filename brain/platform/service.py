@@ -438,9 +438,7 @@ def create_optimization_job(
     return job
 
 
-def get_optimization_job(
-    session: Session, organization_id: str, identity: str
-) -> OptimizationJob:
+def get_optimization_job(session: Session, organization_id: str, identity: str) -> OptimizationJob:
     job = session.scalar(
         select(OptimizationJob).where(
             OptimizationJob.organization_id == organization_id, OptimizationJob.id == identity

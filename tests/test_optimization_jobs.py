@@ -58,7 +58,9 @@ def test_job_api_idempotency_roles_and_tenant_isolation(platform):
         == 403
     )
     assert (
-        p.request("GET", p.base + f"/optimization-jobs/{document['id']}", role="outsider").status_code
+        p.request(
+            "GET", p.base + f"/optimization-jobs/{document['id']}", role="outsider"
+        ).status_code
         == 404
     )
 
@@ -74,9 +76,10 @@ def test_job_api_idempotency_roles_and_tenant_isolation(platform):
     if p.app.state.engine.dialect.name != "postgresql":
         pytest.skip("Le traitement de file et RLS exigent PostgreSQL")
     with p.app.state.session_factory() as session:
-        assert session.scalar(
-            select(OptimizationJob.id).where(OptimizationJob.id == document["id"])
-        ) is None
+        assert (
+            session.scalar(select(OptimizationJob.id).where(OptimizationJob.id == document["id"]))
+            is None
+        )
     worker = OptimizationWorker(
         p.app.state.engine,
         p.app.state.session_factory,
@@ -215,17 +218,13 @@ def test_postgres_cancel_racing_with_worker_never_overwrites_success(platform):
         assert cancellation_requested
         assert future.result(timeout=40) is True
 
-    final = p.request(
-        "GET", p.base + f"/optimization-jobs/{job_id}", role="viewer"
-    ).json()
+    final = p.request("GET", p.base + f"/optimization-jobs/{job_id}", role="viewer").json()
     assert final["state"] in ("SUCCEEDED", "FAILED", "CANCELLED")
     if final["state"] == "CANCELLED":
         assert final["run_id"] is None
     elif final["state"] == "SUCCEEDED":
         assert final["run_id"]
-        run = p.request(
-            "GET", p.base + f"/optimization-runs/{final['run_id']}", role="viewer"
-        )
+        run = p.request("GET", p.base + f"/optimization-runs/{final['run_id']}", role="viewer")
         assert run.status_code == 200
         assert run.json()["document"]["report"]["has_verified_plan"] is True
 
@@ -256,9 +255,7 @@ def test_postgres_worker_hard_timeout_persists_no_run(platform):
     )
 
     assert worker.run_once() is True
-    final = p.request(
-        "GET", p.base + f"/optimization-jobs/{job_id}", role="viewer"
-    ).json()
+    final = p.request("GET", p.base + f"/optimization-jobs/{job_id}", role="viewer").json()
     assert final["state"] == "FAILED"
     assert final["error_code"] == "EXECUTION_TIMEOUT"
     assert final["run_id"] is None
