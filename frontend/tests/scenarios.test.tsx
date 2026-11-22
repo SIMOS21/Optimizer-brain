@@ -113,6 +113,38 @@ function fill() {
 }
 afterEach(() => vi.unstubAllGlobals());
 
+it.each([" 1 ", "\u00851\u0085", "\u00a01\u00a0"])(
+  "accepts the canonical version returned by the API for %j and can repeat it",
+  async (version) => {
+    const fetch = vi.fn(async () => new Response(JSON.stringify(scenario())));
+    vi.stubGlobal("fetch", fetch);
+    const api = new ApiClient();
+    const submitted = { ...request(), version };
+    expect((await api.createScenario(org.id, submitted)).id).toBe("clone");
+    expect((await api.createScenario(org.id, submitted)).id).toBe("clone");
+    expect(submitted.version).toBe(version);
+  },
+);
+it("keeps non-whitespace version characters significant and rejects another version", async () => {
+  const record = scenario();
+  const fetch = vi.fn(async () => new Response(JSON.stringify(record)));
+  vi.stubGlobal("fetch", fetch);
+  const api = new ApiClient();
+  record.version = record.document.version = "\ufeff1\ufeff";
+  expect(
+    (
+      await api.createScenario(org.id, {
+        ...request(),
+        version: "\ufeff1\ufeff",
+      })
+    ).version,
+  ).toBe("\ufeff1\ufeff");
+  record.version = record.document.version = "2";
+  await expect(
+    api.createScenario(org.id, { ...request(), version: " 1 " }),
+  ).rejects.toThrow("demande");
+});
+
 it("validates an empty change set and rejects hidden model overrides", () => {
   expect(decode("ScenarioResponse", scenario()).document.changes).toEqual([]);
   const invalid = scenario() as unknown as { document: { changes: unknown[] } };

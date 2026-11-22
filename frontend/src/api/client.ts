@@ -242,7 +242,10 @@ export class ApiClient {
     );
     if (
       result.key !== body.key ||
-      result.version !== body.version ||
+      // Pydantic Text strips Unicode White_Space at the boundary. ECMAScript
+      // trim differs (notably U+0085 and U+FEFF), so match the server's set.
+      result.version !==
+        body.version.replace(/^\p{White_Space}+|\p{White_Space}+$/gu, "") ||
       result.source_model_version_id !== body.source_model_version_id ||
       result.document.source_content_hash !== body.expected_source_content_hash
     )

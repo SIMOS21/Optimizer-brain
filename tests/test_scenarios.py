@@ -300,6 +300,18 @@ def test_scenario_checksum_rejects_corruption_without_rewriting_history(platform
     assert p.request("GET", path).json() == scenario
 
 
+def test_scenario_versions_normalize_whitespace_and_preserve_idempotence(platform):
+    p = platform
+    request = body(p, p.model())
+    first = create(p, {**request, "version": " 1 "})
+    assert first["version"] == first["document"]["version"] == "1"
+    for version in ("1", " 1 ", "\u00851\u0085", "\u00a01\u00a0"):
+        assert create(p, {**request, "version": version})["id"] == first["id"]
+    distinct = create(p, {**request, "version": "\ufeff1\ufeff"})
+    assert distinct["id"] != first["id"]
+    assert distinct["version"] == "\ufeff1\ufeff"
+
+
 @pytest.mark.parametrize("sector,objective", [("factory", 4100), ("university", 17)])
 def test_clone_math_goldens_without_altering_sources(sector, objective):
     from pathlib import Path

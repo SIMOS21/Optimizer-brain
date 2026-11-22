@@ -45,6 +45,11 @@ rôle insuffisant, 404 pour une ressource étrangère/absente, 409 pour une réf
 non publiée, une empreinte incompatible ou une incohérence historique, 422 pour
 les champs invalides. Aucun PATCH/PUT/DELETE de scénario.
 
+Les espaces périphériques des champs version, nom et justification sont normalisés
+par le serveur. Le client accepte la version canonique retournée et conserve la
+même demande lors d'une répétition. Ce traitement de métadonnées ne change aucune
+valeur mathématique.
+
 `ScenarioResponse` porte les identités, clé/version, auteur/date, empreinte du
 scénario et état actuel de publication du modèle dérivé. Son `document` canonique
 `5B.1` contient nom, justification, référence et empreinte, graphe et empreinte,

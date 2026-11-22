@@ -74,7 +74,9 @@ for (const [sector, fixture, objective] of [
     await page
       .getByLabel("Clé du scénario")
       .fill(`scenario_${sector}_${Date.now()}`);
-    await page.getByLabel("Version du scénario").fill("1");
+    await page
+      .getByLabel("Version du scénario")
+      .fill(sector === "factory" ? " 1 " : "\u00851\u0085");
     await page
       .getByLabel("Nom du scénario")
       .fill(`Synthetic ${sector} identical clone`);
@@ -90,6 +92,7 @@ for (const [sector, fixture, objective] of [
     const response = await created;
     expect(response.status()).toBe(201);
     const record = (await response.json()) as Scenario;
+    expect(record.version).toBe("1");
     expect(record.document.changes).toEqual([]);
     expect(record.source_model_version_id).toBe(fixture.model.id);
     expect(record.document.source_content_hash).toBe(

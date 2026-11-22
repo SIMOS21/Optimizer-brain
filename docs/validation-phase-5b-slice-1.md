@@ -83,3 +83,14 @@ Aucun gain, sensibilité, batch ni relaxation HARD. Les lectures reconstruisent
 les artefacts et ne sont pas benchmarkées sur de gros historiques. La prochaine
 tranche de 5B doit traiter les politiques publiées avant toute variation de valeur.
 Les Phases 5C et 6 ne sont pas commencées ; aucune PR n'est fusionnée automatiquement.
+
+## Revue finale après la livraison de référence
+
+Un défaut de comparaison frontend a été reproduit puis corrigé : la version
+` 1 `, normalisée en `1` par l'API, était rejetée par le client après création.
+Le [rapport de revue](review-phase-5b-slice-1-final.md) détaille la reproduction,
+la correction minimale, les dix invariants examinés et les risques résiduels.
+Après correction : **410 tests Python réussis, 8 skips**, **122 Vitest** et
+**32 Playwright** réussis, avec PostgreSQL et worker réels ; Ruff, mypy,
+TypeScript, build et lint réussis. Les chiffres précédents décrivent toujours
+la livraison `8d8ade1`, avant les non-régressions ajoutées pendant cette revue.
