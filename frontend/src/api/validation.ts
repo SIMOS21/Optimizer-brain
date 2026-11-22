@@ -32,6 +32,15 @@ export function decode<K extends keyof Schemas>(
   schema: K,
   value: unknown,
 ): Schemas[K] {
+  // Only bounded solver configuration uses binary64 numbers. Model coefficients,
+  // decisions, fractions and recorded result metrics keep their original text.
+  if (schema === "OptimizationJobResponse") value = jobSettings(value);
+  if (
+    schema === "Page_OptimizationJobResponse_" &&
+    isRecord(value) &&
+    Array.isArray(value.items)
+  )
+    value = { ...value, items: value.items.map(jobSettings) };
   const validate = ajv.getSchema<Schemas[K]>(
     `urn:brain:contract#/components/schemas/${schema}`,
   );
@@ -52,6 +61,23 @@ export function decode<K extends keyof Schemas>(
     } as Schemas[K];
   }
   return value as Schemas[K];
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return value !== null && typeof value === "object" && !Array.isArray(value);
+}
+function jobSettings(value: unknown): unknown {
+  if (!isRecord(value) || !isRecord(value.settings)) return value;
+  const settings = { ...value.settings };
+  for (const key of ["time_limit_seconds", "mip_rel_gap"]) {
+    const entry = settings[key];
+    if (
+      typeof entry === "string" &&
+      /^-?(?:\d+\.?\d*|\.\d+)(?:e[+-]?\d+)?$/i.test(entry)
+    )
+      settings[key] = Number(entry);
+  }
+  return { ...value, settings };
 }
 
 export function parsePrecise(text: string): unknown {

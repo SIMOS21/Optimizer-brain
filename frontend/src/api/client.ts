@@ -7,6 +7,8 @@ import type {
   GraphArtifact,
   ModelArtifact,
   RunArtifact,
+  OptimizationJob,
+  SolveSettings,
 } from "./types";
 import { decode, parsePrecise } from "./validation";
 
@@ -14,7 +16,7 @@ const messages: Record<number, string> = {
   401: "Session expirée ou identifiants invalides. Reconnectez-vous.",
   403: "Votre rôle actuel ne permet pas cette action.",
   404: "Ressource absente ou inaccessible dans cette organisation.",
-  409: "Conflit de version. Rechargez puis créez une nouvelle version ; aucun écrasement.",
+  409: "Conflit de version ou de demande idempotente. Consultez l’état enregistré avant de réessayer ; aucun écrasement.",
   413: "Document trop volumineux (limite serveur : 10 MiB).",
   422: "Document invalide : contrôlez références, unités, versions et champs obligatoires.",
 };
@@ -40,10 +42,15 @@ export class ApiClient {
     schema: K,
     method = "GET",
     body?: unknown,
+    options: { headers?: Record<string, string>; signal?: AbortSignal } = {},
   ): Promise<Schemas[K]> {
     const controller = new AbortController();
+    const abort = () => controller.abort();
+    options.signal?.addEventListener("abort", abort, { once: true });
+    if (options.signal?.aborted) controller.abort();
     this.controllers.add(controller);
     try {
+      controller.signal.throwIfAborted();
       const response = await fetch(`/api/v1${path}`, {
         method,
         credentials: "omit",
@@ -52,9 +59,11 @@ export class ApiClient {
         headers: {
           "Content-Type": "application/json",
           ...(this.token ? { Authorization: `Bearer ${this.token}` } : {}),
+          ...options.headers,
         },
         ...(body === undefined ? {} : { body: JSON.stringify(body) }),
       });
+      controller.signal.throwIfAborted();
       if (!response.ok) {
         if (response.status === 401 && this.token) {
           this.clear();
@@ -62,8 +71,12 @@ export class ApiClient {
         }
         throw new ApiError(response.status);
       }
-      return decode(schema, parsePrecise(await response.text()));
+      const value = parsePrecise(await response.text());
+      controller.signal.throwIfAborted();
+      return decode(schema, value);
     } catch (error) {
+      if (controller.signal.aborted)
+        throw new DOMException("Aborted", "AbortError");
       if (
         error instanceof ApiError ||
         (error instanceof DOMException && error.name === "AbortError")
@@ -75,6 +88,7 @@ export class ApiClient {
         "Réponse indisponible ou incompatible avec le contrat API.",
       );
     } finally {
+      options.signal?.removeEventListener("abort", abort);
       this.controllers.delete(controller);
     }
   }
@@ -157,13 +171,74 @@ export class ApiClient {
   run(org: string, id: string): Promise<RunArtifact> {
     return this.scoped(org, id, "optimization-runs", "RunArtifactResponse");
   }
+  async jobs(org: string, offset = 0): Promise<Page<OptimizationJob>> {
+    const page = await this.request(
+      `/organizations/${encodeURIComponent(org)}/optimization-jobs?limit=50&offset=${offset}`,
+      "Page_OptimizationJobResponse_",
+    );
+    if (page.items.some((item) => item.organization_id !== org))
+      throw new Error("Réponse incohérente avec l’organisation active.");
+    return page;
+  }
+  job(org: string, id: string, signal?: AbortSignal): Promise<OptimizationJob> {
+    return this.scoped(
+      org,
+      id,
+      "optimization-jobs",
+      "OptimizationJobResponse",
+      signal,
+    );
+  }
+  async submitJob(
+    org: string,
+    model: string,
+    settings: SolveSettings,
+    key: string,
+  ): Promise<OptimizationJob> {
+    const job = await this.request(
+      `/organizations/${encodeURIComponent(org)}/model-versions/${encodeURIComponent(model)}/optimization-jobs`,
+      "OptimizationJobResponse",
+      "POST",
+      { settings: decode("SolveSettings-Input", settings) },
+      { headers: { "Idempotency-Key": key } },
+    );
+    if (job.organization_id !== org || job.model_version_id !== model)
+      throw new Error(
+        "Réponse incohérente avec le modèle ou l’organisation active.",
+      );
+    return job;
+  }
+  async cancelJob(org: string, id: string): Promise<OptimizationJob> {
+    const job = await this.request(
+      `/organizations/${encodeURIComponent(org)}/optimization-jobs/${encodeURIComponent(id)}/cancel`,
+      "OptimizationJobResponse",
+      "POST",
+    );
+    if (job.organization_id !== org || job.id !== id)
+      throw new Error(
+        "Réponse incohérente avec le job ou l’organisation active.",
+      );
+    return job;
+  }
   private async scoped<
     K extends
-      "GraphArtifactResponse" | "ModelArtifactResponse" | "RunArtifactResponse",
-  >(org: string, id: string, kind: string, schema: K): Promise<Schemas[K]> {
+      | "GraphArtifactResponse"
+      | "ModelArtifactResponse"
+      | "RunArtifactResponse"
+      | "OptimizationJobResponse",
+  >(
+    org: string,
+    id: string,
+    kind: string,
+    schema: K,
+    signal?: AbortSignal,
+  ): Promise<Schemas[K]> {
     const record = await this.request(
       `/organizations/${encodeURIComponent(org)}/${kind}/${encodeURIComponent(id)}`,
       schema,
+      "GET",
+      undefined,
+      { signal },
     );
     if (record.organization_id !== org || record.id !== id)
       throw new Error(
