@@ -6,7 +6,7 @@ from decimal import Decimal
 import json
 from typing import Annotated, Any
 
-from fastapi import APIRouter, Depends, FastAPI, HTTPException, Query, Request
+from fastapi import APIRouter, Depends, FastAPI, Header, HTTPException, Query, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.routing import APIRoute
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
@@ -25,6 +25,7 @@ from .models import (
     GraphSnapshot,
     Membership,
     ModelVersion,
+    OptimizationJob,
     OptimizationRun,
     Organization,
     User,
@@ -42,6 +43,8 @@ from .schemas import (
     MembershipSet,
     MembershipResponse,
     ModelCreate,
+    OptimizationJobCreate,
+    OptimizationJobResponse,
     OrganizationCreate,
     OrganizationResponse,
     Page,
@@ -155,6 +158,26 @@ def artifact_view(
     if detail:
         view["document"] = json.loads(record.payload)
     return view
+
+
+def optimization_job_view(record: OptimizationJob) -> dict[str, object]:
+    return {
+        "id": record.id,
+        "organization_id": record.organization_id,
+        "model_version_id": record.model_version_id,
+        "created_by": record.created_by,
+        "state": record.state,
+        "settings": json.loads(record.settings),
+        "solver_status": record.solver_status,
+        "run_id": record.run_id,
+        "error_code": record.error_code,
+        "cancel_requested": record.cancel_requested_at is not None,
+        "attempt_number": record.attempt_number,
+        "created_at": record.created_at,
+        "updated_at": record.updated_at,
+        "started_at": record.started_at,
+        "finished_at": record.finished_at,
+    }
 
 
 @router.post("/auth/login", response_model=TokenResponse)
@@ -404,6 +427,73 @@ def model_publish(organization_id: str, identity: str, session: DB, actor: Actor
     )
 
 
+@router.post(
+    "/organizations/{organization_id}/model-versions/{identity}/optimization-jobs",
+    status_code=202,
+    response_model=OptimizationJobResponse,
+)
+def optimization_job_create(
+    organization_id: str,
+    identity: str,
+    body: OptimizationJobCreate,
+    session: DB,
+    actor: Actor,
+    idempotency_key: Annotated[
+        str, Header(alias="Idempotency-Key", min_length=16, max_length=128)
+    ],
+) -> object:
+    job = service.create_optimization_job(
+        session, actor, organization_id, identity, idempotency_key, body
+    )
+    return optimization_job_view(job)
+
+
+@router.get(
+    "/organizations/{organization_id}/optimization-jobs",
+    response_model=Page[OptimizationJobResponse],
+)
+def optimization_jobs(
+    organization_id: str, session: DB, actor: Actor, limit: Limit = 50, offset: Offset = 0
+) -> object:
+    service.tenant(session, actor, organization_id)
+    records = session.scalars(
+        select(OptimizationJob)
+        .where(OptimizationJob.organization_id == organization_id)
+        .order_by(OptimizationJob.created_at.desc(), OptimizationJob.id.desc())
+        .limit(limit)
+        .offset(offset)
+    )
+    return {
+        "items": [optimization_job_view(record) for record in records],
+        "limit": limit,
+        "offset": offset,
+    }
+
+
+@router.get(
+    "/organizations/{organization_id}/optimization-jobs/{identity}",
+    response_model=OptimizationJobResponse,
+)
+def optimization_job_get(
+    organization_id: str, identity: str, session: DB, actor: Actor
+) -> object:
+    service.tenant(session, actor, organization_id)
+    return optimization_job_view(service.get_optimization_job(session, organization_id, identity))
+
+
+@router.post(
+    "/organizations/{organization_id}/optimization-jobs/{identity}/cancel",
+    response_model=OptimizationJobResponse,
+)
+def optimization_job_cancel(
+    organization_id: str, identity: str, session: DB, actor: Actor
+) -> object:
+    job = service.request_optimization_job_cancellation(
+        session, actor, organization_id, identity
+    )
+    return optimization_job_view(job)
+
+
 @router.get(
     "/organizations/{organization_id}/optimization-runs", response_model=Page[ArtifactResponse]
 )
@@ -481,17 +571,19 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             if role[0] or role[1]:
                 engine.dispose()
                 raise ValueError("L'API refuse un rôle PostgreSQL superuser/BYPASSRLS")
-            if connection.scalar(
-                text("SELECT has_table_privilege(current_user, 'graph_snapshots', 'TRUNCATE')")
-            ):
-                engine.dispose()
-                raise ValueError("Le rôle de l'API ne doit pas pouvoir tronquer l'historique")
             revision = (
                 connection.execute(text("SELECT version_num FROM alembic_version")).scalars().all()
             )
-            if revision != ["0003_4a"]:
+            if revision != ["0004_4c"]:
                 engine.dispose()
-                raise ValueError("Migrations Phase 4A requises avant le démarrage")
+                raise ValueError("Migration Phase 4C requise avant le démarrage")
+            if connection.scalar(
+                text("SELECT has_table_privilege(current_user, 'graph_snapshots', 'TRUNCATE')")
+            ) or connection.scalar(
+                text("SELECT has_table_privilege(current_user, 'optimization_jobs', 'TRUNCATE')")
+            ):
+                engine.dispose()
+                raise ValueError("Le rôle de l'API ne doit pas pouvoir tronquer l'historique")
 
     @asynccontextmanager
     async def lifespan(application: FastAPI) -> AsyncIterator[None]:
@@ -500,7 +592,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         finally:
             engine.dispose()
 
-    app = FastAPI(title="Optimization Brain Governance API", version="0.4a.0", lifespan=lifespan)
+    app = FastAPI(title="Optimization Brain Governance API", version="0.4c.0", lifespan=lifespan)
     app.state.engine, app.state.settings, app.state.session_factory = (
         engine,
         settings,
@@ -519,6 +611,6 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
     @app.get("/health")
     def health() -> object:
-        return {"status": "ok", "phase": "4A", "llm_required": False}
+        return {"status": "ok", "phase": "4C", "llm_required": False}
 
     return app

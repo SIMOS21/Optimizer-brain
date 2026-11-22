@@ -8,7 +8,8 @@
 | 3 — Multi-department Model Builder | Livrée : graphe typé, fragments, partage explicite, composition globale, rapports mesurés, snapshots SQLite locaux ; deux secteurs synthétiques validés |
 | 4A — Persistence, Identity & Governance Foundations | Livrée : PostgreSQL/Alembic, identités, sessions révocables, RBAC, RLS, publications et historiques immuables, API v1 distincte ; voir validation-phase-4a.md |
 | 4B — Visual Organization Studio | Livrée : React/TypeScript, canvas fidèle aux snapshots, import/édition versionnée, publication, inspecteurs et historique ; parcours API réelle usine/université validés, voir validation-phase-4b.md |
-| 4C et 5 à 8 | Non implémentées ; jobs web, workers et phases suivantes hors périmètre |
+| 4C — Asynchronous Optimization Execution Center | Tranche backend livrée : jobs PostgreSQL idempotents, API tenant-scoped, worker indépendant, processus enfant terminable, vérification avant run immuable ; interface dédiée et validation CI/PostgreSQL distante à finaliser |
+| 5 à 8 | Non implémentées |
 
 La phase 2 livre IR → matrices → résultat brut → vérification indépendante →
 résultat traçable, avec maintien des routes legacy. Les contraintes numériques et
@@ -24,7 +25,9 @@ La phase 4B conserve cette gouvernance : aucun endpoint de calcul ajouté, aucun
 changement du Brain. Le Studio consomme les documents réellement persistés et ne
 présente aucun objectif sans run enregistré. Le guide studio-phase-4b.md décrit
 ses commandes, les contrats typés et ses limites de navigateur.
-Prochaine action : revue du Studio 4B et des contrats de jobs avant de cadrer 4C.
+La tranche 4C ajoute des contrats API distincts pour les jobs et le statut du
+solveur ; détails, configuration et limites figurent dans
+execution-center-phase-4c.md et l'ADR 0006. L'interface React 4C reste à réaliser.
 
 Les contrôles Linux/Windows Python 3.11 sont configurés dans le workflow CI,
 mais ne sont pas réputés exécutés avant une exécution réelle du workflow.

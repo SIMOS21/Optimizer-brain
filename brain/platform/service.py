@@ -1,6 +1,7 @@
 """Tenant-scoped application services. Approval is a separate, audited operation."""
 
 from dataclasses import dataclass
+import hashlib
 import json
 
 from sqlalchemy import func, select
@@ -20,12 +21,20 @@ from .models import (
     GraphSnapshot,
     Membership,
     ModelVersion,
+    OptimizationJob,
     OptimizationRun,
     Organization,
     User,
     now,
 )
-from .schemas import DepartmentCreate, GraphCreate, MembershipSet, ModelCreate, OrganizationCreate
+from .schemas import (
+    DepartmentCreate,
+    GraphCreate,
+    MembershipSet,
+    ModelCreate,
+    OptimizationJobCreate,
+    OrganizationCreate,
+)
 
 
 class ServiceError(ValueError):
@@ -381,3 +390,87 @@ def record_run(
     audit(session, scope, "run.recorded", result.run_id)
     session.flush()
     return record
+
+
+def create_optimization_job(
+    session: Session,
+    user: User,
+    organization_id: str,
+    model_version_id: str,
+    idempotency_key: str,
+    body: OptimizationJobCreate,
+) -> OptimizationJob:
+    scope = tenant(session, user, organization_id, roles=("ADMIN", "BUILDER"), lock=True)
+    model = get_model(session, organization_id, model_version_id)
+    if model.state != "PUBLISHED":
+        raise ServiceError(409, "Modèle publié requis")
+
+    settings = body.settings.model_dump(mode="json")
+    settings_json = canonical_json(settings)
+    request_hash = checksum(
+        canonical_json({"model_version_id": model_version_id, "settings": settings})
+    )
+    idempotency_key_hash = hashlib.sha256(idempotency_key.encode("utf-8")).hexdigest()
+    existing = session.scalar(
+        select(OptimizationJob).where(
+            OptimizationJob.organization_id == organization_id,
+            OptimizationJob.created_by == user.id,
+            OptimizationJob.idempotency_key_hash == idempotency_key_hash,
+        )
+    )
+    if existing is not None:
+        if existing.request_hash != request_hash:
+            raise ServiceError(409, "Idempotency-Key déjà utilisé avec une autre requête")
+        return existing
+
+    job = OptimizationJob(
+        organization_id=organization_id,
+        model_version_id=model_version_id,
+        created_by=user.id,
+        settings=settings_json,
+        request_hash=request_hash,
+        idempotency_key_hash=idempotency_key_hash,
+    )
+    session.add(job)
+    session.flush()
+    audit(session, scope, "optimization_job.queued", job.id)
+    session.flush()
+    return job
+
+
+def get_optimization_job(
+    session: Session, organization_id: str, identity: str
+) -> OptimizationJob:
+    job = session.scalar(
+        select(OptimizationJob).where(
+            OptimizationJob.organization_id == organization_id, OptimizationJob.id == identity
+        )
+    )
+    if job is None:
+        raise ServiceError(404, "Job d'optimisation introuvable")
+    return job
+
+
+def request_optimization_job_cancellation(
+    session: Session, user: User, organization_id: str, identity: str
+) -> OptimizationJob:
+    scope = tenant(session, user, organization_id, roles=("ADMIN", "BUILDER"), lock=True)
+    job = session.scalar(
+        select(OptimizationJob)
+        .where(
+            OptimizationJob.organization_id == organization_id,
+            OptimizationJob.id == identity,
+        )
+        .with_for_update()
+    )
+    if job is None:
+        raise ServiceError(404, "Job d'optimisation introuvable")
+    if scope.role != "ADMIN" and job.created_by != user.id:
+        raise ServiceError(403, "Seul le créateur ou un administrateur peut annuler ce job")
+    if job.state in ("SUCCEEDED", "FAILED", "CANCELLED") or job.cancel_requested_at is not None:
+        return job
+    job.cancel_requested_at = now()
+    job.updated_at = now()
+    audit(session, scope, "optimization_job.cancel_requested", job.id)
+    session.flush()
+    return job

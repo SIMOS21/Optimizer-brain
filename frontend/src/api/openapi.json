@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Optimization Brain Governance API",
-    "version": "0.4a.0"
+    "version": "0.4c.0"
   },
   "paths": {
     "/api/v1/auth/login": {
@@ -896,6 +896,253 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ModelArtifactResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/organizations/{organization_id}/model-versions/{identity}/optimization-jobs": {
+      "post": {
+        "summary": "Optimization Job Create",
+        "operationId": "optimization_job_create_api_v1_organizations__organization_id__model_versions__identity__optimization_jobs_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "organization_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Organization Id"
+            }
+          },
+          {
+            "name": "identity",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Identity"
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 16,
+              "maxLength": 128,
+              "title": "Idempotency-Key"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OptimizationJobCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OptimizationJobResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/organizations/{organization_id}/optimization-jobs": {
+      "get": {
+        "summary": "Optimization Jobs",
+        "operationId": "optimization_jobs_api_v1_organizations__organization_id__optimization_jobs_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "organization_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Organization Id"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 50,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Page_OptimizationJobResponse_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/organizations/{organization_id}/optimization-jobs/{identity}": {
+      "get": {
+        "summary": "Optimization Job Get",
+        "operationId": "optimization_job_get_api_v1_organizations__organization_id__optimization_jobs__identity__get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "organization_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Organization Id"
+            }
+          },
+          {
+            "name": "identity",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Identity"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OptimizationJobResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/organizations/{organization_id}/optimization-jobs/{identity}/cancel": {
+      "post": {
+        "summary": "Optimization Job Cancel",
+        "operationId": "optimization_job_cancel_api_v1_organizations__organization_id__optimization_jobs__identity__cancel_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "organization_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Organization Id"
+            }
+          },
+          {
+            "name": "identity",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Identity"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OptimizationJobResponse"
                 }
               }
             }
@@ -2782,6 +3029,141 @@
         ],
         "title": "Objective"
       },
+      "OptimizationJobCreate": {
+        "properties": {
+          "settings": {
+            "$ref": "#/components/schemas/SolveSettings-Input"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "OptimizationJobCreate"
+      },
+      "OptimizationJobResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "organization_id": {
+            "type": "string",
+            "title": "Organization Id"
+          },
+          "model_version_id": {
+            "type": "string",
+            "title": "Model Version Id"
+          },
+          "created_by": {
+            "type": "string",
+            "title": "Created By"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "QUEUED",
+              "RUNNING",
+              "SUCCEEDED",
+              "FAILED",
+              "CANCELLED"
+            ],
+            "title": "State"
+          },
+          "settings": {
+            "$ref": "#/components/schemas/SolveSettings-Output"
+          },
+          "solver_status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Solver Status"
+          },
+          "run_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Run Id"
+          },
+          "error_code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error Code"
+          },
+          "cancel_requested": {
+            "type": "boolean",
+            "title": "Cancel Requested"
+          },
+          "attempt_number": {
+            "type": "integer",
+            "title": "Attempt Number"
+          },
+          "created_at": {
+            "type": "integer",
+            "title": "Created At"
+          },
+          "updated_at": {
+            "type": "integer",
+            "title": "Updated At"
+          },
+          "started_at": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Started At"
+          },
+          "finished_at": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Finished At"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "organization_id",
+          "model_version_id",
+          "created_by",
+          "state",
+          "settings",
+          "solver_status",
+          "run_id",
+          "error_code",
+          "cancel_requested",
+          "attempt_number",
+          "created_at",
+          "updated_at",
+          "started_at",
+          "finished_at"
+        ],
+        "title": "OptimizationJobResponse"
+      },
       "Organization": {
         "properties": {
           "source": {
@@ -3300,6 +3682,33 @@
           "offset"
         ],
         "title": "Page[MembershipResponse]"
+      },
+      "Page_OptimizationJobResponse_": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/OptimizationJobResponse"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "limit": {
+            "type": "integer",
+            "title": "Limit"
+          },
+          "offset": {
+            "type": "integer",
+            "title": "Offset"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "items",
+          "limit",
+          "offset"
+        ],
+        "title": "Page[OptimizationJobResponse]"
       },
       "Page_OrganizationResponse_": {
         "properties": {
@@ -3885,6 +4294,90 @@
         ],
         "title": "RunDocument"
       },
+      "SolveSettings-Input": {
+        "properties": {
+          "time_limit_seconds": {
+            "type": "number",
+            "maximum": 300.0,
+            "exclusiveMinimum": 0.0,
+            "title": "Time Limit Seconds",
+            "default": 20.0
+          },
+          "mip_rel_gap": {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Mip Rel Gap",
+            "default": 0.0
+          },
+          "presolve": {
+            "type": "boolean",
+            "title": "Presolve",
+            "default": true
+          },
+          "node_limit": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 2147483647.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Node Limit"
+          },
+          "verification": {
+            "$ref": "#/components/schemas/VerificationSettings-Input"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "SolveSettings"
+      },
+      "SolveSettings-Output": {
+        "properties": {
+          "time_limit_seconds": {
+            "type": "number",
+            "maximum": 300.0,
+            "exclusiveMinimum": 0.0,
+            "title": "Time Limit Seconds",
+            "default": 20.0
+          },
+          "mip_rel_gap": {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Mip Rel Gap",
+            "default": 0.0
+          },
+          "presolve": {
+            "type": "boolean",
+            "title": "Presolve",
+            "default": true
+          },
+          "node_limit": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 2147483647.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Node Limit"
+          },
+          "verification": {
+            "$ref": "#/components/schemas/VerificationSettings-Output"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "SolveSettings"
+      },
       "Term-Input": {
         "properties": {
           "variable": {
@@ -4278,6 +4771,125 @@
           "declaration_version"
         ],
         "title": "VariableImport"
+      },
+      "VerificationSettings-Input": {
+        "properties": {
+          "bound_tolerance": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 128,
+                "pattern": "^[+-]?(?:[0-9]+(?:\\.[0-9]*)?|\\.[0-9]+)(?:[eE][+-]?[0-9]+)?$"
+              },
+              {
+                "type": "number"
+              }
+            ],
+            "title": "Bound Tolerance",
+            "description": "Décimal fini ; 100 chiffres, exposant [-100,100]. Chaîne recommandée.",
+            "default": "1E-7"
+          },
+          "constraint_tolerance": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 128,
+                "pattern": "^[+-]?(?:[0-9]+(?:\\.[0-9]*)?|\\.[0-9]+)(?:[eE][+-]?[0-9]+)?$"
+              },
+              {
+                "type": "number"
+              }
+            ],
+            "title": "Constraint Tolerance",
+            "description": "Décimal fini ; 100 chiffres, exposant [-100,100]. Chaîne recommandée.",
+            "default": "1E-7"
+          },
+          "integrality_tolerance": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 128,
+                "pattern": "^[+-]?(?:[0-9]+(?:\\.[0-9]*)?|\\.[0-9]+)(?:[eE][+-]?[0-9]+)?$"
+              },
+              {
+                "type": "number"
+              }
+            ],
+            "title": "Integrality Tolerance",
+            "description": "Décimal fini ; 100 chiffres, exposant [-100,100]. Chaîne recommandée.",
+            "default": "1E-7"
+          },
+          "objective_absolute_tolerance": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 128,
+                "pattern": "^[+-]?(?:[0-9]+(?:\\.[0-9]*)?|\\.[0-9]+)(?:[eE][+-]?[0-9]+)?$"
+              },
+              {
+                "type": "number"
+              }
+            ],
+            "title": "Objective Absolute Tolerance",
+            "description": "Décimal fini ; 100 chiffres, exposant [-100,100]. Chaîne recommandée.",
+            "default": "0.000001"
+          },
+          "objective_relative_tolerance": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 128,
+                "pattern": "^[+-]?(?:[0-9]+(?:\\.[0-9]*)?|\\.[0-9]+)(?:[eE][+-]?[0-9]+)?$"
+              },
+              {
+                "type": "number"
+              }
+            ],
+            "title": "Objective Relative Tolerance",
+            "description": "Décimal fini ; 100 chiffres, exposant [-100,100]. Chaîne recommandée.",
+            "default": "1E-9"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "VerificationSettings"
+      },
+      "VerificationSettings-Output": {
+        "properties": {
+          "bound_tolerance": {
+            "type": "string",
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Bound Tolerance",
+            "default": "1E-7"
+          },
+          "constraint_tolerance": {
+            "type": "string",
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Constraint Tolerance",
+            "default": "1E-7"
+          },
+          "integrality_tolerance": {
+            "type": "string",
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Integrality Tolerance",
+            "default": "1E-7"
+          },
+          "objective_absolute_tolerance": {
+            "type": "string",
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Objective Absolute Tolerance",
+            "default": "0.000001"
+          },
+          "objective_relative_tolerance": {
+            "type": "string",
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Objective Relative Tolerance",
+            "default": "1E-9"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "VerificationSettings"
       }
     },
     "securitySchemes": {
