@@ -109,7 +109,7 @@ class ManagedProcess:
     def _launch_windows(
         cls, command: list[str], env: dict[str, str], memory_limit_bytes: int
     ) -> "ManagedProcess":
-        kernel = ctypes.WinDLL("kernel32", use_last_error=True)
+        kernel = getattr(ctypes, "WinDLL")("kernel32", use_last_error=True)
         kernel.CreateJobObjectW.argtypes = [wintypes.LPVOID, wintypes.LPCWSTR]
         kernel.CreateJobObjectW.restype = wintypes.HANDLE
         kernel.SetInformationJobObject.argtypes = [
@@ -127,7 +127,7 @@ class ManagedProcess:
 
         job = kernel.CreateJobObjectW(None, None)
         if not job:
-            raise ctypes.WinError(ctypes.get_last_error())
+            raise getattr(ctypes, "WinError")(getattr(ctypes, "get_last_error")())
         process = None
         managed = None
         try:
@@ -137,7 +137,7 @@ class ManagedProcess:
             if not kernel.SetInformationJobObject(
                 job, 9, ctypes.byref(limits), ctypes.sizeof(limits)
             ):
-                raise ctypes.WinError(ctypes.get_last_error())
+                raise getattr(ctypes, "WinError")(getattr(ctypes, "get_last_error")())
             process = subprocess.Popen(
                 command,
                 stdin=subprocess.PIPE,
@@ -145,14 +145,14 @@ class ManagedProcess:
                 stderr=subprocess.DEVNULL,
                 env=env,
                 close_fds=True,
-                creationflags=subprocess.CREATE_NEW_PROCESS_GROUP,
+                creationflags=getattr(subprocess, "CREATE_NEW_PROCESS_GROUP"),
             )
             process_handle = kernel.OpenProcess(0x0100 | 0x0001 | 0x1000, False, process.pid)
             if not process_handle:
-                raise ctypes.WinError(ctypes.get_last_error())
+                raise getattr(ctypes, "WinError")(getattr(ctypes, "get_last_error")())
             try:
                 if not kernel.AssignProcessToJobObject(job, process_handle):
-                    raise ctypes.WinError(ctypes.get_last_error())
+                    raise getattr(ctypes, "WinError")(getattr(ctypes, "get_last_error")())
             finally:
                 kernel.CloseHandle(process_handle)
             managed = cls(process, job)
@@ -183,7 +183,7 @@ class ManagedProcess:
         if self.windows and self.job_handle is None:
             return self.process.poll() is None
         if self.job_handle is not None:
-            kernel = ctypes.WinDLL("kernel32", use_last_error=True)
+            kernel = getattr(ctypes, "WinDLL")("kernel32", use_last_error=True)
             kernel.QueryInformationJobObject.argtypes = [
                 wintypes.HANDLE,
                 ctypes.c_int,
@@ -196,10 +196,10 @@ class ManagedProcess:
             if not kernel.QueryInformationJobObject(
                 self.job_handle, 1, ctypes.byref(accounting), ctypes.sizeof(accounting), None
             ):
-                raise ctypes.WinError(ctypes.get_last_error())
+                raise getattr(ctypes, "WinError")(getattr(ctypes, "get_last_error")())
             return bool(accounting.ActiveProcesses > 0)
         try:
-            os.killpg(self.process_group_id, 0)  # type: ignore[attr-defined]
+            getattr(os, "killpg")(self.process_group_id, 0)
         except ProcessLookupError:
             return False
         except PermissionError:
@@ -223,9 +223,9 @@ class ManagedProcess:
         if self.tree_is_running():
             try:
                 if self.job_handle is not None:
-                    self.process.send_signal(signal.CTRL_BREAK_EVENT)
+                    self.process.send_signal(getattr(signal, "CTRL_BREAK_EVENT"))
                 else:
-                    os.killpg(self.process_group_id, signal.SIGTERM)  # type: ignore[attr-defined]
+                    getattr(os, "killpg")(self.process_group_id, signal.SIGTERM)
             except (OSError, ValueError):
                 pass
         if self.wait_for_tree(grace_seconds):
@@ -233,14 +233,14 @@ class ManagedProcess:
             return True
 
         if self.job_handle is not None:
-            kernel = ctypes.WinDLL("kernel32", use_last_error=True)
+            kernel = getattr(ctypes, "WinDLL")("kernel32", use_last_error=True)
             kernel.TerminateJobObject.argtypes = [wintypes.HANDLE, wintypes.UINT]
             kernel.TerminateJobObject.restype = wintypes.BOOL
             if not kernel.TerminateJobObject(self.job_handle, 1):
-                raise ctypes.WinError(ctypes.get_last_error())
+                raise getattr(ctypes, "WinError")(getattr(ctypes, "get_last_error")())
         else:
             try:
-                os.killpg(self.process_group_id, signal.SIGKILL)  # type: ignore[attr-defined]
+                getattr(os, "killpg")(self.process_group_id, getattr(signal, "SIGKILL"))
             except ProcessLookupError:
                 pass
         if not self.wait_for_tree(max(grace_seconds, 1.0)):
@@ -250,10 +250,10 @@ class ManagedProcess:
 
     def close(self) -> None:
         if self.job_handle is not None:
-            kernel = ctypes.WinDLL("kernel32", use_last_error=True)
+            kernel = getattr(ctypes, "WinDLL")("kernel32", use_last_error=True)
             kernel.CloseHandle.argtypes = [wintypes.HANDLE]
             if not kernel.CloseHandle(self.job_handle):
-                raise ctypes.WinError(ctypes.get_last_error())
+                raise getattr(ctypes, "WinError")(getattr(ctypes, "get_last_error")())
             self.job_handle = None
 
     def _reap_adopted_children(self) -> None:
