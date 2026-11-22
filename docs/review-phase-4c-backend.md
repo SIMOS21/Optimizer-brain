@@ -175,10 +175,19 @@ captures sont dans `frontend/test-results/review-4c-screenshots`, ignoré par Gi
 La [première CI de revue](https://github.com/SIMOS21/Optimizer-brain/actions/runs/45051501208)
 au commit `dcc3f0b` a validé Linux/Windows (296 passed, 43 skipped chacun),
 PostgreSQL (332 passed, 7 skipped), Vitest (37) et 12/13 parcours navigateur.
-L'échec du treizième parcours est conservé dans ce compte rendu ; une nouvelle
-CI après correction transactionnelle doit encore être consultée. La CI initiale
-verte de `b82a65a` ne prouve pas l'exécution des nouveaux tests. Les parcours
-Playwright restent ceux du Studio 4B : ils ne sont pas présentés comme une UI 4C.
+L'échec du treizième parcours est conservé dans ce compte rendu.
+
+Après correction transactionnelle, la [CI du commit `e356c25`](https://github.com/SIMOS21/Optimizer-brain/actions/runs/45052380054)
+est **verte sur les trois jobs Linux, Windows et PostgreSQL**. Le job PostgreSQL
+confirme **336 passed, 7 skipped, 1 warning en 37,27 s**, **37 tests Vitest** et
+**13 parcours Playwright réussis en 14,6 s**. Les deux jobs sans configuration
+PostgreSQL ont leurs skips d'intégration attendus ; leurs résultats ne sont pas
+utilisés comme preuve d'exécution des tests PostgreSQL. Les limites CPU et mémoire
+sont également exercées sur Linux par cette CI.
+
+Les parcours Playwright restent ceux du Studio 4B : ils ne sont pas présentés
+comme une interface de lancement 4C. Le présent ajout documentaire ne change pas
+le code validé au commit `e356c25`.
 
 L'intégration de la PR #2 reste une étape humaine explicite. Aucune fusion dans
 main ni branche frontend créée avant cette intégration approuvée, conformément
