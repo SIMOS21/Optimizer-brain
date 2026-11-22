@@ -32,6 +32,19 @@ après la vérification indépendante déjà utilisée par `service.record_run`.
    ou de troncature. Le child utilise seulement le rôle runtime et les routes
    exigent un membre actif du tenant.
 
+## Revue de reprise — révocation pendant le calcul
+
+Le compte du créateur est relu et verrouillé à la finalisation, après le verrou
+d'organisation et avant celui du job. Une désactivation déjà validée en base
+interdit la publication ; une désactivation concurrente est sérialisée par le
+verrou de ligne utilisateur. La transaction initiale ne suffit pas : son objet
+`User` détaché peut encore porter `active=True` après une révocation.
+
+Le rôle et l'adhésion restent revérifiés sous le verrou d'organisation. Aucun
+verrou SQL n'est conservé pendant le calcul. Les tests reproduisent une révocation
+du compte ou de l'adhésion après résolution et avant publication, puis vérifient
+l'absence de run. Voir [la revue backend](../review-phase-4c-backend.md).
+
 ## Conséquences / limites
 
 La concurrence configurable s'applique par processus worker, pas globalement à

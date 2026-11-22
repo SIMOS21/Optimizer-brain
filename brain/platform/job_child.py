@@ -84,6 +84,12 @@ def execute_job(organization_id: str, job_id: str, attempt_id: str, parent_pid: 
 
         with factory.begin() as session:
             service.tenant(session, user, organization_id, roles=("ADMIN", "BUILDER"), lock=True)
+            # The solving transaction ended before computation. Re-read identity
+            # under a row lock so a committed account revocation also fences
+            # publication, and a concurrent disable waits for this transaction.
+            publisher = session.scalar(select(User).where(User.id == user.id).with_for_update())
+            if publisher is None or not publisher.active:
+                raise ValueError("Le propriétaire du job n'est plus actif")
             job = session.scalar(
                 select(OptimizationJob)
                 .where(
@@ -102,7 +108,7 @@ def execute_job(organization_id: str, job_id: str, attempt_id: str, parent_pid: 
                 or job.lease_expires_at <= current
             ):
                 return 10
-            run = service.record_run(session, user, organization_id, model_version_id, result)
+            run = service.record_run(session, publisher, organization_id, model_version_id, result)
             current = database_now(session)
             if job.lease_expires_at is None or job.lease_expires_at <= current:
                 raise TimeoutError("Le bail du job a expiré avant la persistance")

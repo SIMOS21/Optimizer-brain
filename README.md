@@ -26,6 +26,8 @@ Phase 4B : [Visual Organization Studio](docs/studio-phase-4b.md),
 [audit](docs/audit-phase-4b.md), [validation et captures](docs/validation-phase-4b.md).
 Phase 4C : [centre d'exécution backend](docs/execution-center-phase-4c.md),
 [ADR jobs et concurrence](docs/decision-records/0006-asynchronous-execution-center.md).
+La [revue backend et le plan frontend 4C](docs/review-phase-4c-backend.md)
+documentent la reprise, les preuves de validation et le préalable d'intégration.
 
 ## Studio organisationnel interactif (phase 4B)
 

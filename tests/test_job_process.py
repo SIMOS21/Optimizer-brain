@@ -40,20 +40,21 @@ def test_termination_waits_for_descendants(tmp_path):
             process.close()
 
 
-def test_windows_job_enforces_cpu_time_limit(tmp_path):
-    if os.name != "nt":
-        pytest.skip("La limite CPU du Job Object est spécifique à Windows")
-    marker = tmp_path / "cpu-child-started"
+@pytest.mark.parametrize("resource_kind", ["cpu", "memory"])
+def test_process_enforces_resource_limits(tmp_path, resource_kind):
+    marker = tmp_path / "resource-child-result"
     fixture = Path(__file__).with_name("process_cpu_fixture.py")
     env = {
         key: value
         for key, value in os.environ.items()
         if key in ("PATH", "SYSTEMROOT", "WINDIR", "TEMP", "TMP", "HOME", "LANG")
     }
+    env["BRAIN_JOB_MEMORY_LIMIT_BYTES"] = str(128 * 1024**2)
+    env["BRAIN_JOB_CPU_LIMIT_SECONDS"] = "2"
     process = ManagedProcess.launch(
-        [sys.executable, str(fixture), str(marker)],
+        [sys.executable, str(fixture), str(marker), resource_kind],
         env,
-        512 * 1024**2,
+        128 * 1024**2,
         2,
     )
     try:
@@ -64,6 +65,9 @@ def test_windows_job_enforces_cpu_time_limit(tmp_path):
         assert process.wait_for_tree(15) is True
         assert process.process.returncode is not None
         assert process.tree_is_running() is False
+        if resource_kind == "memory":
+            assert process.process.returncode == 0
+            assert marker.read_text(encoding="ascii") == "memory-limit-enforced"
     finally:
         if process.tree_is_running():
             assert process.terminate(0.2) is True

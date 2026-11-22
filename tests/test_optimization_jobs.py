@@ -1,15 +1,19 @@
 """Phase 4C job API and PostgreSQL worker integration."""
 
 from concurrent.futures import ThreadPoolExecutor
+from dataclasses import replace
+import io
 import json
 import time
+from types import SimpleNamespace
 
 import pytest
 from sqlalchemy import select, update
 from sqlalchemy.exc import DBAPIError
 
 from brain.platform.database import set_tenant
-from brain.platform.models import OptimizationJob, now
+from brain.platform.models import Membership, OptimizationJob, OptimizationRun, User, now
+from brain.platform import auth, job_child
 from brain.platform.worker import JobClaim, OptimizationWorker, WorkerSettings
 from tests.conftest_platform import platform_fixture, postgres_urls_fixture  # noqa: F401
 
@@ -309,3 +313,138 @@ def test_postgres_worker_expires_and_fences_stale_attempt(platform):
     stale = p.request("GET", p.base + f"/optimization-jobs/{job_id}", role="viewer")
     assert stale.json()["state"] == "FAILED"
     assert json.loads(stale_claim.settings)["time_limit_seconds"] > 0
+
+
+def _prepare_running_child(p, monkeypatch):
+    model_id = p.model()
+    job_id = _submit_job(p, model_id, "revocation-idempotency-key").json()["id"]
+    attempt_id = "00000000-0000-0000-0000-000000000021"
+    with p.app.state.session_factory.begin() as session:
+        set_tenant(session, p.organization_id)
+        job = session.get(OptimizationJob, job_id)
+        job.state = "RUNNING"
+        job.attempt_number = 1
+        job.attempt_id = attempt_id
+        job.worker_id = "00000000-0000-0000-0000-000000000022"
+        job.lease_expires_at = now() + 300
+        job.started_at = now()
+    monkeypatch.setattr(job_child, "_install_parent_death_signal", lambda parent: True)
+    monkeypatch.setattr(job_child.sys, "stdin", SimpleNamespace(buffer=io.BytesIO(b"START\n")))
+    monkeypatch.setattr(job_child.Settings, "from_env", lambda: p.app.state.settings)
+    return job_id, attempt_id
+
+
+def _assert_no_published_run(p, job_id):
+    with p.app.state.session_factory() as session:
+        set_tenant(session, p.organization_id)
+        assert session.scalar(select(OptimizationRun.id)) is None
+        job = session.get(OptimizationJob, job_id)
+        assert job.state == "RUNNING"
+        assert job.run_id is None
+
+
+@pytest.mark.parametrize("revocation", ["account", "membership"])
+def test_child_rechecks_authorization_before_publishing(platform, monkeypatch, revocation):
+    """Revocation committed during solving must prevent a historical run."""
+    p = platform
+    job_id, attempt_id = _prepare_running_child(p, monkeypatch)
+
+    original_solve = job_child.solve_organization
+
+    def solve_then_revoke(model, settings):
+        result = original_solve(model, settings)
+        with p.app.state.session_factory.begin() as session:
+            if revocation == "account":
+                auth.disable_user(session, session.get(User, p.users["builder"]))
+            else:
+                session.get(Membership, (p.organization_id, p.users["builder"])).active = False
+        return result
+
+    monkeypatch.setattr(job_child, "solve_organization", solve_then_revoke)
+    with pytest.raises(ValueError):
+        job_child.execute_job(p.organization_id, job_id, attempt_id, 0)
+    _assert_no_published_run(p, job_id)
+
+
+def test_child_rolls_back_run_when_lease_expires_during_verification(platform, monkeypatch):
+    p = platform
+    job_id, attempt_id = _prepare_running_child(p, monkeypatch)
+    original_clock = job_child.database_now
+    calls = 0
+
+    def clock(session):
+        nonlocal calls
+        calls += 1
+        return original_clock(session) + (1000 if calls >= 3 else 0)
+
+    monkeypatch.setattr(job_child, "database_now", clock)
+    with pytest.raises(TimeoutError):
+        job_child.execute_job(p.organization_id, job_id, attempt_id, 0)
+    assert calls == 3
+    _assert_no_published_run(p, job_id)
+
+
+def test_child_rejects_corrupted_solution_before_persisting(platform, monkeypatch):
+    p = platform
+    job_id, attempt_id = _prepare_running_child(p, monkeypatch)
+    original_solve = job_child.solve_organization
+
+    def corrupt(model, settings):
+        result = original_solve(model, settings)
+        decisions = tuple((key, 0.0) for key, _ in result.solve.decision_values)
+        return replace(result, solve=replace(result.solve, decision_values=decisions))
+
+    monkeypatch.setattr(job_child, "solve_organization", corrupt)
+    with pytest.raises(ValueError, match="revérification"):
+        job_child.execute_job(p.organization_id, job_id, attempt_id, 0)
+    _assert_no_published_run(p, job_id)
+
+
+def test_job_submission_rejects_unpublished_models_roles_and_invalid_settings(platform):
+    p = platform
+    draft_id = p.model(publish=False)
+    assert _submit_job(p, draft_id, "unpublished-model-test-key").status_code == 409
+    model_id = p.model()
+    route = p.base + f"/model-versions/{model_id}/optimization-jobs"
+    for role in ("viewer", "approver"):
+        assert (
+            p.client.post(
+                route,
+                headers={**p.headers[role], "Idempotency-Key": "forbidden-role-test-key"},
+                json={},
+            ).status_code
+            == 403
+        )
+    assert p.client.post(route, headers=p.headers["builder"], json={}).status_code == 422
+    for settings in ({"time_limit_seconds": 301}, {"unexpected": True}):
+        assert (
+            _submit_job(
+                p, model_id, "invalid-settings-test-key", {"settings": settings}
+            ).status_code
+            == 422
+        )
+    assert (
+        p.client.post(
+            route,
+            headers={**p.headers["outsider"], "Idempotency-Key": "outsider-tenant-test-key"},
+            json={},
+        ).status_code
+        == 404
+    )
+    assert p.request("GET", p.base + "/optimization-jobs").json()["items"] == []
+
+
+def test_postgres_concurrent_submissions_share_one_idempotent_job(platform):
+    p = platform
+    if p.app.state.engine.dialect.name != "postgresql":
+        pytest.skip("La sérialisation des soumissions concurrentes exige PostgreSQL")
+    model_id = p.model()
+    with ThreadPoolExecutor(max_workers=2) as executor:
+        responses = list(
+            executor.map(
+                lambda _: _submit_job(p, model_id, "concurrent-idempotent-test-key"), range(2)
+            )
+        )
+    assert [response.status_code for response in responses] == [202, 202]
+    assert responses[0].json()["id"] == responses[1].json()["id"]
+    assert len(p.request("GET", p.base + "/optimization-jobs").json()["items"]) == 1

@@ -69,3 +69,10 @@ vérifiés, les courses annulation/réussite, les expirations de bail et les tim
 Les tests de processus couvrent l'arrêt des descendants lors d'une annulation et
 du crash du superviseur sous Windows/Linux. Ils ne réinitialisent que la base de
 test explicitement nommée `optimizer_brain_test`.
+
+La [revue de reprise](review-phase-4c-backend.md) consigne le correctif de
+révocation du compte pendant le calcul, les validations réellement exécutées et
+le découpage du futur Optimization Center React. Le compte, l'adhésion et le rôle
+du créateur sont contrôlés à nouveau lors de la transaction finale. Les tests de
+ressources exécutent aussi le bootstrap de production sous un plafond mémoire
+de 128 MiB et un budget CPU de 2 secondes, sans base ni solveur.
