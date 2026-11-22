@@ -31,6 +31,9 @@ from .models import (
 )
 from .schemas import (
     ArtifactResponse,
+    GraphArtifactResponse,
+    ModelArtifactResponse,
+    RunArtifactResponse,
     AuditResponse,
     DepartmentCreate,
     DepartmentResponse,
@@ -305,7 +308,7 @@ def departments(
 
 
 @router.post(
-    "/organizations/{organization_id}/graphs", status_code=201, response_model=ArtifactResponse
+    "/organizations/{organization_id}/graphs", status_code=201, response_model=GraphArtifactResponse
 )
 def graph_create(organization_id: str, body: GraphCreate, session: DB, actor: Actor) -> object:
     return artifact_view(service.create_graph(session, actor, organization_id, body), detail=True)
@@ -332,14 +335,17 @@ def graphs(
     }
 
 
-@router.get("/organizations/{organization_id}/graphs/{identity}", response_model=ArtifactResponse)
+@router.get(
+    "/organizations/{organization_id}/graphs/{identity}", response_model=GraphArtifactResponse
+)
 def graph_get(organization_id: str, identity: str, session: DB, actor: Actor) -> object:
     service.tenant(session, actor, organization_id)
     return artifact_view(service.get_graph(session, organization_id, identity), detail=True)
 
 
 @router.post(
-    "/organizations/{organization_id}/graphs/{identity}/publish", response_model=ArtifactResponse
+    "/organizations/{organization_id}/graphs/{identity}/publish",
+    response_model=GraphArtifactResponse,
 )
 def graph_publish(organization_id: str, identity: str, session: DB, actor: Actor) -> object:
     return artifact_view(
@@ -350,7 +356,7 @@ def graph_publish(organization_id: str, identity: str, session: DB, actor: Actor
 @router.post(
     "/organizations/{organization_id}/model-versions",
     status_code=201,
-    response_model=ArtifactResponse,
+    response_model=ModelArtifactResponse,
 )
 def model_create(organization_id: str, body: ModelCreate, session: DB, actor: Actor) -> object:
     return artifact_view(service.create_model(session, actor, organization_id, body), detail=True)
@@ -380,7 +386,8 @@ def models(
 
 
 @router.get(
-    "/organizations/{organization_id}/model-versions/{identity}", response_model=ArtifactResponse
+    "/organizations/{organization_id}/model-versions/{identity}",
+    response_model=ModelArtifactResponse,
 )
 def model_get(organization_id: str, identity: str, session: DB, actor: Actor) -> object:
     service.tenant(session, actor, organization_id)
@@ -389,7 +396,7 @@ def model_get(organization_id: str, identity: str, session: DB, actor: Actor) ->
 
 @router.post(
     "/organizations/{organization_id}/model-versions/{identity}/publish",
-    response_model=ArtifactResponse,
+    response_model=ModelArtifactResponse,
 )
 def model_publish(organization_id: str, identity: str, session: DB, actor: Actor) -> object:
     return artifact_view(
@@ -421,7 +428,8 @@ def runs(
 
 
 @router.get(
-    "/organizations/{organization_id}/optimization-runs/{identity}", response_model=ArtifactResponse
+    "/organizations/{organization_id}/optimization-runs/{identity}",
+    response_model=RunArtifactResponse,
 )
 def run_get(organization_id: str, identity: str, session: DB, actor: Actor) -> object:
     service.tenant(session, actor, organization_id)

@@ -13,8 +13,8 @@ jobs:
           python-version: '3.11'
       - run: python -m pip install -r requirements-dev.txt
       - run: python -m pytest -q
-      - run: python -m ruff check brain tests migrations
-      - run: python -m ruff format --check brain/kernel brain/solvers brain/organization brain/platform migrations tests/test_kernel.py tests/test_generic_solver.py tests/test_organization.py tests/test_platform.py tests/conftest_platform.py
+      - run: python -m ruff check brain tests migrations scripts
+      - run: python -m ruff format --check brain/kernel brain/solvers brain/organization brain/platform migrations scripts tests/test_kernel.py tests/test_generic_solver.py tests/test_organization.py tests/test_platform.py tests/conftest_platform.py tests/test_studio_contract.py
       - run: python -m mypy
       - run: python -m brain.demo
       - run: python -m brain.kernel verify examples/demo_cross_department.json --plan examples/golden_plan.json
@@ -29,7 +29,7 @@ jobs:
         env:
           POSTGRES_USER: brain_migrator
           POSTGRES_PASSWORD: ci-only-migrator-password
-          POSTGRES_DB: postgres
+          POSTGRES_DB: optimizer_brain_studio
         ports: ['5432:5432']
         options: >-
           --health-cmd "pg_isready -U brain_migrator -d postgres"
@@ -37,6 +37,10 @@ jobs:
     env:
       BRAIN_TEST_MIGRATION_DATABASE_URL: postgresql+psycopg://brain_migrator:ci-only-migrator-password@127.0.0.1:5432/optimizer_brain_test
       BRAIN_TEST_DATABASE_URL: postgresql+psycopg://brain_app:ci-only-runtime-password@127.0.0.1:5432/optimizer_brain_test
+      BRAIN_DATABASE_URL: postgresql+psycopg://brain_app:ci-only-runtime-password@127.0.0.1:5432/optimizer_brain_studio
+      BRAIN_MIGRATION_DATABASE_URL: postgresql+psycopg://brain_migrator:ci-only-migrator-password@127.0.0.1:5432/optimizer_brain_studio
+      BRAIN_DEMO_PASSWORD: ci-only-synthetic-studio-password
+      STUDIO_BASE_URL: http://127.0.0.1:5180
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -44,3 +48,36 @@ jobs:
           python-version: '3.11'
       - run: python -m pip install -r requirements-dev.txt
       - run: python -m pytest -q
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: python -m alembic upgrade head
+      - run: python -m scripts.seed_studio --with-history --fixtures
+      - run: python -m scripts.export_studio_contract
+      - run: git diff --exit-code frontend/src/api/openapi.json
+      - run: npm ci
+        working-directory: frontend
+      - run: npm run generate:types
+        working-directory: frontend
+      - run: git diff --exit-code frontend/src/api/generated.d.ts
+      - run: npm run build && npm run lint && npm test
+        working-directory: frontend
+      - run: npx playwright install --with-deps chromium
+        working-directory: frontend
+      - name: Real API and compiled Studio journey
+        run: |
+          env -u BRAIN_MIGRATION_DATABASE_URL -u BRAIN_TEST_MIGRATION_DATABASE_URL -u BRAIN_TEST_DATABASE_URL -u BRAIN_DEMO_PASSWORD python -m uvicorn brain.platform.api:create_app --factory --host 127.0.0.1 --port 8001 --no-access-log &
+          (cd frontend && npm run preview) &
+          for attempt in {1..60}; do
+            if curl -fsS http://127.0.0.1:8001/health && curl -fsS http://127.0.0.1:5180/ >/dev/null; then break; fi
+            sleep 1
+          done
+          cd frontend
+          npm run test:e2e
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: studio-screenshots
+          path: docs/screenshots/*.png

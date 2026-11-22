@@ -1,0 +1,4290 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Optimization Brain Governance API",
+    "version": "0.4a.0"
+  },
+  "paths": {
+    "/api/v1/auth/login": {
+      "post": {
+        "summary": "Login",
+        "operationId": "login_api_v1_auth_login_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TokenResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/logout": {
+      "post": {
+        "summary": "Logout",
+        "operationId": "logout_api_v1_auth_logout_post",
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/auth/me": {
+      "get": {
+        "summary": "Me",
+        "operationId": "me_api_v1_auth_me_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/organizations": {
+      "post": {
+        "summary": "Organization Create",
+        "operationId": "organization_create_api_v1_organizations_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OrganizationCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrganizationResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "Organizations",
+        "operationId": "organizations_api_v1_organizations_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 50,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Page_OrganizationResponse_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/organizations/{organization_id}": {
+      "get": {
+        "summary": "Organization Get",
+        "operationId": "organization_get_api_v1_organizations__organization_id__get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "organization_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Organization Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrganizationResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/organizations/{organization_id}/memberships": {
+      "put": {
+        "summary": "Membership Set",
+        "operationId": "membership_set_api_v1_organizations__organization_id__memberships_put",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "organization_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Organization Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MembershipSet"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MembershipResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "Memberships",
+        "operationId": "memberships_api_v1_organizations__organization_id__memberships_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "organization_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Organization Id"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 50,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Page_MembershipResponse_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/organizations/{organization_id}/departments": {
+      "post": {
+        "summary": "Department Create",
+        "operationId": "department_create_api_v1_organizations__organization_id__departments_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "organization_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Organization Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DepartmentCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DepartmentResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "Departments",
+        "operationId": "departments_api_v1_organizations__organization_id__departments_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "organization_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Organization Id"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 50,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Page_DepartmentResponse_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/organizations/{organization_id}/graphs": {
+      "post": {
+        "summary": "Graph Create",
+        "operationId": "graph_create_api_v1_organizations__organization_id__graphs_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "organization_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Organization Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GraphCreate-Input"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GraphArtifactResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "Graphs",
+        "operationId": "graphs_api_v1_organizations__organization_id__graphs_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "organization_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Organization Id"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 50,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Page_ArtifactResponse_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/organizations/{organization_id}/graphs/{identity}": {
+      "get": {
+        "summary": "Graph Get",
+        "operationId": "graph_get_api_v1_organizations__organization_id__graphs__identity__get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "organization_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Organization Id"
+            }
+          },
+          {
+            "name": "identity",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Identity"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GraphArtifactResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/organizations/{organization_id}/graphs/{identity}/publish": {
+      "post": {
+        "summary": "Graph Publish",
+        "operationId": "graph_publish_api_v1_organizations__organization_id__graphs__identity__publish_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "organization_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Organization Id"
+            }
+          },
+          {
+            "name": "identity",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Identity"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GraphArtifactResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/organizations/{organization_id}/model-versions": {
+      "post": {
+        "summary": "Model Create",
+        "operationId": "model_create_api_v1_organizations__organization_id__model_versions_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "organization_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Organization Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ModelCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ModelArtifactResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "Models",
+        "operationId": "models_api_v1_organizations__organization_id__model_versions_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "organization_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Organization Id"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 50,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Page_ArtifactResponse_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/organizations/{organization_id}/model-versions/{identity}": {
+      "get": {
+        "summary": "Model Get",
+        "operationId": "model_get_api_v1_organizations__organization_id__model_versions__identity__get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "organization_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Organization Id"
+            }
+          },
+          {
+            "name": "identity",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Identity"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ModelArtifactResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/organizations/{organization_id}/model-versions/{identity}/publish": {
+      "post": {
+        "summary": "Model Publish",
+        "operationId": "model_publish_api_v1_organizations__organization_id__model_versions__identity__publish_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "organization_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Organization Id"
+            }
+          },
+          {
+            "name": "identity",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Identity"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ModelArtifactResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/organizations/{organization_id}/optimization-runs": {
+      "get": {
+        "summary": "Runs",
+        "operationId": "runs_api_v1_organizations__organization_id__optimization_runs_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "organization_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Organization Id"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 50,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Page_ArtifactResponse_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/organizations/{organization_id}/optimization-runs/{identity}": {
+      "get": {
+        "summary": "Run Get",
+        "operationId": "run_get_api_v1_organizations__organization_id__optimization_runs__identity__get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "organization_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Organization Id"
+            }
+          },
+          {
+            "name": "identity",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Identity"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RunArtifactResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/organizations/{organization_id}/audit-events": {
+      "get": {
+        "summary": "Audit Events",
+        "operationId": "audit_events_api_v1_organizations__organization_id__audit_events_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "organization_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Organization Id"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 50,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Page_AuditResponse_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/health": {
+      "get": {
+        "summary": "Health",
+        "operationId": "health_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "Response Health Health Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ArtifactResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "organization_id": {
+            "type": "string",
+            "title": "Organization Id"
+          },
+          "created_at": {
+            "type": "integer",
+            "title": "Created At"
+          },
+          "created_by": {
+            "type": "string",
+            "title": "Created By"
+          },
+          "content_hash": {
+            "type": "string",
+            "title": "Content Hash"
+          },
+          "key": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Key"
+          },
+          "version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Version"
+          },
+          "state": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "DRAFT",
+                  "PUBLISHED"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "State"
+          },
+          "published_by": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Published By"
+          },
+          "published_at": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Published At"
+          },
+          "graph_snapshot_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Graph Snapshot Id"
+          },
+          "model_hash": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model Hash"
+          },
+          "data_snapshot_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Data Snapshot Id"
+          },
+          "model_version_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model Version Id"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Status"
+          },
+          "document": {
+            "$ref": "#/components/schemas/JsonValue"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "organization_id",
+          "created_at",
+          "created_by",
+          "content_hash"
+        ],
+        "title": "ArtifactResponse"
+      },
+      "AuditResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "actor_id": {
+            "type": "string",
+            "title": "Actor Id"
+          },
+          "action": {
+            "type": "string",
+            "title": "Action"
+          },
+          "target_id": {
+            "type": "string",
+            "title": "Target Id"
+          },
+          "created_at": {
+            "type": "integer",
+            "title": "Created At"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "actor_id",
+          "action",
+          "target_id",
+          "created_at"
+        ],
+        "title": "AuditResponse"
+      },
+      "CompositionDocument": {
+        "properties": {
+          "organization_model": {
+            "$ref": "#/components/schemas/OrganizationModel-Output"
+          },
+          "dsl": {
+            "$ref": "#/components/schemas/ModelDSL"
+          },
+          "ir": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/JsonValue"
+            },
+            "type": "object",
+            "title": "Ir"
+          },
+          "model_hash": {
+            "type": "string",
+            "title": "Model Hash"
+          },
+          "model_manifest_hash": {
+            "type": "string",
+            "title": "Model Manifest Hash"
+          },
+          "composition_manifest_hash": {
+            "type": "string",
+            "title": "Composition Manifest Hash"
+          },
+          "constraint_traces": {
+            "items": {
+              "$ref": "#/components/schemas/ConstraintTraceDocument"
+            },
+            "type": "array",
+            "title": "Constraint Traces"
+          },
+          "resource_traces": {
+            "items": {
+              "$ref": "#/components/schemas/ResourceTraceDocument"
+            },
+            "type": "array",
+            "title": "Resource Traces"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "organization_model",
+          "dsl",
+          "ir",
+          "model_hash",
+          "model_manifest_hash",
+          "composition_manifest_hash",
+          "constraint_traces",
+          "resource_traces"
+        ],
+        "title": "CompositionDocument"
+      },
+      "Constraint-Input": {
+        "properties": {
+          "source": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 1,
+            "title": "Source"
+          },
+          "approved": {
+            "type": "boolean",
+            "title": "Approved"
+          },
+          "version": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 1,
+            "title": "Version"
+          },
+          "unit": {
+            "type": "string",
+            "maxLength": 128,
+            "title": "Unit"
+          },
+          "id": {
+            "type": "string",
+            "maxLength": 100,
+            "pattern": "^[A-Za-z][A-Za-z0-9_]*$",
+            "title": "Id"
+          },
+          "owner_department": {
+            "type": "string",
+            "maxLength": 100,
+            "pattern": "^[A-Za-z][A-Za-z0-9_]*$",
+            "title": "Owner Department"
+          },
+          "kind": {
+            "type": "string",
+            "const": "HARD",
+            "title": "Kind"
+          },
+          "terms": {
+            "items": {
+              "$ref": "#/components/schemas/Term-Input"
+            },
+            "type": "array",
+            "maxItems": 10000,
+            "title": "Terms"
+          },
+          "operator": {
+            "type": "string",
+            "enum": [
+              "<=",
+              ">=",
+              "=="
+            ],
+            "title": "Operator"
+          },
+          "rhs": {
+            "anyOf": [
+              {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "maxLength": 128,
+                    "pattern": "^[+-]?(?:[0-9]+(?:\\.[0-9]*)?|\\.[0-9]+)(?:[eE][+-]?[0-9]+)?$"
+                  },
+                  {
+                    "type": "number"
+                  }
+                ],
+                "description": "Décimal fini ; 100 chiffres, exposant [-100,100]. Chaîne recommandée."
+              },
+              {
+                "$ref": "#/components/schemas/ParameterRef"
+              }
+            ],
+            "title": "Rhs"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "source",
+          "approved",
+          "version",
+          "unit",
+          "id",
+          "owner_department",
+          "kind",
+          "terms",
+          "operator",
+          "rhs"
+        ],
+        "title": "Constraint"
+      },
+      "Constraint-Output": {
+        "properties": {
+          "source": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 1,
+            "title": "Source"
+          },
+          "approved": {
+            "type": "boolean",
+            "title": "Approved"
+          },
+          "version": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 1,
+            "title": "Version"
+          },
+          "unit": {
+            "type": "string",
+            "maxLength": 128,
+            "title": "Unit"
+          },
+          "id": {
+            "type": "string",
+            "maxLength": 100,
+            "pattern": "^[A-Za-z][A-Za-z0-9_]*$",
+            "title": "Id"
+          },
+          "owner_department": {
+            "type": "string",
+            "maxLength": 100,
+            "pattern": "^[A-Za-z][A-Za-z0-9_]*$",
+            "title": "Owner Department"
+          },
+          "kind": {
+            "type": "string",
+            "const": "HARD",
+            "title": "Kind"
+          },
+          "terms": {
+            "items": {
+              "$ref": "#/components/schemas/Term-Output"
+            },
+            "type": "array",
+            "maxItems": 10000,
+            "title": "Terms"
+          },
+          "operator": {
+            "type": "string",
+            "enum": [
+              "<=",
+              ">=",
+              "=="
+            ],
+            "title": "Operator"
+          },
+          "rhs": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$"
+              },
+              {
+                "$ref": "#/components/schemas/ParameterRef"
+              }
+            ],
+            "title": "Rhs"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "source",
+          "approved",
+          "version",
+          "unit",
+          "id",
+          "owner_department",
+          "kind",
+          "terms",
+          "operator",
+          "rhs"
+        ],
+        "title": "Constraint"
+      },
+      "ConstraintTraceDocument": {
+        "properties": {
+          "constraint_id": {
+            "type": "string",
+            "title": "Constraint Id"
+          },
+          "owner_department": {
+            "type": "string",
+            "title": "Owner Department"
+          },
+          "fragment_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Fragment Ids"
+          },
+          "contribution_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Contribution Ids"
+          },
+          "parameter_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Parameter Ids"
+          },
+          "resource_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Resource Id"
+          },
+          "source_paths": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Source Paths"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "constraint_id",
+          "owner_department",
+          "fragment_ids",
+          "contribution_ids",
+          "parameter_ids",
+          "resource_id",
+          "source_paths"
+        ],
+        "title": "ConstraintTraceDocument"
+      },
+      "Department": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "maxLength": 100,
+            "pattern": "^[A-Za-z][A-Za-z0-9_]*$",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 1,
+            "title": "Name"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "name"
+        ],
+        "title": "Department"
+      },
+      "DepartmentCreate": {
+        "properties": {
+          "key": {
+            "type": "string",
+            "maxLength": 100,
+            "pattern": "^[A-Za-z][A-Za-z0-9_]*$",
+            "title": "Key"
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 1,
+            "title": "Name"
+          },
+          "owner_user_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Owner User Id"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "key",
+          "name"
+        ],
+        "title": "DepartmentCreate"
+      },
+      "DepartmentFragment-Input": {
+        "properties": {
+          "source": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 1,
+            "title": "Source"
+          },
+          "approved": {
+            "type": "boolean",
+            "title": "Approved"
+          },
+          "version": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 1,
+            "title": "Version"
+          },
+          "id": {
+            "type": "string",
+            "maxLength": 100,
+            "pattern": "^[A-Za-z][A-Za-z0-9_]*$",
+            "title": "Id"
+          },
+          "organization_id": {
+            "type": "string",
+            "maxLength": 100,
+            "pattern": "^[A-Za-z][A-Za-z0-9_]*$",
+            "title": "Organization Id"
+          },
+          "organization_version": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 1,
+            "title": "Organization Version"
+          },
+          "department_id": {
+            "type": "string",
+            "maxLength": 100,
+            "pattern": "^[A-Za-z][A-Za-z0-9_]*$",
+            "title": "Department Id"
+          },
+          "department_version": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 1,
+            "title": "Department Version"
+          },
+          "parameters": {
+            "patternProperties": {
+              "^[A-Za-z][A-Za-z0-9_]*$": {
+                "$ref": "#/components/schemas/Parameter-Input"
+              }
+            },
+            "propertyNames": {
+              "maxLength": 100
+            },
+            "type": "object",
+            "maxProperties": 10000,
+            "title": "Parameters"
+          },
+          "parameter_refs": {
+            "items": {
+              "$ref": "#/components/schemas/ParameterImport"
+            },
+            "type": "array",
+            "maxItems": 10000,
+            "title": "Parameter Refs"
+          },
+          "variables": {
+            "items": {
+              "$ref": "#/components/schemas/Variable-Input"
+            },
+            "type": "array",
+            "maxItems": 10000,
+            "title": "Variables"
+          },
+          "variable_refs": {
+            "items": {
+              "$ref": "#/components/schemas/VariableImport"
+            },
+            "type": "array",
+            "maxItems": 10000,
+            "title": "Variable Refs"
+          },
+          "constraints": {
+            "items": {
+              "$ref": "#/components/schemas/Constraint-Input"
+            },
+            "type": "array",
+            "maxItems": 10000,
+            "title": "Constraints"
+          },
+          "resource_uses": {
+            "items": {
+              "$ref": "#/components/schemas/ResourceUse-Input"
+            },
+            "type": "array",
+            "maxItems": 10000,
+            "title": "Resource Uses"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "source",
+          "approved",
+          "version",
+          "id",
+          "organization_id",
+          "organization_version",
+          "department_id",
+          "department_version"
+        ],
+        "title": "DepartmentFragment"
+      },
+      "DepartmentFragment-Output": {
+        "properties": {
+          "source": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 1,
+            "title": "Source"
+          },
+          "approved": {
+            "type": "boolean",
+            "title": "Approved"
+          },
+          "version": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 1,
+            "title": "Version"
+          },
+          "id": {
+            "type": "string",
+            "maxLength": 100,
+            "pattern": "^[A-Za-z][A-Za-z0-9_]*$",
+            "title": "Id"
+          },
+          "organization_id": {
+            "type": "string",
+            "maxLength": 100,
+            "pattern": "^[A-Za-z][A-Za-z0-9_]*$",
+            "title": "Organization Id"
+          },
+          "organization_version": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 1,
+            "title": "Organization Version"
+          },
+          "department_id": {
+            "type": "string",
+            "maxLength": 100,
+            "pattern": "^[A-Za-z][A-Za-z0-9_]*$",
+            "title": "Department Id"
+          },
+          "department_version": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 1,
+            "title": "Department Version"
+          },
+          "parameters": {
+            "patternProperties": {
+              "^[A-Za-z][A-Za-z0-9_]*$": {
+                "$ref": "#/components/schemas/Parameter-Output"
+              }
+            },
+            "propertyNames": {
+              "maxLength": 100
+            },
+            "type": "object",
+            "maxProperties": 10000,
+            "title": "Parameters"
+          },
+          "parameter_refs": {
+            "items": {
+              "$ref": "#/components/schemas/ParameterImport"
+            },
+            "type": "array",
+            "maxItems": 10000,
+            "title": "Parameter Refs"
+          },
+          "variables": {
+            "items": {
+              "$ref": "#/components/schemas/Variable-Output"
+            },
+            "type": "array",
+            "maxItems": 10000,
+            "title": "Variables"
+          },
+          "variable_refs": {
+            "items": {
+              "$ref": "#/components/schemas/VariableImport"
+            },
+            "type": "array",
+            "maxItems": 10000,
+            "title": "Variable Refs"
+          },
+          "constraints": {
+            "items": {
+              "$ref": "#/components/schemas/Constraint-Output"
+            },
+            "type": "array",
+            "maxItems": 10000,
+            "title": "Constraints"
+          },
+          "resource_uses": {
+            "items": {
+              "$ref": "#/components/schemas/ResourceUse-Output"
+            },
+            "type": "array",
+            "maxItems": 10000,
+            "title": "Resource Uses"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "source",
+          "approved",
+          "version",
+          "id",
+          "organization_id",
+          "organization_version",
+          "department_id",
+          "department_version"
+        ],
+        "title": "DepartmentFragment"
+      },
+      "DepartmentNode": {
+        "properties": {
+          "source": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 1,
+            "title": "Source"
+          },
+          "approved": {
+            "type": "boolean",
+            "title": "Approved"
+          },
+          "version": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 1,
+            "title": "Version"
+          },
+          "id": {
+            "type": "string",
+            "maxLength": 100,
+            "pattern": "^[A-Za-z][A-Za-z0-9_]*$",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 1,
+            "title": "Name"
+          },
+          "owner_id": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 1,
+            "title": "Owner Id"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "source",
+          "approved",
+          "version",
+          "id",
+          "name",
+          "owner_id"
+        ],
+        "title": "DepartmentNode"
+      },
+      "DepartmentResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "key": {
+            "type": "string",
+            "title": "Key"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "owner_user_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Owner User Id"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "key",
+          "name",
+          "owner_user_id"
+        ],
+        "title": "DepartmentResponse"
+      },
+      "DependencyEdge": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "maxLength": 100,
+            "pattern": "^[A-Za-z][A-Za-z0-9_]*$",
+            "title": "Id"
+          },
+          "source_id": {
+            "type": "string",
+            "maxLength": 100,
+            "pattern": "^[A-Za-z][A-Za-z0-9_]*$",
+            "title": "Source Id"
+          },
+          "target_id": {
+            "type": "string",
+            "maxLength": 100,
+            "pattern": "^[A-Za-z][A-Za-z0-9_]*$",
+            "title": "Target Id"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "DEPENDS_ON",
+              "USES_RESOURCE"
+            ],
+            "title": "Type"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "source_id",
+          "target_id",
+          "type"
+        ],
+        "title": "DependencyEdge"
+      },
+      "GraphArtifactResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "organization_id": {
+            "type": "string",
+            "title": "Organization Id"
+          },
+          "created_at": {
+            "type": "integer",
+            "title": "Created At"
+          },
+          "created_by": {
+            "type": "string",
+            "title": "Created By"
+          },
+          "content_hash": {
+            "type": "string",
+            "title": "Content Hash"
+          },
+          "key": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Key"
+          },
+          "version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Version"
+          },
+          "state": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "DRAFT",
+                  "PUBLISHED"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "State"
+          },
+          "published_by": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Published By"
+          },
+          "published_at": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Published At"
+          },
+          "graph_snapshot_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Graph Snapshot Id"
+          },
+          "model_hash": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model Hash"
+          },
+          "data_snapshot_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Data Snapshot Id"
+          },
+          "model_version_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model Version Id"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Status"
+          },
+          "document": {
+            "$ref": "#/components/schemas/GraphCreate-Output"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "organization_id",
+          "created_at",
+          "created_by",
+          "content_hash",
+          "document"
+        ],
+        "title": "GraphArtifactResponse"
+      },
+      "GraphCreate-Input": {
+        "properties": {
+          "graph": {
+            "$ref": "#/components/schemas/OrganizationGraph-Input"
+          },
+          "shared_parameters": {
+            "patternProperties": {
+              "^[A-Za-z][A-Za-z0-9_]*$": {
+                "$ref": "#/components/schemas/Parameter-Input"
+              }
+            },
+            "propertyNames": {
+              "maxLength": 100
+            },
+            "type": "object",
+            "title": "Shared Parameters"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "graph",
+          "shared_parameters"
+        ],
+        "title": "GraphCreate"
+      },
+      "GraphCreate-Output": {
+        "properties": {
+          "graph": {
+            "$ref": "#/components/schemas/OrganizationGraph-Output"
+          },
+          "shared_parameters": {
+            "patternProperties": {
+              "^[A-Za-z][A-Za-z0-9_]*$": {
+                "$ref": "#/components/schemas/Parameter-Output"
+              }
+            },
+            "propertyNames": {
+              "maxLength": 100
+            },
+            "type": "object",
+            "title": "Shared Parameters"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "graph",
+          "shared_parameters"
+        ],
+        "title": "GraphCreate"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "JsonValue": {},
+      "LoginRequest": {
+        "properties": {
+          "username": {
+            "type": "string",
+            "maxLength": 128,
+            "minLength": 3,
+            "title": "Username"
+          },
+          "password": {
+            "type": "string",
+            "maxLength": 1024,
+            "minLength": 1,
+            "format": "password",
+            "title": "Password",
+            "writeOnly": true
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "username",
+          "password"
+        ],
+        "title": "LoginRequest"
+      },
+      "MembershipResponse": {
+        "properties": {
+          "user_id": {
+            "type": "string",
+            "title": "User Id"
+          },
+          "organization_id": {
+            "type": "string",
+            "title": "Organization Id"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "ADMIN",
+              "BUILDER",
+              "APPROVER",
+              "VIEWER"
+            ],
+            "title": "Role"
+          },
+          "active": {
+            "type": "boolean",
+            "title": "Active"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "user_id",
+          "organization_id",
+          "role",
+          "active"
+        ],
+        "title": "MembershipResponse"
+      },
+      "MembershipSet": {
+        "properties": {
+          "user_id": {
+            "type": "string",
+            "maxLength": 36,
+            "minLength": 36,
+            "title": "User Id"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "ADMIN",
+              "BUILDER",
+              "APPROVER",
+              "VIEWER"
+            ],
+            "title": "Role"
+          },
+          "active": {
+            "type": "boolean",
+            "title": "Active",
+            "default": true
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "user_id",
+          "role"
+        ],
+        "title": "MembershipSet"
+      },
+      "ModelArtifactResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "organization_id": {
+            "type": "string",
+            "title": "Organization Id"
+          },
+          "created_at": {
+            "type": "integer",
+            "title": "Created At"
+          },
+          "created_by": {
+            "type": "string",
+            "title": "Created By"
+          },
+          "content_hash": {
+            "type": "string",
+            "title": "Content Hash"
+          },
+          "key": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Key"
+          },
+          "version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Version"
+          },
+          "state": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "DRAFT",
+                  "PUBLISHED"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "State"
+          },
+          "published_by": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Published By"
+          },
+          "published_at": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Published At"
+          },
+          "graph_snapshot_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Graph Snapshot Id"
+          },
+          "model_hash": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model Hash"
+          },
+          "data_snapshot_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Data Snapshot Id"
+          },
+          "model_version_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model Version Id"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Status"
+          },
+          "document": {
+            "$ref": "#/components/schemas/CompositionDocument"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "organization_id",
+          "created_at",
+          "created_by",
+          "content_hash",
+          "document"
+        ],
+        "title": "ModelArtifactResponse"
+      },
+      "ModelCreate": {
+        "properties": {
+          "graph_snapshot_id": {
+            "type": "string",
+            "title": "Graph Snapshot Id"
+          },
+          "model": {
+            "$ref": "#/components/schemas/OrganizationModel-Input"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "graph_snapshot_id",
+          "model"
+        ],
+        "title": "ModelCreate"
+      },
+      "ModelDSL": {
+        "properties": {
+          "schema_version": {
+            "type": "string",
+            "const": "1.0",
+            "title": "Schema Version"
+          },
+          "id": {
+            "type": "string",
+            "maxLength": 100,
+            "pattern": "^[A-Za-z][A-Za-z0-9_]*$",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 1,
+            "title": "Name"
+          },
+          "model_version": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 1,
+            "title": "Model Version"
+          },
+          "data_snapshot_id": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 1,
+            "title": "Data Snapshot Id"
+          },
+          "scenario_id": {
+            "type": "string",
+            "maxLength": 100,
+            "pattern": "^[A-Za-z][A-Za-z0-9_]*$",
+            "title": "Scenario Id"
+          },
+          "currency": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "EUR",
+                  "MAD",
+                  "USD"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Currency"
+          },
+          "dimensions": {
+            "patternProperties": {
+              "^[A-Za-z][A-Za-z0-9_]*$": {
+                "items": {
+                  "type": "string",
+                  "maxLength": 100,
+                  "pattern": "^[A-Za-z][A-Za-z0-9_]*$"
+                },
+                "type": "array",
+                "maxItems": 10000,
+                "minItems": 1
+              }
+            },
+            "propertyNames": {
+              "maxLength": 100
+            },
+            "type": "object",
+            "maxProperties": 100,
+            "title": "Dimensions"
+          },
+          "departments": {
+            "items": {
+              "$ref": "#/components/schemas/Department"
+            },
+            "type": "array",
+            "maxItems": 1000,
+            "minItems": 1,
+            "title": "Departments"
+          },
+          "parameters": {
+            "patternProperties": {
+              "^[A-Za-z][A-Za-z0-9_]*$": {
+                "$ref": "#/components/schemas/Parameter-Output"
+              }
+            },
+            "propertyNames": {
+              "maxLength": 100
+            },
+            "type": "object",
+            "maxProperties": 10000,
+            "title": "Parameters"
+          },
+          "variables": {
+            "items": {
+              "$ref": "#/components/schemas/Variable-Output"
+            },
+            "type": "array",
+            "maxItems": 10000,
+            "minItems": 1,
+            "title": "Variables"
+          },
+          "constraints": {
+            "items": {
+              "$ref": "#/components/schemas/Constraint-Output"
+            },
+            "type": "array",
+            "maxItems": 10000,
+            "title": "Constraints"
+          },
+          "objectives": {
+            "items": {
+              "$ref": "#/components/schemas/Objective-Output"
+            },
+            "type": "array",
+            "maxItems": 1,
+            "minItems": 1,
+            "title": "Objectives"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "schema_version",
+          "id",
+          "name",
+          "model_version",
+          "data_snapshot_id",
+          "scenario_id",
+          "departments",
+          "parameters",
+          "variables",
+          "constraints",
+          "objectives"
+        ],
+        "title": "ModelDSL"
+      },
+      "Objective-Input": {
+        "properties": {
+          "source": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 1,
+            "title": "Source"
+          },
+          "approved": {
+            "type": "boolean",
+            "title": "Approved"
+          },
+          "version": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 1,
+            "title": "Version"
+          },
+          "unit": {
+            "type": "string",
+            "maxLength": 128,
+            "title": "Unit"
+          },
+          "id": {
+            "type": "string",
+            "maxLength": 100,
+            "pattern": "^[A-Za-z][A-Za-z0-9_]*$",
+            "title": "Id"
+          },
+          "owner_department": {
+            "type": "string",
+            "maxLength": 100,
+            "pattern": "^[A-Za-z][A-Za-z0-9_]*$",
+            "title": "Owner Department"
+          },
+          "sense": {
+            "type": "string",
+            "enum": [
+              "MAX",
+              "MIN"
+            ],
+            "title": "Sense"
+          },
+          "priority": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Priority",
+            "default": 1
+          },
+          "terms": {
+            "items": {
+              "$ref": "#/components/schemas/Term-Input"
+            },
+            "type": "array",
+            "maxItems": 10000,
+            "title": "Terms"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "source",
+          "approved",
+          "version",
+          "unit",
+          "id",
+          "owner_department",
+          "sense",
+          "terms"
+        ],
+        "title": "Objective"
+      },
+      "Objective-Output": {
+        "properties": {
+          "source": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 1,
+            "title": "Source"
+          },
+          "approved": {
+            "type": "boolean",
+            "title": "Approved"
+          },
+          "version": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 1,
+            "title": "Version"
+          },
+          "unit": {
+            "type": "string",
+            "maxLength": 128,
+            "title": "Unit"
+          },
+          "id": {
+            "type": "string",
+            "maxLength": 100,
+            "pattern": "^[A-Za-z][A-Za-z0-9_]*$",
+            "title": "Id"
+          },
+          "owner_department": {
+            "type": "string",
+            "maxLength": 100,
+            "pattern": "^[A-Za-z][A-Za-z0-9_]*$",
+            "title": "Owner Department"
+          },
+          "sense": {
+            "type": "string",
+            "enum": [
+              "MAX",
+              "MIN"
+            ],
+            "title": "Sense"
+          },
+          "priority": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Priority",
+            "default": 1
+          },
+          "terms": {
+            "items": {
+              "$ref": "#/components/schemas/Term-Output"
+            },
+            "type": "array",
+            "maxItems": 10000,
+            "title": "Terms"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "source",
+          "approved",
+          "version",
+          "unit",
+          "id",
+          "owner_department",
+          "sense",
+          "terms"
+        ],
+        "title": "Objective"
+      },
+      "Organization": {
+        "properties": {
+          "source": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 1,
+            "title": "Source"
+          },
+          "approved": {
+            "type": "boolean",
+            "title": "Approved"
+          },
+          "version": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 1,
+            "title": "Version"
+          },
+          "id": {
+            "type": "string",
+            "maxLength": 100,
+            "pattern": "^[A-Za-z][A-Za-z0-9_]*$",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 1,
+            "title": "Name"
+          },
+          "data_snapshot_id": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 1,
+            "title": "Data Snapshot Id"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "source",
+          "approved",
+          "version",
+          "id",
+          "name",
+          "data_snapshot_id"
+        ],
+        "title": "Organization"
+      },
+      "OrganizationCreate": {
+        "properties": {
+          "key": {
+            "type": "string",
+            "maxLength": 100,
+            "pattern": "^[A-Za-z][A-Za-z0-9_]*$",
+            "title": "Key"
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 1,
+            "title": "Name"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "key",
+          "name"
+        ],
+        "title": "OrganizationCreate"
+      },
+      "OrganizationGraph-Input": {
+        "properties": {
+          "schema_version": {
+            "type": "string",
+            "const": "1.0",
+            "title": "Schema Version"
+          },
+          "organization": {
+            "$ref": "#/components/schemas/Organization"
+          },
+          "departments": {
+            "items": {
+              "$ref": "#/components/schemas/DepartmentNode"
+            },
+            "type": "array",
+            "maxItems": 1000,
+            "minItems": 1,
+            "title": "Departments"
+          },
+          "resources": {
+            "items": {
+              "$ref": "#/components/schemas/ResourceNode"
+            },
+            "type": "array",
+            "maxItems": 10000,
+            "title": "Resources"
+          },
+          "edges": {
+            "items": {
+              "$ref": "#/components/schemas/DependencyEdge"
+            },
+            "type": "array",
+            "maxItems": 10000,
+            "title": "Edges"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "schema_version",
+          "organization",
+          "departments"
+        ],
+        "title": "OrganizationGraph"
+      },
+      "OrganizationGraph-Output": {
+        "properties": {
+          "schema_version": {
+            "type": "string",
+            "const": "1.0",
+            "title": "Schema Version"
+          },
+          "organization": {
+            "$ref": "#/components/schemas/Organization"
+          },
+          "departments": {
+            "items": {
+              "$ref": "#/components/schemas/DepartmentNode"
+            },
+            "type": "array",
+            "maxItems": 1000,
+            "minItems": 1,
+            "title": "Departments"
+          },
+          "resources": {
+            "items": {
+              "$ref": "#/components/schemas/ResourceNode"
+            },
+            "type": "array",
+            "maxItems": 10000,
+            "title": "Resources"
+          },
+          "edges": {
+            "items": {
+              "$ref": "#/components/schemas/DependencyEdge"
+            },
+            "type": "array",
+            "maxItems": 10000,
+            "title": "Edges"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "schema_version",
+          "organization",
+          "departments"
+        ],
+        "title": "OrganizationGraph"
+      },
+      "OrganizationModel-Input": {
+        "properties": {
+          "schema_version": {
+            "type": "string",
+            "const": "1.0",
+            "title": "Schema Version"
+          },
+          "model_id": {
+            "type": "string",
+            "maxLength": 100,
+            "pattern": "^[A-Za-z][A-Za-z0-9_]*$",
+            "title": "Model Id"
+          },
+          "model_name": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 1,
+            "title": "Model Name"
+          },
+          "model_version": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 1,
+            "title": "Model Version"
+          },
+          "scenario_id": {
+            "type": "string",
+            "maxLength": 100,
+            "pattern": "^[A-Za-z][A-Za-z0-9_]*$",
+            "title": "Scenario Id"
+          },
+          "currency": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "EUR",
+                  "MAD",
+                  "USD"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Currency"
+          },
+          "dimensions": {
+            "patternProperties": {
+              "^[A-Za-z][A-Za-z0-9_]*$": {
+                "items": {
+                  "type": "string",
+                  "maxLength": 100,
+                  "pattern": "^[A-Za-z][A-Za-z0-9_]*$"
+                },
+                "type": "array"
+              }
+            },
+            "propertyNames": {
+              "maxLength": 100
+            },
+            "type": "object",
+            "title": "Dimensions"
+          },
+          "shared_parameters": {
+            "patternProperties": {
+              "^[A-Za-z][A-Za-z0-9_]*$": {
+                "$ref": "#/components/schemas/Parameter-Input"
+              }
+            },
+            "propertyNames": {
+              "maxLength": 100
+            },
+            "type": "object",
+            "maxProperties": 10000,
+            "title": "Shared Parameters"
+          },
+          "objective": {
+            "$ref": "#/components/schemas/Objective-Input"
+          },
+          "graph": {
+            "$ref": "#/components/schemas/OrganizationGraph-Input"
+          },
+          "fragments": {
+            "items": {
+              "$ref": "#/components/schemas/DepartmentFragment-Input"
+            },
+            "type": "array",
+            "maxItems": 1000,
+            "minItems": 1,
+            "title": "Fragments"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "schema_version",
+          "model_id",
+          "model_name",
+          "model_version",
+          "scenario_id",
+          "objective",
+          "graph",
+          "fragments"
+        ],
+        "title": "OrganizationModel"
+      },
+      "OrganizationModel-Output": {
+        "properties": {
+          "schema_version": {
+            "type": "string",
+            "const": "1.0",
+            "title": "Schema Version"
+          },
+          "model_id": {
+            "type": "string",
+            "maxLength": 100,
+            "pattern": "^[A-Za-z][A-Za-z0-9_]*$",
+            "title": "Model Id"
+          },
+          "model_name": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 1,
+            "title": "Model Name"
+          },
+          "model_version": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 1,
+            "title": "Model Version"
+          },
+          "scenario_id": {
+            "type": "string",
+            "maxLength": 100,
+            "pattern": "^[A-Za-z][A-Za-z0-9_]*$",
+            "title": "Scenario Id"
+          },
+          "currency": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "EUR",
+                  "MAD",
+                  "USD"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Currency"
+          },
+          "dimensions": {
+            "patternProperties": {
+              "^[A-Za-z][A-Za-z0-9_]*$": {
+                "items": {
+                  "type": "string",
+                  "maxLength": 100,
+                  "pattern": "^[A-Za-z][A-Za-z0-9_]*$"
+                },
+                "type": "array"
+              }
+            },
+            "propertyNames": {
+              "maxLength": 100
+            },
+            "type": "object",
+            "title": "Dimensions"
+          },
+          "shared_parameters": {
+            "patternProperties": {
+              "^[A-Za-z][A-Za-z0-9_]*$": {
+                "$ref": "#/components/schemas/Parameter-Output"
+              }
+            },
+            "propertyNames": {
+              "maxLength": 100
+            },
+            "type": "object",
+            "maxProperties": 10000,
+            "title": "Shared Parameters"
+          },
+          "objective": {
+            "$ref": "#/components/schemas/Objective-Output"
+          },
+          "graph": {
+            "$ref": "#/components/schemas/OrganizationGraph-Output"
+          },
+          "fragments": {
+            "items": {
+              "$ref": "#/components/schemas/DepartmentFragment-Output"
+            },
+            "type": "array",
+            "maxItems": 1000,
+            "minItems": 1,
+            "title": "Fragments"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "schema_version",
+          "model_id",
+          "model_name",
+          "model_version",
+          "scenario_id",
+          "objective",
+          "graph",
+          "fragments"
+        ],
+        "title": "OrganizationModel"
+      },
+      "OrganizationResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "key": {
+            "type": "string",
+            "title": "Key"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "ADMIN",
+              "BUILDER",
+              "APPROVER",
+              "VIEWER"
+            ],
+            "title": "Role"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "key",
+          "name",
+          "role"
+        ],
+        "title": "OrganizationResponse"
+      },
+      "Page_ArtifactResponse_": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/ArtifactResponse"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "limit": {
+            "type": "integer",
+            "title": "Limit"
+          },
+          "offset": {
+            "type": "integer",
+            "title": "Offset"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "items",
+          "limit",
+          "offset"
+        ],
+        "title": "Page[ArtifactResponse]"
+      },
+      "Page_AuditResponse_": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/AuditResponse"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "limit": {
+            "type": "integer",
+            "title": "Limit"
+          },
+          "offset": {
+            "type": "integer",
+            "title": "Offset"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "items",
+          "limit",
+          "offset"
+        ],
+        "title": "Page[AuditResponse]"
+      },
+      "Page_DepartmentResponse_": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/DepartmentResponse"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "limit": {
+            "type": "integer",
+            "title": "Limit"
+          },
+          "offset": {
+            "type": "integer",
+            "title": "Offset"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "items",
+          "limit",
+          "offset"
+        ],
+        "title": "Page[DepartmentResponse]"
+      },
+      "Page_MembershipResponse_": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/MembershipResponse"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "limit": {
+            "type": "integer",
+            "title": "Limit"
+          },
+          "offset": {
+            "type": "integer",
+            "title": "Offset"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "items",
+          "limit",
+          "offset"
+        ],
+        "title": "Page[MembershipResponse]"
+      },
+      "Page_OrganizationResponse_": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/OrganizationResponse"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "limit": {
+            "type": "integer",
+            "title": "Limit"
+          },
+          "offset": {
+            "type": "integer",
+            "title": "Offset"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "items",
+          "limit",
+          "offset"
+        ],
+        "title": "Page[OrganizationResponse]"
+      },
+      "Parameter-Input": {
+        "properties": {
+          "source": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 1,
+            "title": "Source"
+          },
+          "approved": {
+            "type": "boolean",
+            "title": "Approved"
+          },
+          "version": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 1,
+            "title": "Version"
+          },
+          "unit": {
+            "type": "string",
+            "maxLength": 128,
+            "title": "Unit"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 128,
+                "pattern": "^[+-]?(?:[0-9]+(?:\\.[0-9]*)?|\\.[0-9]+)(?:[eE][+-]?[0-9]+)?$"
+              },
+              {
+                "type": "number"
+              }
+            ],
+            "title": "Value",
+            "description": "Décimal fini ; 100 chiffres, exposant [-100,100]. Chaîne recommandée."
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "source",
+          "approved",
+          "version",
+          "unit",
+          "value"
+        ],
+        "title": "Parameter"
+      },
+      "Parameter-Output": {
+        "properties": {
+          "source": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 1,
+            "title": "Source"
+          },
+          "approved": {
+            "type": "boolean",
+            "title": "Approved"
+          },
+          "version": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 1,
+            "title": "Version"
+          },
+          "unit": {
+            "type": "string",
+            "maxLength": 128,
+            "title": "Unit"
+          },
+          "value": {
+            "type": "string",
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Value"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "source",
+          "approved",
+          "version",
+          "unit",
+          "value"
+        ],
+        "title": "Parameter"
+      },
+      "ParameterImport": {
+        "properties": {
+          "unit": {
+            "type": "string",
+            "maxLength": 128,
+            "title": "Unit"
+          },
+          "parameter": {
+            "type": "string",
+            "maxLength": 100,
+            "pattern": "^[A-Za-z][A-Za-z0-9_]*$",
+            "title": "Parameter"
+          },
+          "version": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 1,
+            "title": "Version"
+          },
+          "owner_department": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 100,
+                "pattern": "^[A-Za-z][A-Za-z0-9_]*$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Owner Department"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "unit",
+          "parameter",
+          "version",
+          "owner_department"
+        ],
+        "title": "ParameterImport"
+      },
+      "ParameterRef": {
+        "properties": {
+          "parameter": {
+            "type": "string",
+            "maxLength": 100,
+            "pattern": "^[A-Za-z][A-Za-z0-9_]*$",
+            "title": "Parameter"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "parameter"
+        ],
+        "title": "ParameterRef"
+      },
+      "ResourceNode": {
+        "properties": {
+          "source": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 1,
+            "title": "Source"
+          },
+          "approved": {
+            "type": "boolean",
+            "title": "Approved"
+          },
+          "version": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 1,
+            "title": "Version"
+          },
+          "unit": {
+            "type": "string",
+            "maxLength": 128,
+            "title": "Unit"
+          },
+          "id": {
+            "type": "string",
+            "maxLength": 100,
+            "pattern": "^[A-Za-z][A-Za-z0-9_]*$",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 1,
+            "title": "Name"
+          },
+          "capacity": {
+            "$ref": "#/components/schemas/ParameterRef"
+          },
+          "capacity_version": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 1,
+            "title": "Capacity Version"
+          },
+          "owner_department": {
+            "type": "string",
+            "maxLength": 100,
+            "pattern": "^[A-Za-z][A-Za-z0-9_]*$",
+            "title": "Owner Department"
+          },
+          "shared_with": {
+            "items": {
+              "type": "string",
+              "maxLength": 100,
+              "pattern": "^[A-Za-z][A-Za-z0-9_]*$"
+            },
+            "type": "array",
+            "maxItems": 1000,
+            "title": "Shared With"
+          },
+          "constraint_id": {
+            "type": "string",
+            "maxLength": 100,
+            "pattern": "^[A-Za-z][A-Za-z0-9_]*$",
+            "title": "Constraint Id"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "source",
+          "approved",
+          "version",
+          "unit",
+          "id",
+          "name",
+          "capacity",
+          "capacity_version",
+          "owner_department",
+          "constraint_id"
+        ],
+        "title": "ResourceNode"
+      },
+      "ResourceTraceDocument": {
+        "properties": {
+          "resource_id": {
+            "type": "string",
+            "title": "Resource Id"
+          },
+          "parameter_id": {
+            "type": "string",
+            "title": "Parameter Id"
+          },
+          "constraint_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Constraint Id"
+          },
+          "fragment_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Fragment Ids"
+          },
+          "contribution_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Contribution Ids"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "resource_id",
+          "parameter_id",
+          "constraint_id",
+          "fragment_ids",
+          "contribution_ids"
+        ],
+        "title": "ResourceTraceDocument"
+      },
+      "ResourceUse-Input": {
+        "properties": {
+          "source": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 1,
+            "title": "Source"
+          },
+          "approved": {
+            "type": "boolean",
+            "title": "Approved"
+          },
+          "version": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 1,
+            "title": "Version"
+          },
+          "id": {
+            "type": "string",
+            "maxLength": 100,
+            "pattern": "^[A-Za-z][A-Za-z0-9_]*$",
+            "title": "Id"
+          },
+          "resource_id": {
+            "type": "string",
+            "maxLength": 100,
+            "pattern": "^[A-Za-z][A-Za-z0-9_]*$",
+            "title": "Resource Id"
+          },
+          "terms": {
+            "items": {
+              "$ref": "#/components/schemas/Term-Input"
+            },
+            "type": "array",
+            "maxItems": 10000,
+            "title": "Terms"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "source",
+          "approved",
+          "version",
+          "id",
+          "resource_id",
+          "terms"
+        ],
+        "title": "ResourceUse"
+      },
+      "ResourceUse-Output": {
+        "properties": {
+          "source": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 1,
+            "title": "Source"
+          },
+          "approved": {
+            "type": "boolean",
+            "title": "Approved"
+          },
+          "version": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 1,
+            "title": "Version"
+          },
+          "id": {
+            "type": "string",
+            "maxLength": 100,
+            "pattern": "^[A-Za-z][A-Za-z0-9_]*$",
+            "title": "Id"
+          },
+          "resource_id": {
+            "type": "string",
+            "maxLength": 100,
+            "pattern": "^[A-Za-z][A-Za-z0-9_]*$",
+            "title": "Resource Id"
+          },
+          "terms": {
+            "items": {
+              "$ref": "#/components/schemas/Term-Output"
+            },
+            "type": "array",
+            "maxItems": 10000,
+            "title": "Terms"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "source",
+          "approved",
+          "version",
+          "id",
+          "resource_id",
+          "terms"
+        ],
+        "title": "ResourceUse"
+      },
+      "RunArtifactResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "organization_id": {
+            "type": "string",
+            "title": "Organization Id"
+          },
+          "created_at": {
+            "type": "integer",
+            "title": "Created At"
+          },
+          "created_by": {
+            "type": "string",
+            "title": "Created By"
+          },
+          "content_hash": {
+            "type": "string",
+            "title": "Content Hash"
+          },
+          "key": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Key"
+          },
+          "version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Version"
+          },
+          "state": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "DRAFT",
+                  "PUBLISHED"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "State"
+          },
+          "published_by": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Published By"
+          },
+          "published_at": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Published At"
+          },
+          "graph_snapshot_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Graph Snapshot Id"
+          },
+          "model_hash": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model Hash"
+          },
+          "data_snapshot_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Data Snapshot Id"
+          },
+          "model_version_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model Version Id"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Status"
+          },
+          "document": {
+            "$ref": "#/components/schemas/RunDocument"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "organization_id",
+          "created_at",
+          "created_by",
+          "content_hash",
+          "document"
+        ],
+        "title": "RunArtifactResponse"
+      },
+      "RunDocument": {
+        "properties": {
+          "solve": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/JsonValue"
+            },
+            "type": "object",
+            "title": "Solve"
+          },
+          "report": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/JsonValue"
+            },
+            "type": "object",
+            "title": "Report"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "solve",
+          "report"
+        ],
+        "title": "RunDocument"
+      },
+      "Term-Input": {
+        "properties": {
+          "variable": {
+            "type": "string",
+            "maxLength": 100,
+            "pattern": "^[A-Za-z][A-Za-z0-9_]*$",
+            "title": "Variable"
+          },
+          "coefficient": {
+            "anyOf": [
+              {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "maxLength": 128,
+                    "pattern": "^[+-]?(?:[0-9]+(?:\\.[0-9]*)?|\\.[0-9]+)(?:[eE][+-]?[0-9]+)?$"
+                  },
+                  {
+                    "type": "number"
+                  }
+                ],
+                "description": "Décimal fini ; 100 chiffres, exposant [-100,100]. Chaîne recommandée."
+              },
+              {
+                "$ref": "#/components/schemas/ParameterRef"
+              }
+            ],
+            "title": "Coefficient"
+          },
+          "coefficient_unit": {
+            "type": "string",
+            "maxLength": 128,
+            "title": "Coefficient Unit"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "variable",
+          "coefficient",
+          "coefficient_unit"
+        ],
+        "title": "Term"
+      },
+      "Term-Output": {
+        "properties": {
+          "variable": {
+            "type": "string",
+            "maxLength": 100,
+            "pattern": "^[A-Za-z][A-Za-z0-9_]*$",
+            "title": "Variable"
+          },
+          "coefficient": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$"
+              },
+              {
+                "$ref": "#/components/schemas/ParameterRef"
+              }
+            ],
+            "title": "Coefficient"
+          },
+          "coefficient_unit": {
+            "type": "string",
+            "maxLength": 128,
+            "title": "Coefficient Unit"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "variable",
+          "coefficient",
+          "coefficient_unit"
+        ],
+        "title": "Term"
+      },
+      "TokenResponse": {
+        "properties": {
+          "access_token": {
+            "type": "string",
+            "title": "Access Token"
+          },
+          "token_type": {
+            "type": "string",
+            "const": "bearer",
+            "title": "Token Type"
+          },
+          "expires_at": {
+            "type": "integer",
+            "title": "Expires At"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "access_token",
+          "token_type",
+          "expires_at"
+        ],
+        "title": "TokenResponse"
+      },
+      "UserResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "username": {
+            "type": "string",
+            "title": "Username"
+          },
+          "display_name": {
+            "type": "string",
+            "title": "Display Name"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "username",
+          "display_name"
+        ],
+        "title": "UserResponse"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      },
+      "Variable-Input": {
+        "properties": {
+          "unit": {
+            "type": "string",
+            "maxLength": 128,
+            "title": "Unit"
+          },
+          "id": {
+            "type": "string",
+            "maxLength": 100,
+            "pattern": "^[A-Za-z][A-Za-z0-9_]*$",
+            "title": "Id"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "BINARY",
+              "INTEGER",
+              "CONTINUOUS"
+            ],
+            "title": "Type"
+          },
+          "lb": {
+            "anyOf": [
+              {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "maxLength": 128,
+                    "pattern": "^[+-]?(?:[0-9]+(?:\\.[0-9]*)?|\\.[0-9]+)(?:[eE][+-]?[0-9]+)?$"
+                  },
+                  {
+                    "type": "number"
+                  }
+                ],
+                "description": "Décimal fini ; 100 chiffres, exposant [-100,100]. Chaîne recommandée."
+              },
+              {
+                "$ref": "#/components/schemas/ParameterRef"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lb"
+          },
+          "ub": {
+            "anyOf": [
+              {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "maxLength": 128,
+                    "pattern": "^[+-]?(?:[0-9]+(?:\\.[0-9]*)?|\\.[0-9]+)(?:[eE][+-]?[0-9]+)?$"
+                  },
+                  {
+                    "type": "number"
+                  }
+                ],
+                "description": "Décimal fini ; 100 chiffres, exposant [-100,100]. Chaîne recommandée."
+              },
+              {
+                "$ref": "#/components/schemas/ParameterRef"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ub"
+          },
+          "department": {
+            "type": "string",
+            "maxLength": 100,
+            "pattern": "^[A-Za-z][A-Za-z0-9_]*$",
+            "title": "Department"
+          },
+          "indices": {
+            "patternProperties": {
+              "^[A-Za-z][A-Za-z0-9_]*$": {
+                "type": "string",
+                "maxLength": 100,
+                "pattern": "^[A-Za-z][A-Za-z0-9_]*$"
+              }
+            },
+            "propertyNames": {
+              "maxLength": 100
+            },
+            "type": "object",
+            "maxProperties": 100,
+            "title": "Indices"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "unit",
+          "id",
+          "type",
+          "lb",
+          "ub",
+          "department"
+        ],
+        "title": "Variable"
+      },
+      "Variable-Output": {
+        "properties": {
+          "unit": {
+            "type": "string",
+            "maxLength": 128,
+            "title": "Unit"
+          },
+          "id": {
+            "type": "string",
+            "maxLength": 100,
+            "pattern": "^[A-Za-z][A-Za-z0-9_]*$",
+            "title": "Id"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "BINARY",
+              "INTEGER",
+              "CONTINUOUS"
+            ],
+            "title": "Type"
+          },
+          "lb": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$"
+              },
+              {
+                "$ref": "#/components/schemas/ParameterRef"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lb"
+          },
+          "ub": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$"
+              },
+              {
+                "$ref": "#/components/schemas/ParameterRef"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ub"
+          },
+          "department": {
+            "type": "string",
+            "maxLength": 100,
+            "pattern": "^[A-Za-z][A-Za-z0-9_]*$",
+            "title": "Department"
+          },
+          "indices": {
+            "patternProperties": {
+              "^[A-Za-z][A-Za-z0-9_]*$": {
+                "type": "string",
+                "maxLength": 100,
+                "pattern": "^[A-Za-z][A-Za-z0-9_]*$"
+              }
+            },
+            "propertyNames": {
+              "maxLength": 100
+            },
+            "type": "object",
+            "maxProperties": 100,
+            "title": "Indices"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "unit",
+          "id",
+          "type",
+          "lb",
+          "ub",
+          "department"
+        ],
+        "title": "Variable"
+      },
+      "VariableImport": {
+        "properties": {
+          "unit": {
+            "type": "string",
+            "maxLength": 128,
+            "title": "Unit"
+          },
+          "variable": {
+            "type": "string",
+            "maxLength": 100,
+            "pattern": "^[A-Za-z][A-Za-z0-9_]*$",
+            "title": "Variable"
+          },
+          "owner_department": {
+            "type": "string",
+            "maxLength": 100,
+            "pattern": "^[A-Za-z][A-Za-z0-9_]*$",
+            "title": "Owner Department"
+          },
+          "declaration_version": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 1,
+            "title": "Declaration Version"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "unit",
+          "variable",
+          "owner_department",
+          "declaration_version"
+        ],
+        "title": "VariableImport"
+      }
+    },
+    "securitySchemes": {
+      "HTTPBearer": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    }
+  }
+}

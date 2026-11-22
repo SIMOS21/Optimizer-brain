@@ -2,7 +2,7 @@
 
 from typing import Annotated, Generic, Literal, TypeVar
 from pydantic import Field, JsonValue, SecretStr, StringConstraints
-from brain.kernel.schema import Identifier, Parameter, StrictModel, Text
+from brain.kernel.schema import Identifier, ModelDSL, Parameter, StrictModel, Text
 from brain.organization.schema import OrganizationGraph, OrganizationModel
 
 Role = Literal["ADMIN", "BUILDER", "APPROVER", "VIEWER"]
@@ -82,7 +82,7 @@ class DepartmentResponse(StrictModel):
     owner_user_id: str | None
 
 
-class ArtifactResponse(StrictModel):
+class ArtifactMetadata(StrictModel):
     id: str
     organization_id: str
     created_at: int
@@ -98,7 +98,56 @@ class ArtifactResponse(StrictModel):
     data_snapshot_id: str | None = None
     model_version_id: str | None = None
     status: str | None = None
+
+
+class ArtifactResponse(ArtifactMetadata):
     document: JsonValue = None
+
+
+class ConstraintTraceDocument(StrictModel):
+    constraint_id: str
+    owner_department: str
+    fragment_ids: list[str]
+    contribution_ids: list[str]
+    parameter_ids: list[str]
+    resource_id: str | None
+    source_paths: list[str]
+
+
+class ResourceTraceDocument(StrictModel):
+    resource_id: str
+    parameter_id: str
+    constraint_id: str | None
+    fragment_ids: list[str]
+    contribution_ids: list[str]
+
+
+class CompositionDocument(StrictModel):
+    organization_model: OrganizationModel
+    dsl: ModelDSL
+    ir: dict[str, JsonValue]
+    model_hash: str
+    model_manifest_hash: str
+    composition_manifest_hash: str
+    constraint_traces: list[ConstraintTraceDocument]
+    resource_traces: list[ResourceTraceDocument]
+
+
+class RunDocument(StrictModel):
+    solve: dict[str, JsonValue]
+    report: dict[str, JsonValue]
+
+
+class GraphArtifactResponse(ArtifactMetadata):
+    document: GraphCreate
+
+
+class ModelArtifactResponse(ArtifactMetadata):
+    document: CompositionDocument
+
+
+class RunArtifactResponse(ArtifactMetadata):
+    document: RunDocument
 
 
 class AuditResponse(StrictModel):

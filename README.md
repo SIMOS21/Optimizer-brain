@@ -1,4 +1,4 @@
-> **Développement avec Codex :** lire `AGENTS.md` et `OPTIMIZATION_BRAIN_SPEC.md`. Les phases 0 à 3 et les fondations 4A sont livrées ; la plateforme complète reste une cible.
+> **Développement avec Codex :** lire `AGENTS.md` et `OPTIMIZATION_BRAIN_SPEC.md`. Les phases 0 à 3, les fondations 4A et le Studio visuel 4B sont livrés ; la plateforme complète reste une cible.
 
 # Optimization Brain — MVP conservé et Universal Model Kernel
 
@@ -21,6 +21,31 @@ Phase 3 : [Organization Graph](docs/organization-graph.md),
 Phase 4A : [déploiement PostgreSQL et API sécurisée](docs/platform-phase-4a.md),
 [ADR identité et gouvernance](docs/decision-records/0004-persistence-identity-governance.md),
 [audit préalable](docs/audit-phase-4a.md), [validation](docs/validation-phase-4a.md).
+Phase 4B : [Visual Organization Studio](docs/studio-phase-4b.md),
+[ADR navigateur et contrats](docs/decision-records/0005-visual-studio-browser-contracts.md),
+[audit](docs/audit-phase-4b.md), [validation et captures](docs/validation-phase-4b.md).
+
+## Studio organisationnel interactif (phase 4B)
+
+`frontend/` fournit React + TypeScript strict, Vite et React Flow : organisations,
+graphe zoomable au clavier/souris, ressources/provenance, brouillons versionnés,
+imports JSON, publication confirmée, inspecteur DSL/IR et historique enregistré.
+Les relations du canvas sont exactement celles du snapshot ; aucune arête ne crée
+d'équation. Les contraintes et résultats restent ceux du backend existant.
+
+Après lancement de l'API sécurisée sur 8001 et provisionnement des exemples suivant
+le [guide PowerShell](docs/studio-phase-4b.md), lancer :
+
+```powershell
+Set-Location frontend
+npm.cmd ci
+npm.cmd run dev
+```
+
+Studio : http://127.0.0.1:5173. Jeton en mémoire uniquement ; rechargement = relogin.
+Le proxy appelle l'API sécurisée 4A. Aucun calcul depuis le navigateur, worker,
+scénario avancé ou LLM n'est introduit. Les positions restent locales ; les
+équations sont inspectables dans les modèles persistés et l'IR canonique.
 
 ## Fondations de persistance et de gouvernance (phase 4A)
 
@@ -34,7 +59,8 @@ Lancer cette application avec `python -m uvicorn brain.platform.api:create_app -
 après la [configuration et les migrations](docs/platform-phase-4a.md).
 L'application legacy `brain.api:app` reste une démonstration locale séparée,
 sans authentification. Les snapshots SQLite de Phase 3 et le Brain hors ligne
-restent disponibles. Aucun frontend, worker ou Phase 4B/4C/5 n'est livré ici.
+restent disponibles. Le Studio est ajouté séparément en 4B ; aucun worker ou
+Phase 4C/5 n'est livré.
 
 ## Composition multi-départements (phase 3)
 

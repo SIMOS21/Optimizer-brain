@@ -1,7 +1,7 @@
 numpy>=1.26,<3
 scipy>=1.11,<2
-fastapi>=0.110,<1
-pydantic>=2.12,<3
+fastapi==0.143.2
+pydantic==2.12.5
 uvicorn>=0.29,<1
 pytest>=8,<10
 SQLAlchemy>=2.0.45,<2.1
