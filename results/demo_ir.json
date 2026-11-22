@@ -1,0 +1,230 @@
+{
+  "schema_version": "1.0",
+  "model_id": "demo_cross_department",
+  "model_version": "1.0.0",
+  "data_snapshot_id": "synthetic_demo_v1",
+  "scenario_id": "base",
+  "model_hash": "6067a4939fd2c2b42ade6387c12e72cf4df95c5581ab0375babdc134b0108ba0",
+  "manifest_hash": "6a6d1bda76b061526cc0f6d66888288d3d34e548e290b8a90c9aa97c9188d6a7",
+  "parameters": [
+    {
+      "id": "delivery_capacity_units",
+      "value": "55",
+      "unit": {
+        "dimensions": [
+          [
+            "count",
+            1
+          ]
+        ],
+        "scale": "1"
+      },
+      "origin": {
+        "source": "synthetic_demo",
+        "approved": true,
+        "version": "1"
+      }
+    },
+    {
+      "id": "machine_capacity_hours",
+      "value": "100",
+      "unit": {
+        "dimensions": [
+          [
+            "time",
+            1
+          ]
+        ],
+        "scale": "1"
+      },
+      "origin": {
+        "source": "synthetic_demo",
+        "approved": true,
+        "version": "1"
+      }
+    },
+    {
+      "id": "operating_cash_budget_eur",
+      "value": "8000",
+      "unit": {
+        "dimensions": [
+          [
+            "EUR",
+            1
+          ]
+        ],
+        "scale": "1"
+      },
+      "origin": {
+        "source": "synthetic_demo",
+        "approved": true,
+        "version": "1"
+      }
+    }
+  ],
+  "variables": [
+    {
+      "id": "qty_A",
+      "domain": "INTEGER",
+      "lb": "0",
+      "ub": "40",
+      "unit": {
+        "dimensions": [
+          [
+            "count",
+            1
+          ]
+        ],
+        "scale": "1"
+      },
+      "department": "sales",
+      "indices": []
+    },
+    {
+      "id": "qty_B",
+      "domain": "INTEGER",
+      "lb": "0",
+      "ub": "35",
+      "unit": {
+        "dimensions": [
+          [
+            "count",
+            1
+          ]
+        ],
+        "scale": "1"
+      },
+      "department": "sales",
+      "indices": []
+    }
+  ],
+  "constraints": [
+    {
+      "id": "finance_budget",
+      "terms": [
+        {
+          "variable": "qty_A",
+          "coefficient": "100"
+        },
+        {
+          "variable": "qty_B",
+          "coefficient": "200"
+        }
+      ],
+      "operator": "<=",
+      "rhs": "8000",
+      "unit": {
+        "dimensions": [
+          [
+            "EUR",
+            1
+          ]
+        ],
+        "scale": "1"
+      },
+      "owner_department": "finance",
+      "origin": {
+        "source": "synthetic_demo",
+        "approved": true,
+        "version": "1"
+      }
+    },
+    {
+      "id": "logistics_delivery",
+      "terms": [
+        {
+          "variable": "qty_A",
+          "coefficient": "1"
+        },
+        {
+          "variable": "qty_B",
+          "coefficient": "1"
+        }
+      ],
+      "operator": "<=",
+      "rhs": "55",
+      "unit": {
+        "dimensions": [
+          [
+            "count",
+            1
+          ]
+        ],
+        "scale": "1"
+      },
+      "owner_department": "logistics",
+      "origin": {
+        "source": "synthetic_demo",
+        "approved": true,
+        "version": "1"
+      }
+    },
+    {
+      "id": "production_machine",
+      "terms": [
+        {
+          "variable": "qty_A",
+          "coefficient": "2"
+        },
+        {
+          "variable": "qty_B",
+          "coefficient": "1"
+        }
+      ],
+      "operator": "<=",
+      "rhs": "100",
+      "unit": {
+        "dimensions": [
+          [
+            "time",
+            1
+          ]
+        ],
+        "scale": "1"
+      },
+      "owner_department": "production",
+      "origin": {
+        "source": "synthetic_demo",
+        "approved": true,
+        "version": "1"
+      }
+    }
+  ],
+  "objectives": [
+    {
+      "id": "maximize_contribution",
+      "terms": [
+        {
+          "variable": "qty_A",
+          "coefficient": "80"
+        },
+        {
+          "variable": "qty_B",
+          "coefficient": "60"
+        }
+      ],
+      "sense": "MAX",
+      "priority": 1,
+      "unit": {
+        "dimensions": [
+          [
+            "EUR",
+            1
+          ]
+        ],
+        "scale": "1"
+      },
+      "owner_department": "finance",
+      "origin": {
+        "source": "synthetic_demo",
+        "approved": true,
+        "version": "1"
+      }
+    }
+  ],
+  "transformations": [
+    "Resolved parameter references and explicit unit scales",
+    "Aggregated terms, removed zeros, sorted identifiers"
+  ],
+  "warnings": []
+}

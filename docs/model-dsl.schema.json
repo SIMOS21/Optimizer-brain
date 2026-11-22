@@ -1,0 +1,539 @@
+{
+  "$defs": {
+    "Constraint": {
+      "additionalProperties": false,
+      "properties": {
+        "source": {
+          "maxLength": 500,
+          "minLength": 1,
+          "title": "Source",
+          "type": "string"
+        },
+        "approved": {
+          "title": "Approved",
+          "type": "boolean"
+        },
+        "version": {
+          "maxLength": 500,
+          "minLength": 1,
+          "title": "Version",
+          "type": "string"
+        },
+        "unit": {
+          "maxLength": 128,
+          "title": "Unit",
+          "type": "string"
+        },
+        "id": {
+          "maxLength": 100,
+          "pattern": "^[A-Za-z][A-Za-z0-9_]*$",
+          "title": "Id",
+          "type": "string"
+        },
+        "owner_department": {
+          "maxLength": 100,
+          "pattern": "^[A-Za-z][A-Za-z0-9_]*$",
+          "title": "Owner Department",
+          "type": "string"
+        },
+        "kind": {
+          "const": "HARD",
+          "title": "Kind",
+          "type": "string"
+        },
+        "terms": {
+          "items": {
+            "$ref": "#/$defs/Term"
+          },
+          "maxItems": 10000,
+          "title": "Terms",
+          "type": "array"
+        },
+        "operator": {
+          "enum": [
+            "<=",
+            ">=",
+            "=="
+          ],
+          "title": "Operator",
+          "type": "string"
+        },
+        "rhs": {
+          "anyOf": [
+            {
+              "anyOf": [
+                {
+                  "maxLength": 128,
+                  "pattern": "^[+-]?(?:[0-9]+(?:\\.[0-9]*)?|\\.[0-9]+)(?:[eE][+-]?[0-9]+)?$",
+                  "type": "string"
+                },
+                {
+                  "type": "number"
+                }
+              ],
+              "description": "Décimal fini ; 100 chiffres, exposant [-100,100]. Chaîne recommandée."
+            },
+            {
+              "$ref": "#/$defs/ParameterRef"
+            }
+          ],
+          "title": "Rhs"
+        }
+      },
+      "required": [
+        "source",
+        "approved",
+        "version",
+        "unit",
+        "id",
+        "owner_department",
+        "kind",
+        "terms",
+        "operator",
+        "rhs"
+      ],
+      "title": "Constraint",
+      "type": "object"
+    },
+    "Department": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "maxLength": 100,
+          "pattern": "^[A-Za-z][A-Za-z0-9_]*$",
+          "title": "Id",
+          "type": "string"
+        },
+        "name": {
+          "maxLength": 500,
+          "minLength": 1,
+          "title": "Name",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "name"
+      ],
+      "title": "Department",
+      "type": "object"
+    },
+    "Objective": {
+      "additionalProperties": false,
+      "properties": {
+        "source": {
+          "maxLength": 500,
+          "minLength": 1,
+          "title": "Source",
+          "type": "string"
+        },
+        "approved": {
+          "title": "Approved",
+          "type": "boolean"
+        },
+        "version": {
+          "maxLength": 500,
+          "minLength": 1,
+          "title": "Version",
+          "type": "string"
+        },
+        "unit": {
+          "maxLength": 128,
+          "title": "Unit",
+          "type": "string"
+        },
+        "id": {
+          "maxLength": 100,
+          "pattern": "^[A-Za-z][A-Za-z0-9_]*$",
+          "title": "Id",
+          "type": "string"
+        },
+        "owner_department": {
+          "maxLength": 100,
+          "pattern": "^[A-Za-z][A-Za-z0-9_]*$",
+          "title": "Owner Department",
+          "type": "string"
+        },
+        "sense": {
+          "enum": [
+            "MAX",
+            "MIN"
+          ],
+          "title": "Sense",
+          "type": "string"
+        },
+        "priority": {
+          "default": 1,
+          "minimum": 1,
+          "title": "Priority",
+          "type": "integer"
+        },
+        "terms": {
+          "items": {
+            "$ref": "#/$defs/Term"
+          },
+          "maxItems": 10000,
+          "title": "Terms",
+          "type": "array"
+        }
+      },
+      "required": [
+        "source",
+        "approved",
+        "version",
+        "unit",
+        "id",
+        "owner_department",
+        "sense",
+        "terms"
+      ],
+      "title": "Objective",
+      "type": "object"
+    },
+    "Parameter": {
+      "additionalProperties": false,
+      "properties": {
+        "source": {
+          "maxLength": 500,
+          "minLength": 1,
+          "title": "Source",
+          "type": "string"
+        },
+        "approved": {
+          "title": "Approved",
+          "type": "boolean"
+        },
+        "version": {
+          "maxLength": 500,
+          "minLength": 1,
+          "title": "Version",
+          "type": "string"
+        },
+        "unit": {
+          "maxLength": 128,
+          "title": "Unit",
+          "type": "string"
+        },
+        "value": {
+          "anyOf": [
+            {
+              "maxLength": 128,
+              "pattern": "^[+-]?(?:[0-9]+(?:\\.[0-9]*)?|\\.[0-9]+)(?:[eE][+-]?[0-9]+)?$",
+              "type": "string"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "description": "Décimal fini ; 100 chiffres, exposant [-100,100]. Chaîne recommandée.",
+          "title": "Value"
+        }
+      },
+      "required": [
+        "source",
+        "approved",
+        "version",
+        "unit",
+        "value"
+      ],
+      "title": "Parameter",
+      "type": "object"
+    },
+    "ParameterRef": {
+      "additionalProperties": false,
+      "properties": {
+        "parameter": {
+          "maxLength": 100,
+          "pattern": "^[A-Za-z][A-Za-z0-9_]*$",
+          "title": "Parameter",
+          "type": "string"
+        }
+      },
+      "required": [
+        "parameter"
+      ],
+      "title": "ParameterRef",
+      "type": "object"
+    },
+    "Term": {
+      "additionalProperties": false,
+      "properties": {
+        "variable": {
+          "maxLength": 100,
+          "pattern": "^[A-Za-z][A-Za-z0-9_]*$",
+          "title": "Variable",
+          "type": "string"
+        },
+        "coefficient": {
+          "anyOf": [
+            {
+              "anyOf": [
+                {
+                  "maxLength": 128,
+                  "pattern": "^[+-]?(?:[0-9]+(?:\\.[0-9]*)?|\\.[0-9]+)(?:[eE][+-]?[0-9]+)?$",
+                  "type": "string"
+                },
+                {
+                  "type": "number"
+                }
+              ],
+              "description": "Décimal fini ; 100 chiffres, exposant [-100,100]. Chaîne recommandée."
+            },
+            {
+              "$ref": "#/$defs/ParameterRef"
+            }
+          ],
+          "title": "Coefficient"
+        },
+        "coefficient_unit": {
+          "maxLength": 128,
+          "title": "Coefficient Unit",
+          "type": "string"
+        }
+      },
+      "required": [
+        "variable",
+        "coefficient",
+        "coefficient_unit"
+      ],
+      "title": "Term",
+      "type": "object"
+    },
+    "Variable": {
+      "additionalProperties": false,
+      "properties": {
+        "unit": {
+          "maxLength": 128,
+          "title": "Unit",
+          "type": "string"
+        },
+        "id": {
+          "maxLength": 100,
+          "pattern": "^[A-Za-z][A-Za-z0-9_]*$",
+          "title": "Id",
+          "type": "string"
+        },
+        "type": {
+          "enum": [
+            "BINARY",
+            "INTEGER",
+            "CONTINUOUS"
+          ],
+          "title": "Type",
+          "type": "string"
+        },
+        "lb": {
+          "anyOf": [
+            {
+              "anyOf": [
+                {
+                  "maxLength": 128,
+                  "pattern": "^[+-]?(?:[0-9]+(?:\\.[0-9]*)?|\\.[0-9]+)(?:[eE][+-]?[0-9]+)?$",
+                  "type": "string"
+                },
+                {
+                  "type": "number"
+                }
+              ],
+              "description": "Décimal fini ; 100 chiffres, exposant [-100,100]. Chaîne recommandée."
+            },
+            {
+              "$ref": "#/$defs/ParameterRef"
+            }
+          ],
+          "title": "Lb"
+        },
+        "ub": {
+          "anyOf": [
+            {
+              "anyOf": [
+                {
+                  "maxLength": 128,
+                  "pattern": "^[+-]?(?:[0-9]+(?:\\.[0-9]*)?|\\.[0-9]+)(?:[eE][+-]?[0-9]+)?$",
+                  "type": "string"
+                },
+                {
+                  "type": "number"
+                }
+              ],
+              "description": "Décimal fini ; 100 chiffres, exposant [-100,100]. Chaîne recommandée."
+            },
+            {
+              "$ref": "#/$defs/ParameterRef"
+            }
+          ],
+          "title": "Ub"
+        },
+        "department": {
+          "maxLength": 100,
+          "pattern": "^[A-Za-z][A-Za-z0-9_]*$",
+          "title": "Department",
+          "type": "string"
+        },
+        "indices": {
+          "maxProperties": 100,
+          "patternProperties": {
+            "^[A-Za-z][A-Za-z0-9_]*$": {
+              "maxLength": 100,
+              "pattern": "^[A-Za-z][A-Za-z0-9_]*$",
+              "type": "string"
+            }
+          },
+          "propertyNames": {
+            "maxLength": 100
+          },
+          "title": "Indices",
+          "type": "object"
+        }
+      },
+      "required": [
+        "unit",
+        "id",
+        "type",
+        "lb",
+        "ub",
+        "department"
+      ],
+      "title": "Variable",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "id": {
+      "maxLength": 100,
+      "pattern": "^[A-Za-z][A-Za-z0-9_]*$",
+      "title": "Id",
+      "type": "string"
+    },
+    "name": {
+      "maxLength": 500,
+      "minLength": 1,
+      "title": "Name",
+      "type": "string"
+    },
+    "model_version": {
+      "maxLength": 500,
+      "minLength": 1,
+      "title": "Model Version",
+      "type": "string"
+    },
+    "data_snapshot_id": {
+      "maxLength": 500,
+      "minLength": 1,
+      "title": "Data Snapshot Id",
+      "type": "string"
+    },
+    "scenario_id": {
+      "maxLength": 100,
+      "pattern": "^[A-Za-z][A-Za-z0-9_]*$",
+      "title": "Scenario Id",
+      "type": "string"
+    },
+    "currency": {
+      "anyOf": [
+        {
+          "enum": [
+            "EUR",
+            "MAD",
+            "USD"
+          ],
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Currency"
+    },
+    "dimensions": {
+      "maxProperties": 100,
+      "patternProperties": {
+        "^[A-Za-z][A-Za-z0-9_]*$": {
+          "items": {
+            "maxLength": 100,
+            "pattern": "^[A-Za-z][A-Za-z0-9_]*$",
+            "type": "string"
+          },
+          "maxItems": 10000,
+          "minItems": 1,
+          "type": "array"
+        }
+      },
+      "propertyNames": {
+        "maxLength": 100
+      },
+      "title": "Dimensions",
+      "type": "object"
+    },
+    "departments": {
+      "items": {
+        "$ref": "#/$defs/Department"
+      },
+      "maxItems": 1000,
+      "minItems": 1,
+      "title": "Departments",
+      "type": "array"
+    },
+    "parameters": {
+      "maxProperties": 10000,
+      "patternProperties": {
+        "^[A-Za-z][A-Za-z0-9_]*$": {
+          "$ref": "#/$defs/Parameter"
+        }
+      },
+      "propertyNames": {
+        "maxLength": 100
+      },
+      "title": "Parameters",
+      "type": "object"
+    },
+    "variables": {
+      "items": {
+        "$ref": "#/$defs/Variable"
+      },
+      "maxItems": 10000,
+      "minItems": 1,
+      "title": "Variables",
+      "type": "array"
+    },
+    "constraints": {
+      "items": {
+        "$ref": "#/$defs/Constraint"
+      },
+      "maxItems": 10000,
+      "title": "Constraints",
+      "type": "array"
+    },
+    "objectives": {
+      "items": {
+        "$ref": "#/$defs/Objective"
+      },
+      "maxItems": 1,
+      "minItems": 1,
+      "title": "Objectives",
+      "type": "array"
+    }
+  },
+  "required": [
+    "schema_version",
+    "id",
+    "name",
+    "model_version",
+    "data_snapshot_id",
+    "scenario_id",
+    "departments",
+    "parameters",
+    "variables",
+    "constraints",
+    "objectives"
+  ],
+  "title": "ModelDSL",
+  "type": "object"
+}

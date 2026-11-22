@@ -1,0 +1,54 @@
+{
+  "schema_version": "1.0",
+  "id": "generic_allocation",
+  "name": "Allocation générique synthétique",
+  "model_version": "1.0.0",
+  "data_snapshot_id": "synthetic_allocation_v1",
+  "scenario_id": "base",
+  "departments": [{"id": "owner", "name": "Responsable du modèle"}],
+  "dimensions": {"item": ["A", "B"]},
+  "parameters": {},
+  "variables": [
+    {"id": "qty_A", "type": "INTEGER", "lb": "0", "ub": "40", "unit": "unit", "department": "owner", "indices": {"item": "A"}},
+    {"id": "qty_B", "type": "INTEGER", "lb": "0", "ub": "35", "unit": "unit", "department": "owner", "indices": {"item": "B"}}
+  ],
+  "constraints": [
+    {
+      "id": "capacity_1", "owner_department": "owner", "kind": "HARD",
+      "source": "synthetic", "approved": true, "version": "1",
+      "terms": [
+        {"variable": "qty_A", "coefficient": "2", "coefficient_unit": "hour/unit"},
+        {"variable": "qty_B", "coefficient": "1", "coefficient_unit": "hour/unit"}
+      ],
+      "operator": "<=", "rhs": "100", "unit": "hour"
+    },
+    {
+      "id": "capacity_2", "owner_department": "owner", "kind": "HARD",
+      "source": "synthetic", "approved": true, "version": "1",
+      "terms": [
+        {"variable": "qty_A", "coefficient": "100", "coefficient_unit": "EUR/unit"},
+        {"variable": "qty_B", "coefficient": "200", "coefficient_unit": "EUR/unit"}
+      ],
+      "operator": "<=", "rhs": "8000", "unit": "EUR"
+    },
+    {
+      "id": "capacity_3", "owner_department": "owner", "kind": "HARD",
+      "source": "synthetic", "approved": true, "version": "1",
+      "terms": [
+        {"variable": "qty_A", "coefficient": "1", "coefficient_unit": "1"},
+        {"variable": "qty_B", "coefficient": "1", "coefficient_unit": "1"}
+      ],
+      "operator": "<=", "rhs": "55", "unit": "unit"
+    }
+  ],
+  "objectives": [
+    {
+      "id": "value", "owner_department": "owner", "sense": "MAX",
+      "source": "synthetic", "approved": true, "version": "1", "unit": "EUR",
+      "terms": [
+        {"variable": "qty_A", "coefficient": "80", "coefficient_unit": "EUR/unit"},
+        {"variable": "qty_B", "coefficient": "60", "coefficient_unit": "EUR/unit"}
+      ]
+    }
+  ]
+}

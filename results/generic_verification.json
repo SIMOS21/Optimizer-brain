@@ -1,0 +1,97 @@
+{
+  "model_id": "generic_allocation",
+  "model_hash": "71f75fd72d7bcbab8da07b29a806738e6a8252349d383d4fccee583384c82b71",
+  "manifest_hash": "49bf86089a785a69643aa67e2edc4b0009a81568fb7f42689ed87211e8c0c0b5",
+  "model_version": "1.0.0",
+  "data_snapshot_id": "synthetic_allocation_v1",
+  "scenario_id": "base",
+  "feasible": true,
+  "issues": [],
+  "bound_tolerance": "0",
+  "constraint_tolerance": "0",
+  "integrality_tolerance": "0",
+  "variables": [
+    {
+      "id": "qty_A",
+      "value": "40",
+      "bound_violation": "0",
+      "integrality_residual": "0",
+      "valid": true
+    },
+    {
+      "id": "qty_B",
+      "value": "15",
+      "bound_violation": "0",
+      "integrality_residual": "0",
+      "valid": true
+    }
+  ],
+  "constraints": [
+    {
+      "id": "capacity_1",
+      "lhs": "95",
+      "rhs": "100",
+      "slack": "5",
+      "violation": "0",
+      "unit": {
+        "dimensions": [
+          [
+            "time",
+            1
+          ]
+        ],
+        "scale": "1"
+      },
+      "valid": true
+    },
+    {
+      "id": "capacity_2",
+      "lhs": "7000",
+      "rhs": "8000",
+      "slack": "1000",
+      "violation": "0",
+      "unit": {
+        "dimensions": [
+          [
+            "EUR",
+            1
+          ]
+        ],
+        "scale": "1"
+      },
+      "valid": true
+    },
+    {
+      "id": "capacity_3",
+      "lhs": "55",
+      "rhs": "55",
+      "slack": "0",
+      "violation": "0",
+      "unit": {
+        "dimensions": [
+          [
+            "count",
+            1
+          ]
+        ],
+        "scale": "1"
+      },
+      "valid": true
+    }
+  ],
+  "objectives": [
+    {
+      "id": "value",
+      "value": "4100",
+      "unit": {
+        "dimensions": [
+          [
+            "EUR",
+            1
+          ]
+        ],
+        "scale": "1"
+      }
+    }
+  ]
+}

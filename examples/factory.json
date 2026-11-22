@@ -1,0 +1,40 @@
+{
+  "scenario": {
+    "name": "Entreprise industrielle — 4 departements",
+    "products": [
+      {
+        "id": "A", "demand": 28, "min_deliver": 10, "inventory": 4,
+        "unit_revenue": 180, "make_cost": 68, "outsource_cost": 105,
+        "ship_cost": 12, "setup_cost": 100, "machine_hours": 2,
+        "labor_hours": 1, "logistics_units": 1, "outsource_limit": 12
+      },
+      {
+        "id": "B", "demand": 45, "min_deliver": 15, "inventory": 5,
+        "unit_revenue": 125, "make_cost": 52, "outsource_cost": 85,
+        "ship_cost": 10, "setup_cost": 80, "machine_hours": 1,
+        "labor_hours": 1, "logistics_units": 1, "outsource_limit": 12
+      },
+      {
+        "id": "C", "demand": 20, "min_deliver": 5, "inventory": 1,
+        "unit_revenue": 260, "make_cost": 118, "outsource_cost": 165,
+        "ship_cost": 18, "setup_cost": 140, "machine_hours": 3,
+        "labor_hours": 2, "logistics_units": 2, "outsource_limit": 8
+      }
+    ],
+    "machine_capacity": 100,
+    "labor_capacity": 75,
+    "logistics_capacity": 90,
+    "budget": 8000,
+    "overtime_max": 10,
+    "overtime_hour_cost": 35,
+    "min_total_deliver": 0
+  },
+  "baseline_plan": {
+    "allocations": [
+      {"product_id": "A", "make": 13, "outsource": 0, "ship": 17},
+      {"product_id": "B", "make": 15, "outsource": 2, "ship": 22},
+      {"product_id": "C", "make": 8, "outsource": 2, "ship": 11}
+    ],
+    "overtime_hours": 0
+  }
+}
