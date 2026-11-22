@@ -280,6 +280,7 @@ def test_postgres_worker_expires_and_fences_stale_attempt(platform):
         job.lease_expires_at = now() - 30
         job.started_at = now() - 60
         job.updated_at = now() - 60
+        job.cancel_requested_at = now() - 45
 
     worker = OptimizationWorker(
         p.app.state.engine,
@@ -293,6 +294,7 @@ def test_postgres_worker_expires_and_fences_stale_attempt(platform):
         job = session.get(OptimizationJob, job_id)
         assert job.state == "FAILED"
         assert job.error_code == "WORKER_LEASE_EXPIRED"
+        assert job.cancel_requested_at is not None
         assert job.run_id is None
         stale_claim = JobClaim(
             job.id,

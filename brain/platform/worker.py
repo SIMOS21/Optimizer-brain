@@ -252,11 +252,13 @@ class OptimizationWorker:
             claim.attempt_id,
             str(os.getpid()),
         ]
+        child_environment = self._child_environment(solver_settings.time_limit_seconds)
         try:
             process = ManagedProcess.launch(
                 command,
-                self._child_environment(solver_settings.time_limit_seconds),
+                child_environment,
                 self.settings.memory_limit_bytes,
+                int(child_environment["BRAIN_JOB_CPU_LIMIT_SECONDS"]),
             )
         except (OSError, RuntimeError, ValueError):
             logger.exception("Could not start child for job %s", claim.id)

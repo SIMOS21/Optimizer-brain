@@ -18,6 +18,7 @@ managed = ManagedProcess.launch(
     [sys.executable, str(child), str(marker), str(os.getpid())],
     env,
     512 * 1024**2,
+    120,
 )
 deadline = time.monotonic() + 10
 while not marker.exists() and time.monotonic() < deadline:

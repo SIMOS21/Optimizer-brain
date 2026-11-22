@@ -53,7 +53,9 @@ la transition vers `SUCCEEDED`.
   processus worker), `BRAIN_JOB_LEASE_SECONDS`, `BRAIN_JOB_HEARTBEAT_SECONDS`,
   `BRAIN_JOB_MEMORY_LIMIT_BYTES`, `BRAIN_JOB_TERMINATION_GRACE_SECONDS` et
   `BRAIN_JOB_HARD_TIMEOUT_GRACE_SECONDS`. La limite solveur par job reste bornée
-  par `SolveSettings.time_limit_seconds` (300 s maximum).
+  par `SolveSettings.time_limit_seconds` (300 s maximum). Un budget CPU de
+  `ceil(time_limit_seconds + hard_timeout_grace_seconds)` est aussi imposé au
+  Job Object Windows et via `RLIMIT_CPU` sous Linux.
 
 La tranche n'ajoute pas encore l'interface React d'exécution, un endpoint de
 retry, une limite de concurrence globale entre plusieurs instances worker, ni

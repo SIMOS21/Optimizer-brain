@@ -78,10 +78,16 @@ class ManagedProcess:
 
     @classmethod
     def launch(
-        cls, command: list[str], env: dict[str, str], memory_limit_bytes: int
+        cls,
+        command: list[str],
+        env: dict[str, str],
+        memory_limit_bytes: int,
+        cpu_limit_seconds: int,
     ) -> "ManagedProcess":
+        if cpu_limit_seconds < 1:
+            raise ValueError("La limite CPU doit être au moins d'une seconde")
         if os.name == "nt":
-            return cls._launch_windows(command, env, memory_limit_bytes)
+            return cls._launch_windows(command, env, memory_limit_bytes, cpu_limit_seconds)
         if sys.platform != "linux":
             raise RuntimeError(
                 "Les workers d'optimisation sont pris en charge sous Linux et Windows"
@@ -107,7 +113,11 @@ class ManagedProcess:
 
     @classmethod
     def _launch_windows(
-        cls, command: list[str], env: dict[str, str], memory_limit_bytes: int
+        cls,
+        command: list[str],
+        env: dict[str, str],
+        memory_limit_bytes: int,
+        cpu_limit_seconds: int,
     ) -> "ManagedProcess":
         kernel = getattr(ctypes, "WinDLL")("kernel32", use_last_error=True)
         kernel.CreateJobObjectW.argtypes = [wintypes.LPVOID, wintypes.LPCWSTR]
@@ -132,7 +142,8 @@ class ManagedProcess:
         managed = None
         try:
             limits = _ExtendedLimitInformation()
-            limits.BasicLimitInformation.LimitFlags = 0x2000 | 0x200
+            limits.BasicLimitInformation.LimitFlags = 0x2000 | 0x200 | 0x4
+            limits.BasicLimitInformation.PerJobUserTimeLimit = cpu_limit_seconds * 10_000_000
             limits.JobMemoryLimit = memory_limit_bytes
             if not kernel.SetInformationJobObject(
                 job, 9, ctypes.byref(limits), ctypes.sizeof(limits)
