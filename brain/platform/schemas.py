@@ -190,3 +190,47 @@ class DiagnosticsResponse(StrictModel):
     model_version_id: str
     model_content_hash: str
     report: DiagnosticsReport
+
+
+class ScenarioCreate(StrictModel):
+    key: Identifier
+    version: Text
+    name: Text
+    reason: Text
+    source_model_version_id: str
+    expected_source_content_hash: Annotated[str, StringConstraints(pattern=r"^[a-f0-9]{64}$")]
+
+
+class ScenarioDocument(StrictModel):
+    schema_version: Literal["5B.1"] = "5B.1"
+    kind: Literal["IDENTICAL_CLONE"] = "IDENTICAL_CLONE"
+    id: str
+    organization_id: str
+    key: str
+    version: str
+    name: str
+    reason: str
+    author_id: str
+    source_model_version_id: str
+    source_content_hash: str
+    model_version_id: str
+    model_content_hash: str
+    graph_snapshot_id: str
+    graph_content_hash: str
+    data_snapshot_id: str
+    scenario_id: str
+    changes: tuple[()] = ()
+
+
+class ScenarioResponse(StrictModel):
+    id: str
+    organization_id: str
+    key: str
+    version: str
+    created_by: str
+    created_at: int
+    content_hash: str
+    model_version_id: str
+    source_model_version_id: str
+    model_state: Literal["DRAFT", "PUBLISHED"]
+    document: ScenarioDocument

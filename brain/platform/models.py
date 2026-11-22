@@ -139,6 +139,46 @@ class ModelVersion(Artifact, Base):
     )
 
 
+class ScenarioVersion(Base):
+    __tablename__ = "scenario_versions"
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=new_id)
+    organization_id: Mapped[str] = mapped_column(String(36), index=True)
+    key: Mapped[str] = mapped_column(String(100))
+    version: Mapped[str] = mapped_column(String(500))
+    source_model_version_id: Mapped[str] = mapped_column(String(36))
+    model_version_id: Mapped[str] = mapped_column(String(36))
+    graph_snapshot_id: Mapped[str] = mapped_column(String(36))
+    data_snapshot_id: Mapped[str] = mapped_column(String(500))
+    request_hash: Mapped[str] = mapped_column(String(64))
+    payload: Mapped[str] = mapped_column(Text)
+    content_hash: Mapped[str] = mapped_column(String(64))
+    created_by: Mapped[str] = mapped_column(String(36))
+    created_at: Mapped[int] = mapped_column(BigInteger, default=now)
+    __table_args__ = (
+        UniqueConstraint("organization_id", "key", "version"),
+        UniqueConstraint("organization_id", "id"),
+        UniqueConstraint("organization_id", "model_version_id"),
+        CheckConstraint("source_model_version_id <> model_version_id", name="scenario_isolated"),
+        ForeignKeyConstraint(["organization_id"], ["organizations.id"]),
+        ForeignKeyConstraint(
+            ["organization_id", "source_model_version_id"],
+            ["model_versions.organization_id", "model_versions.id"],
+        ),
+        ForeignKeyConstraint(
+            ["organization_id", "model_version_id"],
+            ["model_versions.organization_id", "model_versions.id"],
+        ),
+        ForeignKeyConstraint(
+            ["organization_id", "graph_snapshot_id"],
+            ["graph_snapshots.organization_id", "graph_snapshots.id"],
+        ),
+        ForeignKeyConstraint(
+            ["organization_id", "created_by"],
+            ["memberships.organization_id", "memberships.user_id"],
+        ),
+    )
+
+
 class OptimizationRun(Base):
     __tablename__ = "optimization_runs"
     id: Mapped[str] = mapped_column(String(36), primary_key=True)

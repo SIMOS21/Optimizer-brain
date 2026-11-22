@@ -127,7 +127,7 @@ def platform_fixture(request, tmp_path):
             assert connection.scalar(text("SELECT current_database()")) == "optimizer_brain_test"
             connection.execute(
                 text(
-                    "TRUNCATE audit_events,optimization_jobs,optimization_runs,model_versions,graph_snapshots,departments,auth_sessions,login_throttles,memberships,organizations,users CASCADE"
+                    "TRUNCATE audit_events,scenario_versions,optimization_jobs,optimization_runs,model_versions,graph_snapshots,departments,auth_sessions,login_throttles,memberships,organizations,users CASCADE"
                 )
             )
         settings = Settings(runtime_url)

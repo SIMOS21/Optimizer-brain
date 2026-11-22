@@ -17,7 +17,14 @@ from sqlalchemy.engine import Engine
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session, sessionmaker
 
-from brain.platform.database import Settings, database_now, make_engine, sessions, set_tenant
+from brain.platform.database import (
+    SCHEMA_REVISION,
+    Settings,
+    database_now,
+    make_engine,
+    sessions,
+    set_tenant,
+)
 from brain.platform.job_process import ManagedProcess, enable_child_subreaper
 from brain.platform.models import OptimizationJob, Organization
 from brain.solvers.contracts import SolveSettings
@@ -103,8 +110,10 @@ class OptimizationWorker:
             revision = (
                 connection.execute(text("SELECT version_num FROM alembic_version")).scalars().all()
             )
-            if revision != ["0004_4c"]:
-                raise ValueError("Migration Phase 4C requise avant le démarrage du worker")
+            if revision != [SCHEMA_REVISION]:
+                raise ValueError(
+                    f"Migration {SCHEMA_REVISION} requise avant le démarrage du worker"
+                )
             if connection.scalar(
                 text("SELECT has_table_privilege(current_user, 'optimization_jobs', 'TRUNCATE')")
             ):

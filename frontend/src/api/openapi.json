@@ -1386,6 +1386,178 @@
         }
       }
     },
+    "/api/v1/organizations/{organization_id}/scenarios": {
+      "post": {
+        "summary": "Scenario Create",
+        "operationId": "scenario_create_api_v1_organizations__organization_id__scenarios_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "organization_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Organization Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ScenarioCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ScenarioResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "Scenario List",
+        "operationId": "scenario_list_api_v1_organizations__organization_id__scenarios_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "organization_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Organization Id"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 50,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Page_ScenarioResponse_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/organizations/{organization_id}/scenarios/{identity}": {
+      "get": {
+        "summary": "Scenario Get",
+        "operationId": "scenario_get_api_v1_organizations__organization_id__scenarios__identity__get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "organization_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Organization Id"
+            }
+          },
+          {
+            "name": "identity",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Identity"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ScenarioResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/organizations/{organization_id}/audit-events": {
       "get": {
         "summary": "Audit Events",
@@ -4353,6 +4525,33 @@
         ],
         "title": "Page[OrganizationResponse]"
       },
+      "Page_ScenarioResponse_": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/ScenarioResponse"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "limit": {
+            "type": "integer",
+            "title": "Limit"
+          },
+          "offset": {
+            "type": "integer",
+            "title": "Offset"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "items",
+          "limit",
+          "offset"
+        ],
+        "title": "Page[ScenarioResponse]"
+      },
       "Parameter-Input": {
         "properties": {
           "source": {
@@ -4909,6 +5108,224 @@
           "report"
         ],
         "title": "RunDocument"
+      },
+      "ScenarioCreate": {
+        "properties": {
+          "key": {
+            "type": "string",
+            "maxLength": 100,
+            "pattern": "^[A-Za-z][A-Za-z0-9_]*$",
+            "title": "Key"
+          },
+          "version": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 1,
+            "title": "Version"
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 1,
+            "title": "Name"
+          },
+          "reason": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 1,
+            "title": "Reason"
+          },
+          "source_model_version_id": {
+            "type": "string",
+            "title": "Source Model Version Id"
+          },
+          "expected_source_content_hash": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$",
+            "title": "Expected Source Content Hash"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "key",
+          "version",
+          "name",
+          "reason",
+          "source_model_version_id",
+          "expected_source_content_hash"
+        ],
+        "title": "ScenarioCreate"
+      },
+      "ScenarioDocument": {
+        "properties": {
+          "schema_version": {
+            "type": "string",
+            "const": "5B.1",
+            "title": "Schema Version",
+            "default": "5B.1"
+          },
+          "kind": {
+            "type": "string",
+            "const": "IDENTICAL_CLONE",
+            "title": "Kind",
+            "default": "IDENTICAL_CLONE"
+          },
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "organization_id": {
+            "type": "string",
+            "title": "Organization Id"
+          },
+          "key": {
+            "type": "string",
+            "title": "Key"
+          },
+          "version": {
+            "type": "string",
+            "title": "Version"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "reason": {
+            "type": "string",
+            "title": "Reason"
+          },
+          "author_id": {
+            "type": "string",
+            "title": "Author Id"
+          },
+          "source_model_version_id": {
+            "type": "string",
+            "title": "Source Model Version Id"
+          },
+          "source_content_hash": {
+            "type": "string",
+            "title": "Source Content Hash"
+          },
+          "model_version_id": {
+            "type": "string",
+            "title": "Model Version Id"
+          },
+          "model_content_hash": {
+            "type": "string",
+            "title": "Model Content Hash"
+          },
+          "graph_snapshot_id": {
+            "type": "string",
+            "title": "Graph Snapshot Id"
+          },
+          "graph_content_hash": {
+            "type": "string",
+            "title": "Graph Content Hash"
+          },
+          "data_snapshot_id": {
+            "type": "string",
+            "title": "Data Snapshot Id"
+          },
+          "scenario_id": {
+            "type": "string",
+            "title": "Scenario Id"
+          },
+          "changes": {
+            "type": "array",
+            "maxItems": 0,
+            "minItems": 0,
+            "title": "Changes",
+            "default": []
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "organization_id",
+          "key",
+          "version",
+          "name",
+          "reason",
+          "author_id",
+          "source_model_version_id",
+          "source_content_hash",
+          "model_version_id",
+          "model_content_hash",
+          "graph_snapshot_id",
+          "graph_content_hash",
+          "data_snapshot_id",
+          "scenario_id"
+        ],
+        "title": "ScenarioDocument"
+      },
+      "ScenarioResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "organization_id": {
+            "type": "string",
+            "title": "Organization Id"
+          },
+          "key": {
+            "type": "string",
+            "title": "Key"
+          },
+          "version": {
+            "type": "string",
+            "title": "Version"
+          },
+          "created_by": {
+            "type": "string",
+            "title": "Created By"
+          },
+          "created_at": {
+            "type": "integer",
+            "title": "Created At"
+          },
+          "content_hash": {
+            "type": "string",
+            "title": "Content Hash"
+          },
+          "model_version_id": {
+            "type": "string",
+            "title": "Model Version Id"
+          },
+          "source_model_version_id": {
+            "type": "string",
+            "title": "Source Model Version Id"
+          },
+          "model_state": {
+            "type": "string",
+            "enum": [
+              "DRAFT",
+              "PUBLISHED"
+            ],
+            "title": "Model State"
+          },
+          "document": {
+            "$ref": "#/components/schemas/ScenarioDocument"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "organization_id",
+          "key",
+          "version",
+          "created_by",
+          "created_at",
+          "content_hash",
+          "model_version_id",
+          "source_model_version_id",
+          "model_state",
+          "document"
+        ],
+        "title": "ScenarioResponse"
       },
       "SolveSettings-Input": {
         "properties": {

@@ -6,6 +6,8 @@ import os
 from sqlalchemy import Engine, create_engine, event, text
 from sqlalchemy.orm import Session, sessionmaker
 
+SCHEMA_REVISION = "0005_5b"
+
 
 @dataclass(frozen=True)
 class Settings:

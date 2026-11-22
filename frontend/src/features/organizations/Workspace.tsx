@@ -33,6 +33,12 @@ const OptimizationCenter = lazy(() =>
   })),
 );
 
+const ScenarioLab = lazy(() =>
+  import("../scenarios/ScenarioLab").then((module) => ({
+    default: module.ScenarioLab,
+  })),
+);
+
 const GraphCanvas = lazy(() =>
   import("../graph/GraphCanvas").then((module) => ({
     default: module.GraphCanvas,
@@ -521,6 +527,7 @@ export function Workspace({
           <NavLink to={`${base}/models`}>Modèles & contraintes</NavLink>
           <NavLink to={`${base}/history`}>Historique vérifié</NavLink>
           <NavLink to={`${base}/execution`}>Optimization Center</NavLink>
+          <NavLink to={`${base}/scenarios`}>Scenario Lab</NavLink>
         </nav>
         <div className="sidebar-note">
           <span className="online-dot" /> Brain indépendant du LLM
@@ -535,6 +542,21 @@ export function Workspace({
       </aside>
       <main id="main-content" className="content">
         <Routes>
+          <Route
+            path="scenarios/:id?"
+            element={
+              <Suspense
+                fallback={<p role="status">Chargement du Scenario Lab…</p>}
+              >
+                <ScenarioLab
+                  client={client}
+                  organization={organization}
+                  models={models}
+                  refresh={refresh}
+                />
+              </Suspense>
+            }
+          />
           <Route
             path="execution/:jobId?"
             element={
