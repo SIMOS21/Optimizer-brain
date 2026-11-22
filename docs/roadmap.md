@@ -9,7 +9,8 @@
 | 4A — Persistence, Identity & Governance Foundations | Livrée : PostgreSQL/Alembic, identités, sessions révocables, RBAC, RLS, publications et historiques immuables, API v1 distincte ; voir validation-phase-4a.md |
 | 4B — Visual Organization Studio | Livrée : React/TypeScript, canvas fidèle aux snapshots, import/édition versionnée, publication, inspecteurs et historique ; parcours API réelle usine/université validés, voir validation-phase-4b.md |
 | 4C — Asynchronous Optimization Execution Center | Backend et frontend livrés : modèles publiés, lancement idempotent, suivi et annulation serveur, cockpit et historique immuables ; parcours réels usine/université, INFEASIBLE et TIME_LIMIT ; voir validation-phase-4c.md |
-| 5 à 8 | Non implémentées |
+| 5A — Constraint Diagnostics | Livrée : preuves statiques exactes et incomplètes, mesures indépendantes, provenance, GET sécurisés et consultation Studio en lecture seule ; voir constraint-diagnostics-phase-5a.md |
+| 5B, 5C et 6 à 8 | Non implémentées |
 
 La phase 2 livre IR → matrices → résultat brut → vérification indépendante →
 résultat traçable, avec maintien des routes legacy. Les contraintes numériques et

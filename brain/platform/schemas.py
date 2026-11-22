@@ -2,6 +2,7 @@
 
 from typing import Annotated, Generic, Literal, TypeVar
 from pydantic import Field, JsonValue, SecretStr, StringConstraints
+from brain.constraint_diagnostics import DiagnosticsReport
 from brain.kernel.schema import Identifier, ModelDSL, Parameter, StrictModel, Text
 from brain.organization.schema import OrganizationGraph, OrganizationModel
 from brain.solvers.contracts import SolveSettings
@@ -179,3 +180,13 @@ class AuditResponse(StrictModel):
     action: str
     target_id: str
     created_at: int
+
+
+class DiagnosticsResponse(StrictModel):
+    id: str
+    organization_id: str
+    artifact_kind: Literal["MODEL_VERSION", "RUN"]
+    content_hash: str
+    model_version_id: str
+    model_content_hash: str
+    report: DiagnosticsReport

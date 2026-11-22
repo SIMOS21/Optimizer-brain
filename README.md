@@ -267,7 +267,9 @@ optimization_brain_mvp/
 
 La [roadmap](docs/roadmap.md) suit désormais les phases de la spécification.
 Les phases 3, 4A, 4B et 4C sont livrées. Le centre 4C lance, suit et annule les
-jobs autorisés et consulte leurs résultats historiques vérifiés. La Phase 5, le LLM et les optimisations
-avancées restent hors périmètre.
+jobs autorisés et consulte leurs résultats historiques vérifiés. La
+[Phase 5A](docs/constraint-diagnostics-phase-5a.md) ajoute des diagnostics exacts
+et incomplets, accessibles en lecture seule dans le Studio et l'API sécurisée.
+Les Phases 5B/5C, le LLM et les optimisations avancées restent hors périmètre.
 
 **Règle de conception :** benchmarker et prouver l'apport de chaque couche algorithmique avant de l'ajouter. Un algorithme complexe n'est utile que s'il améliore la qualité, la vitesse de résolution, la robustesse ou l'explicabilité.

@@ -860,6 +860,59 @@
         }
       }
     },
+    "/api/v1/organizations/{organization_id}/model-versions/{identity}/diagnostics": {
+      "get": {
+        "summary": "Model Diagnostics",
+        "operationId": "model_diagnostics_api_v1_organizations__organization_id__model_versions__identity__diagnostics_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "organization_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Organization Id"
+            }
+          },
+          {
+            "name": "identity",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Identity"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DiagnosticsResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/organizations/{organization_id}/model-versions/{identity}/publish": {
       "post": {
         "summary": "Model Publish",
@@ -1263,6 +1316,59 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/RunArtifactResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/organizations/{organization_id}/optimization-runs/{identity}/diagnostics": {
+      "get": {
+        "summary": "Run Diagnostics",
+        "operationId": "run_diagnostics_api_v1_organizations__organization_id__optimization_runs__identity__diagnostics_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "organization_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Organization Id"
+            }
+          },
+          {
+            "name": "identity",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Identity"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DiagnosticsResponse"
                 }
               }
             }
@@ -1790,6 +1896,189 @@
         ],
         "title": "Constraint"
       },
+      "ConstraintActivity": {
+        "properties": {
+          "constraint": {
+            "$ref": "#/components/schemas/ConstraintLink"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "SATISFIED",
+              "SATURATED",
+              "VIOLATED",
+              "UNAVAILABLE"
+            ],
+            "title": "State"
+          },
+          "lhs": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lhs"
+          },
+          "rhs": {
+            "type": "string",
+            "title": "Rhs"
+          },
+          "slack": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Slack"
+          },
+          "violation": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Violation"
+          },
+          "tolerance": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tolerance"
+          },
+          "unit_dimensions": {
+            "items": {
+              "prefixItems": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ],
+              "type": "array",
+              "maxItems": 2,
+              "minItems": 2
+            },
+            "type": "array",
+            "title": "Unit Dimensions"
+          },
+          "unit_scale": {
+            "type": "string",
+            "title": "Unit Scale"
+          },
+          "cost_status": {
+            "type": "string",
+            "const": "NOT_EVALUATED",
+            "title": "Cost Status",
+            "default": "NOT_EVALUATED"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "constraint",
+          "state",
+          "lhs",
+          "rhs",
+          "slack",
+          "violation",
+          "tolerance",
+          "unit_dimensions",
+          "unit_scale"
+        ],
+        "title": "ConstraintActivity"
+      },
+      "ConstraintLink": {
+        "properties": {
+          "constraint_id": {
+            "type": "string",
+            "title": "Constraint Id"
+          },
+          "department": {
+            "type": "string",
+            "title": "Department"
+          },
+          "source": {
+            "type": "string",
+            "title": "Source"
+          },
+          "approved": {
+            "type": "boolean",
+            "title": "Approved"
+          },
+          "version": {
+            "type": "string",
+            "title": "Version"
+          },
+          "fragment_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Fragment Ids",
+            "default": []
+          },
+          "contribution_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Contribution Ids",
+            "default": []
+          },
+          "parameter_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Parameter Ids",
+            "default": []
+          },
+          "resource_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Resource Id"
+          },
+          "source_paths": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Source Paths",
+            "default": []
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "constraint_id",
+          "department",
+          "source",
+          "approved",
+          "version"
+        ],
+        "title": "ConstraintLink"
+      },
       "ConstraintTraceDocument": {
         "properties": {
           "constraint_id": {
@@ -2265,6 +2554,333 @@
           "type"
         ],
         "title": "DependencyEdge"
+      },
+      "DiagnosticsReport": {
+        "properties": {
+          "schema_version": {
+            "type": "string",
+            "const": "5A.1",
+            "title": "Schema Version",
+            "default": "5A.1"
+          },
+          "model_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model Id"
+          },
+          "model_version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model Version"
+          },
+          "model_hash": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model Hash"
+          },
+          "manifest_hash": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Manifest Hash"
+          },
+          "data_snapshot_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Data Snapshot Id"
+          },
+          "scenario_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Scenario Id"
+          },
+          "composition_manifest_hash": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Composition Manifest Hash"
+          },
+          "validation": {
+            "type": "string",
+            "enum": [
+              "VALID",
+              "INVALID_MODEL"
+            ],
+            "title": "Validation"
+          },
+          "static_conclusion": {
+            "type": "string",
+            "enum": [
+              "CONTRADICTION_PROVEN",
+              "NO_CONCLUSION",
+              "NOT_ANALYZED"
+            ],
+            "title": "Static Conclusion"
+          },
+          "findings": {
+            "items": {
+              "$ref": "#/components/schemas/Finding"
+            },
+            "type": "array",
+            "title": "Findings"
+          },
+          "activities": {
+            "items": {
+              "$ref": "#/components/schemas/ConstraintActivity"
+            },
+            "type": "array",
+            "title": "Activities"
+          },
+          "solver_status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Solver Status"
+          },
+          "infeasibility_evidence": {
+            "type": "string",
+            "enum": [
+              "STATIC_PROOF",
+              "SOLVER_REPORTED",
+              "NONE"
+            ],
+            "title": "Infeasibility Evidence"
+          },
+          "iis_available": {
+            "type": "boolean",
+            "const": false,
+            "title": "Iis Available",
+            "default": false
+          },
+          "plan_checked": {
+            "type": "boolean",
+            "title": "Plan Checked",
+            "default": false
+          },
+          "plan_valid": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Plan Valid"
+          },
+          "plan_issues": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Plan Issues",
+            "default": []
+          },
+          "limitations": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Limitations",
+            "default": [
+              "Analyse incomplète : l'absence de contradiction détectée ne prouve pas la faisabilité.",
+              "Les preuves statiques portent sur le modèle rationnel exact, sans tolérance solveur.",
+              "Aucun IIS fourni ; les contraintes citées ne constituent pas un conflit minimal.",
+              "Coûts non évalués : aucune sensibilité ni aucun prix d'ombre exposé par ce backend.",
+              "Saturation et violation décrivent le plan contrôlé, pas une cause d'infaisabilité."
+            ]
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "model_id",
+          "model_version",
+          "model_hash",
+          "manifest_hash",
+          "data_snapshot_id",
+          "scenario_id",
+          "validation",
+          "static_conclusion",
+          "findings",
+          "activities",
+          "infeasibility_evidence"
+        ],
+        "title": "DiagnosticsReport"
+      },
+      "DiagnosticsResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "organization_id": {
+            "type": "string",
+            "title": "Organization Id"
+          },
+          "artifact_kind": {
+            "type": "string",
+            "enum": [
+              "MODEL_VERSION",
+              "RUN"
+            ],
+            "title": "Artifact Kind"
+          },
+          "content_hash": {
+            "type": "string",
+            "title": "Content Hash"
+          },
+          "model_version_id": {
+            "type": "string",
+            "title": "Model Version Id"
+          },
+          "model_content_hash": {
+            "type": "string",
+            "title": "Model Content Hash"
+          },
+          "report": {
+            "$ref": "#/components/schemas/DiagnosticsReport"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "organization_id",
+          "artifact_kind",
+          "content_hash",
+          "model_version_id",
+          "model_content_hash",
+          "report"
+        ],
+        "title": "DiagnosticsResponse"
+      },
+      "Finding": {
+        "properties": {
+          "code": {
+            "type": "string",
+            "title": "Code"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "constraints": {
+            "items": {
+              "$ref": "#/components/schemas/ConstraintLink"
+            },
+            "type": "array",
+            "title": "Constraints",
+            "default": []
+          },
+          "variable_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Variable Ids",
+            "default": []
+          },
+          "variable_departments": {
+            "items": {
+              "prefixItems": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "string"
+                }
+              ],
+              "type": "array",
+              "maxItems": 2,
+              "minItems": 2
+            },
+            "type": "array",
+            "title": "Variable Departments",
+            "default": []
+          },
+          "path": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Path"
+          },
+          "facts": {
+            "items": {
+              "prefixItems": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "string"
+                }
+              ],
+              "type": "array",
+              "maxItems": 2,
+              "minItems": 2
+            },
+            "type": "array",
+            "title": "Facts",
+            "default": []
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "code",
+          "message"
+        ],
+        "title": "Finding"
       },
       "GraphArtifactResponse": {
         "properties": {
