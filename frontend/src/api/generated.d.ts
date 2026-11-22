@@ -230,6 +230,74 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/organizations/{organization_id}/model-versions/{identity}/optimization-jobs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Optimization Job Create */
+        post: operations["optimization_job_create_api_v1_organizations__organization_id__model_versions__identity__optimization_jobs_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/organizations/{organization_id}/optimization-jobs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Optimization Jobs */
+        get: operations["optimization_jobs_api_v1_organizations__organization_id__optimization_jobs_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/organizations/{organization_id}/optimization-jobs/{identity}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Optimization Job Get */
+        get: operations["optimization_job_get_api_v1_organizations__organization_id__optimization_jobs__identity__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/organizations/{organization_id}/optimization-jobs/{identity}/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Optimization Job Cancel */
+        post: operations["optimization_job_cancel_api_v1_organizations__organization_id__optimization_jobs__identity__cancel_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/organizations/{organization_id}/optimization-runs": {
         parameters: {
             query?: never;
@@ -790,6 +858,45 @@ export interface components {
             /** Terms */
             terms: components["schemas"]["Term-Output"][];
         };
+        /** OptimizationJobCreate */
+        OptimizationJobCreate: {
+            settings?: components["schemas"]["SolveSettings-Input"];
+        };
+        /** OptimizationJobResponse */
+        OptimizationJobResponse: {
+            /** Id */
+            id: string;
+            /** Organization Id */
+            organization_id: string;
+            /** Model Version Id */
+            model_version_id: string;
+            /** Created By */
+            created_by: string;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "QUEUED" | "RUNNING" | "SUCCEEDED" | "FAILED" | "CANCELLED";
+            settings: components["schemas"]["SolveSettings-Output"];
+            /** Solver Status */
+            solver_status: string | null;
+            /** Run Id */
+            run_id: string | null;
+            /** Error Code */
+            error_code: string | null;
+            /** Cancel Requested */
+            cancel_requested: boolean;
+            /** Attempt Number */
+            attempt_number: number;
+            /** Created At */
+            created_at: number;
+            /** Updated At */
+            updated_at: number;
+            /** Started At */
+            started_at: number | null;
+            /** Finished At */
+            finished_at: number | null;
+        };
         /** Organization */
         Organization: {
             /** Source */
@@ -947,6 +1054,15 @@ export interface components {
         Page_MembershipResponse_: {
             /** Items */
             items: components["schemas"]["MembershipResponse"][];
+            /** Limit */
+            limit: number;
+            /** Offset */
+            offset: number;
+        };
+        /** Page[OptimizationJobResponse] */
+        Page_OptimizationJobResponse_: {
+            /** Items */
+            items: components["schemas"]["OptimizationJobResponse"][];
             /** Limit */
             limit: number;
             /** Offset */
@@ -1118,6 +1234,48 @@ export interface components {
                 [key: string]: components["schemas"]["JsonValue"];
             };
         };
+        /** SolveSettings */
+        "SolveSettings-Input": {
+            /**
+             * Time Limit Seconds
+             * @default 20
+             */
+            time_limit_seconds: number;
+            /**
+             * Mip Rel Gap
+             * @default 0
+             */
+            mip_rel_gap: number;
+            /**
+             * Presolve
+             * @default true
+             */
+            presolve: boolean;
+            /** Node Limit */
+            node_limit?: number | null;
+            verification?: components["schemas"]["VerificationSettings-Input"];
+        };
+        /** SolveSettings */
+        "SolveSettings-Output": {
+            /**
+             * Time Limit Seconds
+             * @default 20
+             */
+            time_limit_seconds: number;
+            /**
+             * Mip Rel Gap
+             * @default 0
+             */
+            mip_rel_gap: number;
+            /**
+             * Presolve
+             * @default true
+             */
+            presolve: boolean;
+            /** Node Limit */
+            node_limit?: number | null;
+            verification?: components["schemas"]["VerificationSettings-Output"];
+        };
         /** Term */
         "Term-Input": {
             /** Variable */
@@ -1224,6 +1382,67 @@ export interface components {
             owner_department: string;
             /** Declaration Version */
             declaration_version: string;
+        };
+        /** VerificationSettings */
+        "VerificationSettings-Input": {
+            /**
+             * Bound Tolerance
+             * @description Décimal fini ; 100 chiffres, exposant [-100,100]. Chaîne recommandée.
+             * @default 1E-7
+             */
+            bound_tolerance: string | number;
+            /**
+             * Constraint Tolerance
+             * @description Décimal fini ; 100 chiffres, exposant [-100,100]. Chaîne recommandée.
+             * @default 1E-7
+             */
+            constraint_tolerance: string | number;
+            /**
+             * Integrality Tolerance
+             * @description Décimal fini ; 100 chiffres, exposant [-100,100]. Chaîne recommandée.
+             * @default 1E-7
+             */
+            integrality_tolerance: string | number;
+            /**
+             * Objective Absolute Tolerance
+             * @description Décimal fini ; 100 chiffres, exposant [-100,100]. Chaîne recommandée.
+             * @default 0.000001
+             */
+            objective_absolute_tolerance: string | number;
+            /**
+             * Objective Relative Tolerance
+             * @description Décimal fini ; 100 chiffres, exposant [-100,100]. Chaîne recommandée.
+             * @default 1E-9
+             */
+            objective_relative_tolerance: string | number;
+        };
+        /** VerificationSettings */
+        "VerificationSettings-Output": {
+            /**
+             * Bound Tolerance
+             * @default 1E-7
+             */
+            bound_tolerance: string;
+            /**
+             * Constraint Tolerance
+             * @default 1E-7
+             */
+            constraint_tolerance: string;
+            /**
+             * Integrality Tolerance
+             * @default 1E-7
+             */
+            integrality_tolerance: string;
+            /**
+             * Objective Absolute Tolerance
+             * @default 0.000001
+             */
+            objective_absolute_tolerance: string;
+            /**
+             * Objective Relative Tolerance
+             * @default 1E-9
+             */
+            objective_relative_tolerance: string;
         };
     };
     responses: never;
@@ -1792,6 +2011,142 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ModelArtifactResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    optimization_job_create_api_v1_organizations__organization_id__model_versions__identity__optimization_jobs_post: {
+        parameters: {
+            query?: never;
+            header: {
+                "Idempotency-Key": string;
+            };
+            path: {
+                organization_id: string;
+                identity: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["OptimizationJobCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OptimizationJobResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    optimization_jobs_api_v1_organizations__organization_id__optimization_jobs_get: {
+        parameters: {
+            query?: {
+                limit?: number;
+                offset?: number;
+            };
+            header?: never;
+            path: {
+                organization_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Page_OptimizationJobResponse_"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    optimization_job_get_api_v1_organizations__organization_id__optimization_jobs__identity__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                organization_id: string;
+                identity: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OptimizationJobResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    optimization_job_cancel_api_v1_organizations__organization_id__optimization_jobs__identity__cancel_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                organization_id: string;
+                identity: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OptimizationJobResponse"];
                 };
             };
             /** @description Validation Error */

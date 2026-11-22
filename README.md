@@ -1,4 +1,4 @@
-> **Développement avec Codex :** lire `AGENTS.md` et `OPTIMIZATION_BRAIN_SPEC.md`. Les phases 0 à 3, les fondations 4A et le Studio visuel 4B sont livrés ; la plateforme complète reste une cible.
+> **Développement :** lire `AGENTS.md` et `OPTIMIZATION_BRAIN_SPEC.md`. Les phases 0 à 3, 4A, 4B et la première tranche backend 4C sont livrées ; le centre d'exécution reste sans interface dédiée.
 
 # Optimization Brain — MVP conservé et Universal Model Kernel
 
@@ -24,6 +24,10 @@ Phase 4A : [déploiement PostgreSQL et API sécurisée](docs/platform-phase-4a.m
 Phase 4B : [Visual Organization Studio](docs/studio-phase-4b.md),
 [ADR navigateur et contrats](docs/decision-records/0005-visual-studio-browser-contracts.md),
 [audit](docs/audit-phase-4b.md), [validation et captures](docs/validation-phase-4b.md).
+Phase 4C : [centre d'exécution backend](docs/execution-center-phase-4c.md),
+[ADR jobs et concurrence](docs/decision-records/0006-asynchronous-execution-center.md).
+La [revue backend et le plan frontend 4C](docs/review-phase-4c-backend.md)
+documentent la reprise, les preuves de validation et le préalable d'intégration.
 
 ## Studio organisationnel interactif (phase 4B)
 
@@ -43,8 +47,8 @@ npm.cmd run dev
 ```
 
 Studio : http://127.0.0.1:5173. Jeton en mémoire uniquement ; rechargement = relogin.
-Le proxy appelle l'API sécurisée 4A. Aucun calcul depuis le navigateur, worker,
-scénario avancé ou LLM n'est introduit. Les positions restent locales ; les
+Le proxy appelle l'API sécurisée. Aucun calcul depuis le navigateur, scénario
+avancé ou LLM n'est introduit. Les positions restent locales ; les
 équations sont inspectables dans les modèles persistés et l'IR canonique.
 
 ## Fondations de persistance et de gouvernance (phase 4A)
@@ -59,8 +63,9 @@ Lancer cette application avec `python -m uvicorn brain.platform.api:create_app -
 après la [configuration et les migrations](docs/platform-phase-4a.md).
 L'application legacy `brain.api:app` reste une démonstration locale séparée,
 sans authentification. Les snapshots SQLite de Phase 3 et le Brain hors ligne
-restent disponibles. Le Studio est ajouté séparément en 4B ; aucun worker ou
-Phase 4C/5 n'est livré.
+restent disponibles. La Phase 4C ajoute une file PostgreSQL et un worker autonome :
+`python -m brain.platform.worker`. Son API lance et suit les jobs, mais aucune
+interface d'exécution n'est encore livrée.
 
 ## Composition multi-départements (phase 3)
 
@@ -248,10 +253,9 @@ optimization_brain_mvp/
 ## Suite du développement
 
 La [roadmap](docs/roadmap.md) suit désormais les phases de la spécification.
-La phase 3 est livrée : composition globale de fragments, graphe, mesures par
-département et snapshots locaux immuables. Prochaine action : revue des contrats
-et préparation du cadrage de phase 4, sans la commencer dans cet incrément.
-Authentification/RBAC, PostgreSQL, interface web, workers, LLM et optimisations
-avancées ne sont pas implémentés. Les approbations sont déclaratives.
+Les phases 3, 4A, 4B et la tranche backend 4C sont livrées. Le centre 4C persiste
+les jobs et les runs vérifiés ; la prochaine tranche pourra ajouter son interface
+après revue/validation de ce backend. La Phase 5, le LLM et les optimisations
+avancées restent hors périmètre.
 
 **Règle de conception :** benchmarker et prouver l'apport de chaque couche algorithmique avant de l'ajouter. Un algorithme complexe n'est utile que s'il améliore la qualité, la vitesse de résolution, la robustesse ou l'explicabilité.

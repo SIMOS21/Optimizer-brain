@@ -51,3 +51,17 @@ def set_tenant(session: Session, organization_id: str) -> None:
             text("SELECT set_config('brain.organization_id', :organization_id, true)"),
             {"organization_id": organization_id},
         )
+
+
+def database_now(session: Session) -> int:
+    if session.bind is None:
+        raise RuntimeError("La session doit être liée à une base")
+    if session.bind.dialect.name == "postgresql":
+        value = session.scalar(text("SELECT floor(extract(epoch FROM clock_timestamp()))::bigint"))
+    elif session.bind.dialect.name == "sqlite":
+        value = session.scalar(text("SELECT CAST(strftime('%s','now') AS INTEGER)"))
+    else:
+        raise RuntimeError("Horloge de base non prise en charge")
+    if value is None:
+        raise RuntimeError("Horloge de base indisponible")
+    return int(value)

@@ -4,6 +4,7 @@ from typing import Annotated, Generic, Literal, TypeVar
 from pydantic import Field, JsonValue, SecretStr, StringConstraints
 from brain.kernel.schema import Identifier, ModelDSL, Parameter, StrictModel, Text
 from brain.organization.schema import OrganizationGraph, OrganizationModel
+from brain.solvers.contracts import SolveSettings
 
 Role = Literal["ADMIN", "BUILDER", "APPROVER", "VIEWER"]
 
@@ -148,6 +149,28 @@ class ModelArtifactResponse(ArtifactMetadata):
 
 class RunArtifactResponse(ArtifactMetadata):
     document: RunDocument
+
+
+class OptimizationJobCreate(StrictModel):
+    settings: SolveSettings = Field(default_factory=SolveSettings)
+
+
+class OptimizationJobResponse(StrictModel):
+    id: str
+    organization_id: str
+    model_version_id: str
+    created_by: str
+    state: Literal["QUEUED", "RUNNING", "SUCCEEDED", "FAILED", "CANCELLED"]
+    settings: SolveSettings
+    solver_status: str | None
+    run_id: str | None
+    error_code: str | None
+    cancel_requested: bool
+    attempt_number: int
+    created_at: int
+    updated_at: int
+    started_at: int | None
+    finished_at: int | None
 
 
 class AuditResponse(StrictModel):

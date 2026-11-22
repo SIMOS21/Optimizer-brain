@@ -9,6 +9,7 @@ from sqlalchemy import (
     CheckConstraint,
     ForeignKey,
     ForeignKeyConstraint,
+    Index,
     String,
     Text,
     UniqueConstraint,
@@ -157,6 +158,78 @@ class OptimizationRun(Base):
             ["organization_id", "created_by"],
             ["memberships.organization_id", "memberships.user_id"],
         ),
+    )
+
+
+class OptimizationJob(Base):
+    __tablename__ = "optimization_jobs"
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=new_id)
+    organization_id: Mapped[str] = mapped_column(String(36), nullable=False)
+    model_version_id: Mapped[str] = mapped_column(String(36), nullable=False)
+    created_by: Mapped[str] = mapped_column(String(36), nullable=False)
+    state: Mapped[str] = mapped_column(String(16), nullable=False, default="QUEUED")
+    settings: Mapped[str] = mapped_column(Text, nullable=False)
+    request_hash: Mapped[str] = mapped_column(String(64), nullable=False)
+    idempotency_key_hash: Mapped[str] = mapped_column(String(64), nullable=False)
+    solver_status: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    run_id: Mapped[str | None] = mapped_column(String(36), nullable=True)
+    error_code: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    cancel_requested_at: Mapped[int | None] = mapped_column(BigInteger, nullable=True)
+    attempt_number: Mapped[int] = mapped_column(BigInteger, nullable=False, default=0)
+    attempt_id: Mapped[str | None] = mapped_column(String(36), nullable=True)
+    worker_id: Mapped[str | None] = mapped_column(String(36), nullable=True)
+    heartbeat_at: Mapped[int | None] = mapped_column(BigInteger, nullable=True)
+    lease_expires_at: Mapped[int | None] = mapped_column(BigInteger, nullable=True)
+    created_at: Mapped[int] = mapped_column(BigInteger, nullable=False, default=now)
+    updated_at: Mapped[int] = mapped_column(BigInteger, nullable=False, default=now)
+    started_at: Mapped[int | None] = mapped_column(BigInteger, nullable=True)
+    finished_at: Mapped[int | None] = mapped_column(BigInteger, nullable=True)
+    __table_args__ = (
+        UniqueConstraint(
+            "organization_id",
+            "created_by",
+            "idempotency_key_hash",
+            name="uq_optimization_jobs_idempotency",
+        ),
+        ForeignKeyConstraint(
+            ["organization_id", "model_version_id"],
+            ["model_versions.organization_id", "model_versions.id"],
+        ),
+        ForeignKeyConstraint(
+            ["organization_id", "created_by"],
+            ["memberships.organization_id", "memberships.user_id"],
+        ),
+        ForeignKeyConstraint(
+            ["run_id"],
+            ["optimization_runs.id"],
+        ),
+        CheckConstraint(
+            "state IN ('QUEUED','RUNNING','SUCCEEDED','FAILED','CANCELLED')",
+            name="optimization_job_state",
+        ),
+        CheckConstraint("attempt_number >= 0", name="optimization_job_attempt_number"),
+        CheckConstraint(
+            "(state='QUEUED' AND attempt_number=0 AND attempt_id IS NULL AND worker_id IS NULL "
+            "AND lease_expires_at IS NULL AND run_id IS NULL AND solver_status IS NULL "
+            "AND error_code IS NULL AND finished_at IS NULL) OR "
+            "(state='RUNNING' AND attempt_number>0 AND attempt_id IS NOT NULL "
+            "AND worker_id IS NOT NULL AND lease_expires_at IS NOT NULL "
+            "AND run_id IS NULL AND solver_status IS NULL AND error_code IS NULL "
+            "AND finished_at IS NULL) OR "
+            "(state='SUCCEEDED' AND attempt_id IS NOT NULL AND run_id IS NOT NULL "
+            "AND solver_status IS NOT NULL AND finished_at IS NOT NULL "
+            "AND lease_expires_at IS NULL AND worker_id IS NULL AND error_code IS NULL "
+            "AND cancel_requested_at IS NULL) OR "
+            "(state='FAILED' AND attempt_id IS NOT NULL AND run_id IS NULL "
+            "AND solver_status IS NULL AND finished_at IS NOT NULL "
+            "AND error_code IS NOT NULL AND worker_id IS NULL AND lease_expires_at IS NULL) OR "
+            "(state='CANCELLED' AND cancel_requested_at IS NOT NULL "
+            "AND finished_at IS NOT NULL AND run_id IS NULL AND solver_status IS NULL "
+            "AND error_code IS NULL AND worker_id IS NULL AND lease_expires_at IS NULL)",
+            name="optimization_job_lifecycle",
+        ),
+        Index("ix_optimization_jobs_queue", "state", "created_at", "id"),
+        Index("ix_optimization_jobs_expired", "state", "lease_expires_at"),
     )
 
 
