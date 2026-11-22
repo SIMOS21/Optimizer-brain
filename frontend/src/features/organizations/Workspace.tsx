@@ -25,6 +25,7 @@ import { canonical } from "../../api/validation";
 import { exportGraph } from "../graph/projection";
 import { ArtifactImport } from "./ArtifactImport";
 import { StoredRun } from "../execution/DecisionCockpit";
+import { ConstraintDiagnostics } from "../diagnostics/ConstraintDiagnostics";
 
 const OptimizationCenter = lazy(() =>
   import("../execution/OptimizationCenter").then((module) => ({
@@ -417,6 +418,13 @@ function ModelPage({
             }}
           />
           <ModelInspector document={record.document} />
+          <ConstraintDiagnostics
+            client={client}
+            org={organization.id}
+            id={record.id}
+            kind="model-versions"
+            contentHash={record.content_hash}
+          />
           <section className="panel">
             <h2>Comparer deux versions</h2>
             <label>

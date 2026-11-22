@@ -32,4 +32,5 @@ export type Composition = Schemas["CompositionDocument"];
 export type Json = Schemas["JsonValue"];
 export type OptimizationJob = Schemas["OptimizationJobResponse"];
 export type SolveSettings = Schemas["SolveSettings-Input"];
+export type Diagnostics = Schemas["DiagnosticsResponse"];
 export type Page<T> = { items: T[]; limit: number; offset: number };

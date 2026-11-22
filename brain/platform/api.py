@@ -18,6 +18,7 @@ from starlette.responses import Response
 from brain.kernel.schema import _invalid_constant, _unique_object
 from brain.organization.composition import checksum
 from . import auth, service
+from .diagnostics import artifact_diagnostics
 from .database import Settings, make_engine, sessions
 from .models import (
     AuditEvent,
@@ -38,6 +39,7 @@ from .schemas import (
     AuditResponse,
     DepartmentCreate,
     DepartmentResponse,
+    DiagnosticsResponse,
     GraphCreate,
     LoginRequest,
     MembershipSet,
@@ -420,6 +422,14 @@ def model_get(organization_id: str, identity: str, session: DB, actor: Actor) ->
     return artifact_view(service.get_model(session, organization_id, identity), detail=True)
 
 
+@router.get(
+    "/organizations/{organization_id}/model-versions/{identity}/diagnostics",
+    response_model=DiagnosticsResponse,
+)
+def model_diagnostics(organization_id: str, identity: str, session: DB, actor: Actor) -> object:
+    return artifact_diagnostics(session, actor, organization_id, identity, run=False)
+
+
 @router.post(
     "/organizations/{organization_id}/model-versions/{identity}/publish",
     response_model=ModelArtifactResponse,
@@ -528,6 +538,14 @@ def run_get(organization_id: str, identity: str, session: DB, actor: Actor) -> o
     if record is None:
         raise service.ServiceError(404, "Run introuvable")
     return artifact_view(record, detail=True)
+
+
+@router.get(
+    "/organizations/{organization_id}/optimization-runs/{identity}/diagnostics",
+    response_model=DiagnosticsResponse,
+)
+def run_diagnostics(organization_id: str, identity: str, session: DB, actor: Actor) -> object:
+    return artifact_diagnostics(session, actor, organization_id, identity, run=True)
 
 
 @router.get("/organizations/{organization_id}/audit-events", response_model=Page[AuditResponse])

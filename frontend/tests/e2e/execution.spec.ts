@@ -240,6 +240,12 @@ for (const [name, fixture, objective] of [
       await expect(page.getByTestId("independent-verification")).toContainText(
         "réussie",
       );
+      await page
+        .getByRole("button", { name: "Consulter les diagnostics" })
+        .click();
+      await expect(page.getByTestId("constraint-diagnostics")).toContainText(
+        "Plan contrôlé indépendamment selon les tolérances enregistrées.",
+      );
       await expect(
         page.getByRole("heading", {
           name: "Contraintes et marges enregistrées",
@@ -380,6 +386,15 @@ test("INFEASIBLE réel conserve un run sans inventer de plan", async ({
     await expect(page.getByTestId("mathematical-status")).toHaveText(
       "INFEASIBLE",
     );
+    await page
+      .getByRole("button", { name: "Consulter les diagnostics" })
+      .click();
+    await expect(page.getByTestId("static-conclusion")).toContainText(
+      "Contradiction démontrée",
+    );
+    await expect(page.getByTestId("constraint-diagnostics")).toContainText(
+      "Aucun plan à contrôler",
+    );
     await expect(page.getByTestId("independent-verification")).toContainText(
       "Aucun plan vérifié",
     );
@@ -409,6 +424,15 @@ test("TIME_LIMIT réel est distinct d’un échec technique du worker", async ({
     ).toBeVisible();
     await expect(page.getByTestId("mathematical-status")).toHaveText(
       "TIME_LIMIT_NO_SOLUTION",
+    );
+    await page
+      .getByRole("button", { name: "Consulter les diagnostics" })
+      .click();
+    await expect(page.getByTestId("static-conclusion")).toContainText(
+      "non concluante",
+    );
+    await expect(page.getByTestId("constraint-diagnostics")).toContainText(
+      "Aucun plan à contrôler",
     );
     await expect(page.getByTestId("recorded-objective")).toHaveText(
       "Non fourni",

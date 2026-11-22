@@ -4,6 +4,7 @@ import type { Json, RunArtifact } from "../../api/types";
 import { useLoad } from "../../shared/async";
 import { text, unitLabel } from "../../shared/format";
 import { Empty, ErrorNotice, JsonView } from "../../shared/ui";
+import { ConstraintDiagnostics } from "../diagnostics/ConstraintDiagnostics";
 
 function object(value: Json | undefined): Record<string, Json> | undefined {
   return value !== null && typeof value === "object" && !Array.isArray(value)
@@ -271,5 +272,17 @@ export function StoredRun({
     return (
       <ErrorNotice message="Résultat incompatible avec le modèle du job." />
     );
-  return <DecisionCockpit record={loaded.data} />;
+  return (
+    <>
+      <DecisionCockpit record={loaded.data} />
+      <ConstraintDiagnostics
+        key={loaded.data.id}
+        client={client}
+        org={org}
+        id={id}
+        kind="optimization-runs"
+        contentHash={loaded.data.content_hash}
+      />
+    </>
+  );
 }

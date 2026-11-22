@@ -171,6 +171,27 @@ export class ApiClient {
   run(org: string, id: string): Promise<RunArtifact> {
     return this.scoped(org, id, "optimization-runs", "RunArtifactResponse");
   }
+  async diagnostics(
+    org: string,
+    id: string,
+    kind: "model-versions" | "optimization-runs",
+  ) {
+    const result = await this.request(
+      `/organizations/${encodeURIComponent(org)}/${kind}/${encodeURIComponent(id)}/diagnostics`,
+      "DiagnosticsResponse",
+    );
+    if (
+      result.organization_id !== org ||
+      result.id !== id ||
+      result.artifact_kind !==
+        (kind === "model-versions" ? "MODEL_VERSION" : "RUN") ||
+      (kind === "model-versions" && result.model_version_id !== id)
+    )
+      throw new Error(
+        "Réponse incohérente avec l'organisation ou l'artefact actif.",
+      );
+    return result;
+  }
   async jobs(org: string, offset = 0): Promise<Page<OptimizationJob>> {
     const page = await this.request(
       `/organizations/${encodeURIComponent(org)}/optimization-jobs?limit=50&offset=${offset}`,

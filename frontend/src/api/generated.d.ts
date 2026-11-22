@@ -213,6 +213,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/organizations/{organization_id}/model-versions/{identity}/diagnostics": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Model Diagnostics */
+        get: operations["model_diagnostics_api_v1_organizations__organization_id__model_versions__identity__diagnostics_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/organizations/{organization_id}/model-versions/{identity}/publish": {
         parameters: {
             query?: never;
@@ -324,6 +341,23 @@ export interface paths {
         };
         /** Run Get */
         get: operations["run_get_api_v1_organizations__organization_id__optimization_runs__identity__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/organizations/{organization_id}/optimization-runs/{identity}/diagnostics": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Run Diagnostics */
+        get: operations["run_diagnostics_api_v1_organizations__organization_id__optimization_runs__identity__diagnostics_get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -494,6 +528,73 @@ export interface components {
             /** Rhs */
             rhs: string | components["schemas"]["ParameterRef"];
         };
+        /** ConstraintActivity */
+        ConstraintActivity: {
+            constraint: components["schemas"]["ConstraintLink"];
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "SATISFIED" | "SATURATED" | "VIOLATED" | "UNAVAILABLE";
+            /** Lhs */
+            lhs: string | null;
+            /** Rhs */
+            rhs: string;
+            /** Slack */
+            slack: string | null;
+            /** Violation */
+            violation: string | null;
+            /** Tolerance */
+            tolerance: string | null;
+            /** Unit Dimensions */
+            unit_dimensions: [
+                string,
+                number
+            ][];
+            /** Unit Scale */
+            unit_scale: string;
+            /**
+             * Cost Status
+             * @default NOT_EVALUATED
+             * @constant
+             */
+            cost_status: "NOT_EVALUATED";
+        };
+        /** ConstraintLink */
+        ConstraintLink: {
+            /** Constraint Id */
+            constraint_id: string;
+            /** Department */
+            department: string;
+            /** Source */
+            source: string;
+            /** Approved */
+            approved: boolean;
+            /** Version */
+            version: string;
+            /**
+             * Fragment Ids
+             * @default []
+             */
+            fragment_ids: string[];
+            /**
+             * Contribution Ids
+             * @default []
+             */
+            contribution_ids: string[];
+            /**
+             * Parameter Ids
+             * @default []
+             */
+            parameter_ids: string[];
+            /** Resource Id */
+            resource_id?: string | null;
+            /**
+             * Source Paths
+             * @default []
+             */
+            source_paths: string[];
+        };
         /** ConstraintTraceDocument */
         ConstraintTraceDocument: {
             /** Constraint Id */
@@ -632,6 +733,133 @@ export interface components {
              * @enum {string}
              */
             type: "DEPENDS_ON" | "USES_RESOURCE";
+        };
+        /** DiagnosticsReport */
+        DiagnosticsReport: {
+            /**
+             * Schema Version
+             * @default 5A.1
+             * @constant
+             */
+            schema_version: "5A.1";
+            /** Model Id */
+            model_id: string | null;
+            /** Model Version */
+            model_version: string | null;
+            /** Model Hash */
+            model_hash: string | null;
+            /** Manifest Hash */
+            manifest_hash: string | null;
+            /** Data Snapshot Id */
+            data_snapshot_id: string | null;
+            /** Scenario Id */
+            scenario_id: string | null;
+            /** Composition Manifest Hash */
+            composition_manifest_hash?: string | null;
+            /**
+             * Validation
+             * @enum {string}
+             */
+            validation: "VALID" | "INVALID_MODEL";
+            /**
+             * Static Conclusion
+             * @enum {string}
+             */
+            static_conclusion: "CONTRADICTION_PROVEN" | "NO_CONCLUSION" | "NOT_ANALYZED";
+            /** Findings */
+            findings: components["schemas"]["Finding"][];
+            /** Activities */
+            activities: components["schemas"]["ConstraintActivity"][];
+            /** Solver Status */
+            solver_status?: string | null;
+            /**
+             * Infeasibility Evidence
+             * @enum {string}
+             */
+            infeasibility_evidence: "STATIC_PROOF" | "SOLVER_REPORTED" | "NONE";
+            /**
+             * Iis Available
+             * @default false
+             * @constant
+             */
+            iis_available: false;
+            /**
+             * Plan Checked
+             * @default false
+             */
+            plan_checked: boolean;
+            /** Plan Valid */
+            plan_valid?: boolean | null;
+            /**
+             * Plan Issues
+             * @default []
+             */
+            plan_issues: string[];
+            /**
+             * Limitations
+             * @default [
+             *       "Analyse incomplète : l'absence de contradiction détectée ne prouve pas la faisabilité.",
+             *       "Les preuves statiques portent sur le modèle rationnel exact, sans tolérance solveur.",
+             *       "Aucun IIS fourni ; les contraintes citées ne constituent pas un conflit minimal.",
+             *       "Coûts non évalués : aucune sensibilité ni aucun prix d'ombre exposé par ce backend.",
+             *       "Saturation et violation décrivent le plan contrôlé, pas une cause d'infaisabilité."
+             *     ]
+             */
+            limitations: string[];
+        };
+        /** DiagnosticsResponse */
+        DiagnosticsResponse: {
+            /** Id */
+            id: string;
+            /** Organization Id */
+            organization_id: string;
+            /**
+             * Artifact Kind
+             * @enum {string}
+             */
+            artifact_kind: "MODEL_VERSION" | "RUN";
+            /** Content Hash */
+            content_hash: string;
+            /** Model Version Id */
+            model_version_id: string;
+            /** Model Content Hash */
+            model_content_hash: string;
+            report: components["schemas"]["DiagnosticsReport"];
+        };
+        /** Finding */
+        Finding: {
+            /** Code */
+            code: string;
+            /** Message */
+            message: string;
+            /**
+             * Constraints
+             * @default []
+             */
+            constraints: components["schemas"]["ConstraintLink"][];
+            /**
+             * Variable Ids
+             * @default []
+             */
+            variable_ids: string[];
+            /**
+             * Variable Departments
+             * @default []
+             */
+            variable_departments: [
+                string,
+                string
+            ][];
+            /** Path */
+            path?: string | null;
+            /**
+             * Facts
+             * @default []
+             */
+            facts: [
+                string,
+                string
+            ][];
         };
         /** GraphArtifactResponse */
         GraphArtifactResponse: {
@@ -1992,6 +2220,38 @@ export interface operations {
             };
         };
     };
+    model_diagnostics_api_v1_organizations__organization_id__model_versions__identity__diagnostics_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                organization_id: string;
+                identity: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DiagnosticsResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     model_publish_api_v1_organizations__organization_id__model_versions__identity__publish_post: {
         parameters: {
             query?: never;
@@ -2213,6 +2473,38 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["RunArtifactResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    run_diagnostics_api_v1_organizations__organization_id__optimization_runs__identity__diagnostics_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                organization_id: string;
+                identity: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DiagnosticsResponse"];
                 };
             };
             /** @description Validation Error */
