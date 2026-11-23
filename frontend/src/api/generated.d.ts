@@ -366,6 +366,41 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/organizations/{organization_id}/scenarios": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Scenario List */
+        get: operations["scenario_list_api_v1_organizations__organization_id__scenarios_get"];
+        put?: never;
+        /** Scenario Create */
+        post: operations["scenario_create_api_v1_organizations__organization_id__scenarios_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/organizations/{organization_id}/scenarios/{identity}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Scenario Get */
+        get: operations["scenario_get_api_v1_organizations__organization_id__scenarios__identity__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/organizations/{organization_id}/audit-events": {
         parameters: {
             query?: never;
@@ -1305,6 +1340,15 @@ export interface components {
             /** Offset */
             offset: number;
         };
+        /** Page[ScenarioResponse] */
+        Page_ScenarioResponse_: {
+            /** Items */
+            items: components["schemas"]["ScenarioResponse"][];
+            /** Limit */
+            limit: number;
+            /** Offset */
+            offset: number;
+        };
         /** Parameter */
         "Parameter-Input": {
             /** Source */
@@ -1461,6 +1505,98 @@ export interface components {
             report: {
                 [key: string]: components["schemas"]["JsonValue"];
             };
+        };
+        /** ScenarioCreate */
+        ScenarioCreate: {
+            /** Key */
+            key: string;
+            /** Version */
+            version: string;
+            /** Name */
+            name: string;
+            /** Reason */
+            reason: string;
+            /** Source Model Version Id */
+            source_model_version_id: string;
+            /** Expected Source Content Hash */
+            expected_source_content_hash: string;
+        };
+        /** ScenarioDocument */
+        ScenarioDocument: {
+            /**
+             * Schema Version
+             * @default 5B.1
+             * @constant
+             */
+            schema_version: "5B.1";
+            /**
+             * Kind
+             * @default IDENTICAL_CLONE
+             * @constant
+             */
+            kind: "IDENTICAL_CLONE";
+            /** Id */
+            id: string;
+            /** Organization Id */
+            organization_id: string;
+            /** Key */
+            key: string;
+            /** Version */
+            version: string;
+            /** Name */
+            name: string;
+            /** Reason */
+            reason: string;
+            /** Author Id */
+            author_id: string;
+            /** Source Model Version Id */
+            source_model_version_id: string;
+            /** Source Content Hash */
+            source_content_hash: string;
+            /** Model Version Id */
+            model_version_id: string;
+            /** Model Content Hash */
+            model_content_hash: string;
+            /** Graph Snapshot Id */
+            graph_snapshot_id: string;
+            /** Graph Content Hash */
+            graph_content_hash: string;
+            /** Data Snapshot Id */
+            data_snapshot_id: string;
+            /** Scenario Id */
+            scenario_id: string;
+            /**
+             * Changes
+             * @default []
+             */
+            changes: unknown[];
+        };
+        /** ScenarioResponse */
+        ScenarioResponse: {
+            /** Id */
+            id: string;
+            /** Organization Id */
+            organization_id: string;
+            /** Key */
+            key: string;
+            /** Version */
+            version: string;
+            /** Created By */
+            created_by: string;
+            /** Created At */
+            created_at: number;
+            /** Content Hash */
+            content_hash: string;
+            /** Model Version Id */
+            model_version_id: string;
+            /** Source Model Version Id */
+            source_model_version_id: string;
+            /**
+             * Model State
+             * @enum {string}
+             */
+            model_state: "DRAFT" | "PUBLISHED";
+            document: components["schemas"]["ScenarioDocument"];
         };
         /** SolveSettings */
         "SolveSettings-Input": {
@@ -2505,6 +2641,107 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["DiagnosticsResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    scenario_list_api_v1_organizations__organization_id__scenarios_get: {
+        parameters: {
+            query?: {
+                limit?: number;
+                offset?: number;
+            };
+            header?: never;
+            path: {
+                organization_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Page_ScenarioResponse_"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    scenario_create_api_v1_organizations__organization_id__scenarios_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                organization_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ScenarioCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ScenarioResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    scenario_get_api_v1_organizations__organization_id__scenarios__identity__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                organization_id: string;
+                identity: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ScenarioResponse"];
                 };
             };
             /** @description Validation Error */

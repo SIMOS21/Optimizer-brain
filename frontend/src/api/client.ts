@@ -9,6 +9,8 @@ import type {
   RunArtifact,
   OptimizationJob,
   SolveSettings,
+  Scenario,
+  ScenarioCreate,
 } from "./types";
 import { decode, parsePrecise } from "./validation";
 
@@ -190,6 +192,64 @@ export class ApiClient {
       throw new Error(
         "Réponse incohérente avec l'organisation ou l'artefact actif.",
       );
+    return result;
+  }
+  private checkScenario(record: Scenario, org: string): Scenario {
+    const document = record.document;
+    if (
+      record.organization_id !== org ||
+      document.organization_id !== org ||
+      record.id !== document.id ||
+      record.key !== document.key ||
+      record.version !== document.version ||
+      record.created_by !== document.author_id ||
+      record.model_version_id !== document.model_version_id ||
+      record.source_model_version_id !== document.source_model_version_id
+    )
+      throw new Error(
+        "Scénario incompatible avec l'organisation ou la provenance attendue.",
+      );
+    return record;
+  }
+  async scenarios(org: string, offset = 0) {
+    const page = await this.request(
+      `/organizations/${encodeURIComponent(org)}/scenarios?limit=50&offset=${offset}`,
+      "Page_ScenarioResponse_",
+    );
+    page.items.forEach((item) => this.checkScenario(item, org));
+    return page;
+  }
+  async scenario(org: string, id: string): Promise<Scenario> {
+    const result = this.checkScenario(
+      await this.request(
+        `/organizations/${encodeURIComponent(org)}/scenarios/${encodeURIComponent(id)}`,
+        "ScenarioResponse",
+      ),
+      org,
+    );
+    if (result.id !== id) throw new Error("Identité du scénario incompatible.");
+    return result;
+  }
+  async createScenario(org: string, body: ScenarioCreate): Promise<Scenario> {
+    const result = this.checkScenario(
+      await this.request(
+        `/organizations/${encodeURIComponent(org)}/scenarios`,
+        "ScenarioResponse",
+        "POST",
+        body,
+      ),
+      org,
+    );
+    if (
+      result.key !== body.key ||
+      // Pydantic Text strips Unicode White_Space at the boundary. ECMAScript
+      // trim differs (notably U+0085 and U+FEFF), so match the server's set.
+      result.version !==
+        body.version.replace(/^\p{White_Space}+|\p{White_Space}+$/gu, "") ||
+      result.source_model_version_id !== body.source_model_version_id ||
+      result.document.source_content_hash !== body.expected_source_content_hash
+    )
+      throw new Error("Scénario incompatible avec la demande de création.");
     return result;
   }
   async jobs(org: string, offset = 0): Promise<Page<OptimizationJob>> {

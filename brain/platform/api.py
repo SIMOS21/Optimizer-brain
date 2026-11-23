@@ -17,9 +17,9 @@ from starlette.responses import Response
 
 from brain.kernel.schema import _invalid_constant, _unique_object
 from brain.organization.composition import checksum
-from . import auth, service
+from . import auth, service, scenarios
 from .diagnostics import artifact_diagnostics
-from .database import Settings, make_engine, sessions
+from .database import SCHEMA_REVISION, Settings, make_engine, sessions
 from .models import (
     AuditEvent,
     Department,
@@ -40,6 +40,8 @@ from .schemas import (
     DepartmentCreate,
     DepartmentResponse,
     DiagnosticsResponse,
+    ScenarioCreate,
+    ScenarioResponse,
     GraphCreate,
     LoginRequest,
     MembershipSet,
@@ -548,6 +550,29 @@ def run_diagnostics(organization_id: str, identity: str, session: DB, actor: Act
     return artifact_diagnostics(session, actor, organization_id, identity, run=True)
 
 
+@router.post(
+    "/organizations/{organization_id}/scenarios", status_code=201, response_model=ScenarioResponse
+)
+def scenario_create(
+    organization_id: str, body: ScenarioCreate, session: DB, actor: Actor
+) -> object:
+    return scenarios.create_scenario(session, actor, organization_id, body)
+
+
+@router.get("/organizations/{organization_id}/scenarios", response_model=Page[ScenarioResponse])
+def scenario_list(
+    organization_id: str, session: DB, actor: Actor, limit: Limit = 50, offset: Offset = 0
+) -> object:
+    return scenarios.list_scenarios(session, actor, organization_id, limit, offset)
+
+
+@router.get(
+    "/organizations/{organization_id}/scenarios/{identity}", response_model=ScenarioResponse
+)
+def scenario_get(organization_id: str, identity: str, session: DB, actor: Actor) -> object:
+    return scenarios.get_scenario(session, actor, organization_id, identity)
+
+
 @router.get("/organizations/{organization_id}/audit-events", response_model=Page[AuditResponse])
 def audit_events(
     organization_id: str, session: DB, actor: Actor, limit: Limit = 50, offset: Offset = 0
@@ -589,9 +614,9 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             revision = (
                 connection.execute(text("SELECT version_num FROM alembic_version")).scalars().all()
             )
-            if revision != ["0004_4c"]:
+            if revision != [SCHEMA_REVISION]:
                 engine.dispose()
-                raise ValueError("Migration Phase 4C requise avant le démarrage")
+                raise ValueError(f"Migration {SCHEMA_REVISION} requise avant le démarrage")
             if connection.scalar(
                 text("SELECT has_table_privilege(current_user, 'graph_snapshots', 'TRUNCATE')")
             ) or connection.scalar(

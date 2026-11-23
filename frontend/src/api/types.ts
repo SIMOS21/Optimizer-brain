@@ -33,4 +33,6 @@ export type Json = Schemas["JsonValue"];
 export type OptimizationJob = Schemas["OptimizationJobResponse"];
 export type SolveSettings = Schemas["SolveSettings-Input"];
 export type Diagnostics = Schemas["DiagnosticsResponse"];
+export type Scenario = Schemas["ScenarioResponse"];
+export type ScenarioCreate = Schemas["ScenarioCreate"];
 export type Page<T> = { items: T[]; limit: number; offset: number };
