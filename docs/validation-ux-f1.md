@@ -36,6 +36,8 @@ Les décisions et limites sont détaillées dans l'[ADR 0011](decision-records/0
 Le [guide E2E](ux-f1-e2e-isolation.md) décrit les commandes de provisionnement,
 tests, mesure et lancement interactif. Le Studio de démonstration garde ses
 ports 8001/5180 ; le Studio E2E utilise exclusivement 8002/5181.
+Les guides 4B et 4C ont également été actualisés pour éviter de lancer les
+parcours navigateur sur l'environnement de démonstration.
 
 ## Tests et captures
 
@@ -51,6 +53,11 @@ Validation locale Windows, Python 3.14.3, Node 24.13.0, PostgreSQL 17 et Chromiu
 | mypy | Réussi, 46 fichiers source |
 | TypeScript, ESLint, build Vite | Réussis |
 | Syntaxe du script de mesure Node | Réussie |
+
+Prettier ciblé sur les fichiers frontend modifiés : conforme. Le contrôle
+Prettier global, non requis par la CI existante, signale 39 fichiers historiques
+non conformes ; ils ne sont pas reformattés dans cette PR. Le build réussit avec
+l'avertissement de bundling de la directive `use no memo` de la dépendance React.
 
 Les tests ajoutés couvrent un catalogue de plus de 100 organisations, la recherche
 hors page visible, accents, tri, groupes fiables, pagination, vide/erreur,
@@ -130,3 +137,11 @@ et la même base. Les historiques de démonstration et fixtures versionnées res
 inchangés. UX-F2 pourra traiter le dashboard et le chargement de ses collections
 dans une PR distincte, après revue de cet incrément. UX-F3, 5B-3, 5C et LLM ne
 sont pas commencés.
+
+## PR de revue
+
+[PR #7](https://github.com/SIMOS21/Optimizer-brain/pull/7), ouverte sans fusion
+automatique. Le [workflow de la PR](https://github.com/SIMOS21/Optimizer-brain/pull/7/checks)
+contrôle Python sur Linux/Windows et PostgreSQL réel, puis contrats générés,
+TypeScript/build, ESLint, Vitest et Playwright. Ses résultats restent distincts
+des validations locales décrites ci-dessus.
