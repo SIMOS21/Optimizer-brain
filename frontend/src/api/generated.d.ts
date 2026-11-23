@@ -3483,7 +3483,7 @@ export interface operations {
                     "application/json": components["schemas"]["ChangePreview"];
                 };
             };
-            /** @description Forbidden */
+            /** @description Forbidden controlled change */
             403: {
                 headers: {
                     [name: string]: unknown;
@@ -3492,7 +3492,7 @@ export interface operations {
                     "application/json": components["schemas"]["ChangeErrorResponse"];
                 };
             };
-            /** @description Conflict */
+            /** @description Controlled change conflict */
             409: {
                 headers: {
                     [name: string]: unknown;
@@ -3501,7 +3501,7 @@ export interface operations {
                     "application/json": components["schemas"]["ChangeErrorResponse"];
                 };
             };
-            /** @description Unprocessable Content */
+            /** @description Invalid controlled change */
             422: {
                 headers: {
                     [name: string]: unknown;

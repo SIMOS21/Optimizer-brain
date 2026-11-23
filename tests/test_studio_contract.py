@@ -1,6 +1,7 @@
 """4B enriches OpenAPI, retaining the canonical Phase 4A payloads."""
 
 import json
+import http.client
 from pathlib import Path
 
 from brain.organization.composition import canonical_json
@@ -10,7 +11,7 @@ from brain.platform.database import Settings
 from tests.conftest_platform import platform_fixture, postgres_urls_fixture  # noqa: F401
 
 
-def test_exported_contract_matches_secure_application():
+def test_exported_contract_matches_secure_application(monkeypatch):
     app = create_app(Settings("sqlite://", allow_sqlite_for_tests=True))
     path = Path(__file__).resolve().parents[1] / "frontend/src/api/openapi.json"
     assert json.loads(path.read_text(encoding="utf-8")) == app.openapi()
@@ -19,6 +20,13 @@ def test_exported_contract_matches_secure_application():
         "post"
         not in app.openapi()["paths"]["/api/v1/organizations/{organization_id}/optimization-runs"]
     )
+    # Python 3.11 calls 422 "Unprocessable Entity", while newer Python calls it
+    # "Unprocessable Content". Our generated contract must not inherit either
+    # interpreter's phrase through FastAPI's additional-response defaults.
+    for status in (403, 409, 422):
+        monkeypatch.setitem(http.client.responses, status, "Interpreter-specific phrase")
+    app.openapi_schema = None
+    assert json.loads(path.read_text(encoding="utf-8")) == app.openapi()
     app.state.engine.dispose()
 
 

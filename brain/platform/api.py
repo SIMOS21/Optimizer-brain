@@ -145,7 +145,12 @@ def current_user(
 
 Actor = Annotated[User, Depends(current_user)]
 CHANGE_RESPONSES: dict[int | str, dict[str, Any]] = {
-    status: {"model": ChangeErrorResponse} for status in (403, 409, 422)
+    status: {"model": ChangeErrorResponse, "description": description}
+    for status, description in (
+        (403, "Forbidden controlled change"),
+        (409, "Controlled change conflict"),
+        (422, "Invalid controlled change"),
+    )
 }
 
 router = APIRouter(prefix="/api/v1", route_class=SecureJSONRoute)

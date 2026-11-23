@@ -98,6 +98,13 @@ distants de chaque commit sont consultables dans les
 Aucune réussite distante n'est déduite de ces seuls résultats locaux ; le rapport
 de livraison identifie le run GitHub effectivement contrôlé après le push.
 
+Le premier push (`d69b350`, run `45092458057`) a révélé un écart de contrat
+OpenAPI sous Python 3.11 : sa bibliothèque HTTP décrit 422 par « Unprocessable
+Entity », contre « Unprocessable Content » sous Python 3.14. Correction limitée
+aux descriptions explicites des réponses d'erreur ; le test du contrat simule
+désormais d'autres libellés système et exige le même OpenAPI. Aucun schéma de
+données, contrôle d'autorisation ou comportement mathématique n'est assoupli.
+
 SET numérique seulement, une règle par politique créée par l'éditeur Studio
 (API jusqu'à 50), pas de délégation de ressources à propriétaires multiples.
 Parent publié par identifiant, filiation contrôlée limitée à 16. Pas de garantie

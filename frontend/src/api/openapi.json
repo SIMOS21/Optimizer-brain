@@ -1898,34 +1898,34 @@
             }
           },
           "403": {
+            "description": "Forbidden controlled change",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ChangeErrorResponse"
                 }
               }
-            },
-            "description": "Forbidden"
+            }
           },
           "409": {
+            "description": "Controlled change conflict",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ChangeErrorResponse"
                 }
               }
-            },
-            "description": "Conflict"
+            }
           },
           "422": {
+            "description": "Invalid controlled change",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ChangeErrorResponse"
                 }
               }
-            },
-            "description": "Unprocessable Content"
+            }
           }
         }
       }
