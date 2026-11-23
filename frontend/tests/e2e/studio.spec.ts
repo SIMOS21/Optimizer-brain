@@ -1,7 +1,6 @@
 import { expect, test, type Page } from "@playwright/test";
 import { readFile } from "node:fs/promises";
-import factory from "../fixtures/factory.json" with { type: "json" };
-import university from "../fixtures/university.json" with { type: "json" };
+import { factory, university } from "./support/fixtures";
 
 const examples = [
   ["factory", factory, "4100"],

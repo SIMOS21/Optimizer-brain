@@ -1,6 +1,10 @@
 import { defineConfig } from "vitest/config";
 import react from "@vitejs/plugin-react";
 
+const apiTarget = process.env.STUDIO_API_TARGET || "http://127.0.0.1:8001";
+if (!/^http:\/\/127\.0\.0\.1:(8001|8002)$/.test(apiTarget))
+  throw new Error("Proxy API local non autorisé");
+
 export default defineConfig({
   plugins: [react()],
   server: {
@@ -8,7 +12,7 @@ export default defineConfig({
     port: 5173,
     strictPort: true,
     proxy: {
-      "/api/v1": { target: "http://127.0.0.1:8001", changeOrigin: false },
+      "/api/v1": { target: apiTarget, changeOrigin: false },
     },
   },
   preview: {
@@ -16,7 +20,7 @@ export default defineConfig({
     port: 5180,
     strictPort: true,
     proxy: {
-      "/api/v1": { target: "http://127.0.0.1:8001", changeOrigin: false },
+      "/api/v1": { target: apiTarget, changeOrigin: false },
     },
   },
   test: {

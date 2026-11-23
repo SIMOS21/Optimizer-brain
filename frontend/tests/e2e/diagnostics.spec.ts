@@ -1,6 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
-import factory from "../fixtures/factory.json" with { type: "json" };
-import university from "../fixtures/university.json" with { type: "json" };
+import { factory, university } from "./support/fixtures";
 import type { ModelSource } from "../../src/api/types";
 
 async function login(page: Page, role = "viewer") {

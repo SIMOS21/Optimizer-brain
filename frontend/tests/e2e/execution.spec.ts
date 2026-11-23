@@ -2,8 +2,7 @@ import { expect, test, type Page } from "@playwright/test";
 import { spawn, type ChildProcess } from "node:child_process";
 import { once } from "node:events";
 import { fileURLToPath } from "node:url";
-import factory from "../fixtures/factory.json" with { type: "json" };
-import university from "../fixtures/university.json" with { type: "json" };
+import { factory, university } from "./support/fixtures";
 import type { ModelSource } from "../../src/api/types";
 
 const root = fileURLToPath(new URL("../../../", import.meta.url));
