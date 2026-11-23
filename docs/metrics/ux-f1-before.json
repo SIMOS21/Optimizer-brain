@@ -1,0 +1,86 @@
+{
+  "stage": "before",
+  "browser": "159.0.8154.6",
+  "node": "v24.13.0",
+  "protocol": "three fresh contexts per viewport; UI navigation only; no domain mutations",
+  "measurements": [
+    {
+      "width": 1440,
+      "sample": 0,
+      "pickerMs": 271.0541999999999,
+      "openOrganizationMs": 224.673,
+      "warmNavigationMs": 68.95029999999997,
+      "switchOrganizationMs": 90.77039999999988,
+      "loginRequests": 3,
+      "organizationRequests": 5,
+      "warmRequests": 0,
+      "overflow": false,
+      "referenceDigest": "8fdf592a1211e0aebee56bd53dd74654a33c7d403c10e681c3ac4fa353e79311"
+    },
+    {
+      "width": 1440,
+      "sample": 1,
+      "pickerMs": 247.51290000000017,
+      "openOrganizationMs": 214.38459999999986,
+      "warmNavigationMs": 46.38689999999997,
+      "switchOrganizationMs": 105.80880000000025,
+      "loginRequests": 3,
+      "organizationRequests": 5,
+      "warmRequests": 0,
+      "overflow": false,
+      "referenceDigest": "8fdf592a1211e0aebee56bd53dd74654a33c7d403c10e681c3ac4fa353e79311"
+    },
+    {
+      "width": 1440,
+      "sample": 2,
+      "pickerMs": 254.1812,
+      "openOrganizationMs": 215.6786000000002,
+      "warmNavigationMs": 44.82400000000007,
+      "switchOrganizationMs": 105.89750000000004,
+      "loginRequests": 3,
+      "organizationRequests": 5,
+      "warmRequests": 0,
+      "overflow": false,
+      "referenceDigest": "8fdf592a1211e0aebee56bd53dd74654a33c7d403c10e681c3ac4fa353e79311"
+    },
+    {
+      "width": 390,
+      "sample": 0,
+      "pickerMs": 136.74199999999973,
+      "openOrganizationMs": 133.98160000000007,
+      "warmNavigationMs": 72.72009999999955,
+      "switchOrganizationMs": 90.95370000000003,
+      "loginRequests": 3,
+      "organizationRequests": 5,
+      "warmRequests": 0,
+      "overflow": false,
+      "referenceDigest": "8fdf592a1211e0aebee56bd53dd74654a33c7d403c10e681c3ac4fa353e79311"
+    },
+    {
+      "width": 390,
+      "sample": 1,
+      "pickerMs": 128.77019999999993,
+      "openOrganizationMs": 116.66650000000027,
+      "warmNavigationMs": 71.64969999999994,
+      "switchOrganizationMs": 91.29029999999966,
+      "loginRequests": 3,
+      "organizationRequests": 5,
+      "warmRequests": 0,
+      "overflow": false,
+      "referenceDigest": "8fdf592a1211e0aebee56bd53dd74654a33c7d403c10e681c3ac4fa353e79311"
+    },
+    {
+      "width": 390,
+      "sample": 2,
+      "pickerMs": 121.51159999999982,
+      "openOrganizationMs": 122.16499999999996,
+      "warmNavigationMs": 58.36909999999989,
+      "switchOrganizationMs": 107.22090000000026,
+      "loginRequests": 3,
+      "organizationRequests": 5,
+      "warmRequests": 0,
+      "overflow": false,
+      "referenceDigest": "8fdf592a1211e0aebee56bd53dd74654a33c7d403c10e681c3ac4fa353e79311"
+    }
+  ]
+}

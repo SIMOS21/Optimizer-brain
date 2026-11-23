@@ -153,6 +153,8 @@ def prepare(config: E2EConfig) -> str:
 
 def prepare_navigation_catalog(password: str) -> None:
     """Twenty explicitly marked synthetic spaces, only in the guarded E2E DB."""
+    if make_url(os.environ.get("BRAIN_DATABASE_URL", "")).database != DATABASE:
+        raise ValueError("Catalogue E2E refusé hors base dédiée")
     from fastapi.testclient import TestClient
     from brain.platform.api import create_app
 

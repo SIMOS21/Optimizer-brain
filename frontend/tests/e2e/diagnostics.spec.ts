@@ -1,3 +1,4 @@
+import { selectOrganization } from "./support/navigation";
 import { expect, test, type Page } from "@playwright/test";
 import { factory, university } from "./support/fixtures";
 import type { ModelSource } from "../../src/api/types";
@@ -26,10 +27,8 @@ for (const [sector, fixture, objective] of [
     page.on("request", (request) => {
       if (request.method() !== "GET") writes.push(request.url());
     });
-    await page
-      .getByRole("combobox", { name: "Organisation", exact: true })
-      .selectOption(fixture.organization.id);
-    await page.getByRole("link", { name: "Modèles & contraintes" }).click();
+    await selectOrganization(page, fixture.organization.id);
+    await page.getByRole("link", { name: "Modèles & validations" }).click();
     await page
       .locator(
         `a[href="/organizations/${fixture.organization.id}/models/${fixture.model.id}"]`,
@@ -46,7 +45,7 @@ for (const [sector, fixture, objective] of [
         .getByTestId("constraint-diagnostics")
         .getByText("UNAVAILABLE", { exact: true }),
     ).toHaveCount(fixture.model.document.dsl.constraints.length);
-    await page.getByRole("link", { name: "Historique vérifié" }).click();
+    await page.getByRole("link", { name: "Décisions & historique" }).click();
     await page.getByLabel("Résultat historique").selectOption(fixture.run.id);
     await expect(page.getByTestId("recorded-objective")).toHaveText(objective);
     await page
@@ -70,13 +69,12 @@ for (const [sector, fixture, objective] of [
       path: `${process.env.STUDIO_SCREENSHOT_DIR || "test-results/screenshots"}/diagnostics-${sector}.png`,
       fullPage: true,
     });
-    await page
-      .getByRole("combobox", { name: "Organisation", exact: true })
-      .selectOption(
-        sector === "factory"
-          ? university.organization.id
-          : factory.organization.id,
-      );
+    await selectOrganization(
+      page,
+      sector === "factory"
+        ? university.organization.id
+        : factory.organization.id,
+    );
     await expect(diagnostics).toHaveCount(0);
   });
 }
@@ -136,10 +134,8 @@ test("contradiction Ventes/Logistique réelle, sans modifier le modèle publié"
     await page.request.post("/api/v1/auth/logout", { headers });
   }
   await login(page);
-  await page
-    .getByRole("combobox", { name: "Organisation", exact: true })
-    .selectOption(factory.organization.id);
-  await page.getByRole("link", { name: "Modèles & contraintes" }).click();
+  await selectOrganization(page, factory.organization.id);
+  await page.getByRole("link", { name: "Modèles & validations" }).click();
   await page
     .locator(
       `a[href="/organizations/${factory.organization.id}/models/${identity}"]`,

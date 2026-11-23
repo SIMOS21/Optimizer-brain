@@ -1,13 +1,6 @@
 import { compareMetadata } from "../models/comparison";
 import { lazy, Suspense, useState } from "react";
-import {
-  Link,
-  NavLink,
-  Route,
-  Routes,
-  useNavigate,
-  useParams,
-} from "react-router-dom";
+import { Link, Route, Routes, useNavigate, useParams } from "react-router-dom";
 import { ApiClient, canBuild } from "../../api/client";
 import type {
   Artifact,
@@ -481,18 +474,18 @@ export function Workspace({
   client,
   organizationId,
   userId,
+  authorizedOrganization,
 }: {
   client: ApiClient;
   organizationId: string;
   userId: string;
+  authorizedOrganization?: Organization;
 }) {
   const navigate = useNavigate();
   const [revision, setRevision] = useState(0);
   const loaded = useLoad(async () => {
-    const organization = await client.request(
-      `/organizations/${organizationId}`,
-      "OrganizationResponse",
-    );
+    const organization =
+      authorizedOrganization ?? (await client.organization(organizationId));
     const [departments, graphs, models, runs] = await Promise.all([
       client.departments(organizationId),
       client.artifacts(organizationId, "graphs"),
@@ -500,7 +493,7 @@ export function Workspace({
       client.artifacts(organizationId, "optimization-runs"),
     ]);
     return { organization, departments, graphs, models, runs };
-  }, [client, organizationId, revision]);
+  }, [client, organizationId, revision, authorizedOrganization]);
   if (loaded.loading)
     return (
       <p className="page-loading" role="status">
@@ -512,210 +505,179 @@ export function Workspace({
   const base = `/organizations/${organizationId}`;
   const refresh = () => setRevision((value) => value + 1);
   return (
-    <div className="workspace">
-      <aside className="sidebar">
-        <div className="sidebar-org">
-          <span className="eyebrow">ESPACE ORGANISATION</span>
-          <strong>{organization.name}</strong>
-          <span className="role">{organization.role}</span>
-        </div>
-        <nav aria-label="Navigation de l’organisation">
-          <NavLink end to={base}>
-            Vue d’ensemble
-          </NavLink>
-          <NavLink to={`${base}/graphs`}>Organization Graph</NavLink>
-          <NavLink to={`${base}/models`}>Modèles & contraintes</NavLink>
-          <NavLink to={`${base}/history`}>Historique vérifié</NavLink>
-          <NavLink to={`${base}/execution`}>Optimization Center</NavLink>
-          <NavLink to={`${base}/scenarios`}>Scenario Lab</NavLink>
-        </nav>
-        <div className="sidebar-note">
-          <span className="online-dot" /> Brain indépendant du LLM
-          <p>
-            Modèles versionnés.
-            <br />
-            Publication explicite.
-            <br />
-            Décisions vérifiables.
-          </p>
-        </div>
-      </aside>
-      <main id="main-content" className="content">
-        <Routes>
-          <Route
-            path="scenarios/:id?"
-            element={
-              <Suspense
-                fallback={<p role="status">Chargement du Scenario Lab…</p>}
-              >
-                <ScenarioLab
-                  client={client}
-                  organization={organization}
-                  userId={userId}
-                  models={models}
-                  refresh={refresh}
-                />
-              </Suspense>
-            }
-          />
-          <Route
-            path="execution/:jobId?"
-            element={
-              <Suspense
-                fallback={
-                  <p role="status">Chargement du centre d’exécution…</p>
-                }
-              >
-                <OptimizationCenter
-                  client={client}
-                  organization={organization}
-                  userId={userId}
-                  models={models}
-                />
-              </Suspense>
-            }
-          />
-          <Route
-            path="history/:id"
-            element={<RunRoute client={client} org={organization.id} />}
-          />
-          <Route
-            index
-            element={
-              <>
-                <div className="page-heading">
-                  <span className="eyebrow">WORKSPACE</span>
-                  <h1>Une organisation. Un modèle commun.</h1>
-                  <p>
-                    Explorez les responsabilités, les ressources partagées et
-                    les règles qui relient vos départements.
-                  </p>
-                </div>
-                <div className="metrics overview-metrics">
-                  <div>
-                    <span>Départements enregistrés</span>
-                    <strong>{departments.length}</strong>
-                  </div>
-                  <div>
-                    <span>Versions de graphe</span>
-                    <strong>{graphs.length}</strong>
-                  </div>
-                  <div>
-                    <span>Versions de modèle</span>
-                    <strong>{models.length}</strong>
-                  </div>
-                </div>
-                <ArtifactList
-                  title="Graphes de l’organisation"
-                  records={graphs}
-                  base={`${base}/graphs`}
-                />
-                <DepartmentRegistry
-                  client={client}
-                  organization={organization}
-                  departments={departments}
-                  refresh={refresh}
-                />
-              </>
-            }
-          />
-          <Route
-            path="graphs"
-            element={
-              <>
-                <div className="page-heading">
-                  <span className="eyebrow">ORGANIZATION GRAPH</span>
-                  <h1>La structure, rendue explicite.</h1>
-                  <p>
-                    Départements, ressources et relations tels qu’enregistrés
-                    dans chaque snapshot.
-                  </p>
-                </div>
-                <ArtifactList
-                  title="Versions de graphe"
-                  records={graphs}
-                  base={`${base}/graphs`}
-                />
-                <ArtifactImport
-                  client={client}
-                  organization={organization}
-                  kind="graphs"
-                  onSaved={(id) => {
-                    refresh();
-                    navigate(`${base}/graphs/${id}`);
-                  }}
-                />
-              </>
-            }
-          />
-          <Route
-            path="graphs/:id"
-            element={
-              <GraphRoute
+    <div className="legacy-workspace">
+      <Routes>
+        <Route
+          path="scenarios/:id?"
+          element={
+            <Suspense
+              fallback={<p role="status">Chargement du Scenario Lab…</p>}
+            >
+              <ScenarioLab
                 client={client}
                 organization={organization}
-                refresh={refresh}
-              />
-            }
-          />
-          <Route
-            path="models"
-            element={
-              <>
-                <div className="page-heading">
-                  <span className="eyebrow">MODEL INSPECTOR</span>
-                  <h1>Des règles aux équations.</h1>
-                  <p>
-                    La DSL compilée et l’IR sont les sources mathématiques, sans
-                    interprétation du canvas.
-                  </p>
-                </div>
-                <ArtifactList
-                  title="Versions de modèle"
-                  records={models}
-                  base={`${base}/models`}
-                />
-                <ArtifactImport
-                  client={client}
-                  organization={organization}
-                  kind="model-versions"
-                  graphs={graphs}
-                  onSaved={(id) => {
-                    refresh();
-                    navigate(`${base}/models/${id}`);
-                  }}
-                />
-              </>
-            }
-          />
-          <Route
-            path="models/:id"
-            element={
-              <ModelRoute
-                client={client}
-                organization={organization}
-                graphs={graphs}
+                userId={userId}
                 models={models}
                 refresh={refresh}
               />
-            }
-          />
-          <Route
-            path="history"
-            element={
-              <History
+            </Suspense>
+          }
+        />
+        <Route
+          path="execution/:jobId?"
+          element={
+            <Suspense
+              fallback={<p role="status">Chargement du centre d’exécution…</p>}
+            >
+              <OptimizationCenter
                 client={client}
                 organization={organization}
-                records={runs}
+                userId={userId}
+                models={models}
               />
-            }
-          />
-          <Route
-            path="*"
-            element={<Empty>Page introuvable dans cette organisation.</Empty>}
-          />
-        </Routes>
-      </main>
+            </Suspense>
+          }
+        />
+        <Route
+          path="history/:id"
+          element={<RunRoute client={client} org={organization.id} />}
+        />
+        <Route
+          index
+          element={
+            <>
+              <div className="page-heading">
+                <span className="eyebrow">WORKSPACE</span>
+                <h1>Une organisation. Un modèle commun.</h1>
+                <p>
+                  Explorez les responsabilités, les ressources partagées et les
+                  règles qui relient vos départements.
+                </p>
+              </div>
+              <div className="metrics overview-metrics">
+                <div>
+                  <span>Départements enregistrés</span>
+                  <strong>{departments.length}</strong>
+                </div>
+                <div>
+                  <span>Versions de graphe</span>
+                  <strong>{graphs.length}</strong>
+                </div>
+                <div>
+                  <span>Versions de modèle</span>
+                  <strong>{models.length}</strong>
+                </div>
+              </div>
+              <ArtifactList
+                title="Graphes de l’organisation"
+                records={graphs}
+                base={`${base}/graphs`}
+              />
+              <DepartmentRegistry
+                client={client}
+                organization={organization}
+                departments={departments}
+                refresh={refresh}
+              />
+            </>
+          }
+        />
+        <Route
+          path="graphs"
+          element={
+            <>
+              <div className="page-heading">
+                <span className="eyebrow">ORGANIZATION GRAPH</span>
+                <h1>La structure, rendue explicite.</h1>
+                <p>
+                  Départements, ressources et relations tels qu’enregistrés dans
+                  chaque snapshot.
+                </p>
+              </div>
+              <ArtifactList
+                title="Versions de graphe"
+                records={graphs}
+                base={`${base}/graphs`}
+              />
+              <ArtifactImport
+                client={client}
+                organization={organization}
+                kind="graphs"
+                onSaved={(id) => {
+                  refresh();
+                  navigate(`${base}/graphs/${id}`);
+                }}
+              />
+            </>
+          }
+        />
+        <Route
+          path="graphs/:id"
+          element={
+            <GraphRoute
+              client={client}
+              organization={organization}
+              refresh={refresh}
+            />
+          }
+        />
+        <Route
+          path="models"
+          element={
+            <>
+              <div className="page-heading">
+                <span className="eyebrow">MODEL INSPECTOR</span>
+                <h1>Des règles aux équations.</h1>
+                <p>
+                  La DSL compilée et l’IR sont les sources mathématiques, sans
+                  interprétation du canvas.
+                </p>
+              </div>
+              <ArtifactList
+                title="Versions de modèle"
+                records={models}
+                base={`${base}/models`}
+              />
+              <ArtifactImport
+                client={client}
+                organization={organization}
+                kind="model-versions"
+                graphs={graphs}
+                onSaved={(id) => {
+                  refresh();
+                  navigate(`${base}/models/${id}`);
+                }}
+              />
+            </>
+          }
+        />
+        <Route
+          path="models/:id"
+          element={
+            <ModelRoute
+              client={client}
+              organization={organization}
+              graphs={graphs}
+              models={models}
+              refresh={refresh}
+            />
+          }
+        />
+        <Route
+          path="history"
+          element={
+            <History
+              client={client}
+              organization={organization}
+              records={runs}
+            />
+          }
+        />
+        <Route
+          path="*"
+          element={<Empty>Page introuvable dans cette organisation.</Empty>}
+        />
+      </Routes>
     </div>
   );
 }

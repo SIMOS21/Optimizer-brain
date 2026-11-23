@@ -1,3 +1,4 @@
+import { selectOrganization } from "./support/navigation";
 import { expect, test } from "@playwright/test";
 import { spawn, type ChildProcess } from "node:child_process";
 import { once } from "node:events";
@@ -63,10 +64,8 @@ for (const [sector, fixture, objective] of [
       .getByLabel("Mot de passe", { exact: true })
       .fill(process.env.BRAIN_DEMO_PASSWORD);
     await page.getByRole("button", { name: "Accéder au workspace" }).click();
-    await page
-      .getByRole("combobox", { name: "Organisation", exact: true })
-      .selectOption(fixture.organization.id);
-    await page.getByRole("link", { name: "Scenario Lab", exact: true }).click();
+    await selectOrganization(page, fixture.organization.id);
+    await page.getByRole("link", { name: "Scénarios", exact: true }).click();
     await page
       .getByLabel("Modèle publié de référence")
       .selectOption(fixture.model.id);
@@ -107,9 +106,7 @@ for (const [sector, fixture, objective] of [
       .getByRole("button", { name: "Confirmer la publication", exact: true })
       .click();
     await expect(page.getByText("PUBLISHED", { exact: true })).toBeVisible();
-    await page
-      .getByRole("link", { name: "Optimization Center", exact: true })
-      .click();
+    await page.getByRole("link", { name: "Optimisation", exact: true }).click();
     await page
       .getByRole("combobox", { name: "Modèle publié à exécuter", exact: true })
       .selectOption(record.model_version_id);
@@ -127,9 +124,7 @@ for (const [sector, fixture, objective] of [
       await expect(page.getByTestId("independent-verification")).toContainText(
         "réussie",
       );
-      await page
-        .getByRole("link", { name: "Scenario Lab", exact: true })
-        .click();
+      await page.getByRole("link", { name: "Scénarios", exact: true }).click();
       await page
         .locator(
           `a[href="/organizations/${fixture.organization.id}/scenarios/${record.id}"]`,

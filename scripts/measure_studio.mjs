@@ -20,6 +20,8 @@ try {
     for (let sample = 0; sample < 3; sample++) {
       const context = await browser.newContext({ viewport: { width, height: width === 1440 ? 1040 : 844 } });
       const page = await context.newPage();
+      page.setDefaultTimeout(12000);
+      page.setDefaultNavigationTimeout(15000);
       let requests = 0;
       const mutations = [];
       page.on("request", (request) => {
@@ -48,8 +50,8 @@ try {
       if (sample === 0) await page.screenshot({ path: join(output, `organization-${width}.png`), fullPage: true });
       const beforeWarm = requests;
       // Both versions keep these exact URLs. Mobile V2 opens its real menu.
-      const graphsLink = page.locator(`nav a[href="/organizations/${factory.organization.id}/graphs"]`).first();
-      if (!(await graphsLink.isVisible())) await page.getByRole("button", { name: "Ouvrir le menu" }).click();
+      const graphsLink = page.locator(`nav a[href="/organizations/${factory.organization.id}/graphs"]:visible`).first();
+      if (!(await graphsLink.count())) await page.getByRole("button", { name: "Ouvrir le menu" }).click();
       const warmAt = performance.now();
       await graphsLink.click();
       await page.getByRole("heading", { name: "La structure, rendue explicite." }).waitFor();

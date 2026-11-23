@@ -194,6 +194,15 @@ export class ApiClient {
   organizations(): Promise<Organization[]> {
     return this.list("organizations");
   }
+  async organization(id: string): Promise<Organization> {
+    const result = await this.request(
+      `/organizations/${encodeURIComponent(id)}`,
+      "OrganizationResponse",
+    );
+    if (result.id !== id)
+      throw new Error("Organisation incompatible avec la route active.");
+    return result;
+  }
   departments(org: string): Promise<Department[]> {
     return this.list("departments", org);
   }

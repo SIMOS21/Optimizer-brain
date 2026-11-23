@@ -1,3 +1,4 @@
+import { selectOrganization } from "./support/navigation";
 import { expect, test, type Page } from "@playwright/test";
 import { spawn, type ChildProcess } from "node:child_process";
 import { once } from "node:events";
@@ -67,12 +68,8 @@ async function selectModel(
   fixture: typeof factory | typeof university,
   modelId = fixture.model.id,
 ) {
-  await page
-    .getByRole("combobox", { name: "Organisation", exact: true })
-    .selectOption(fixture.organization.id);
-  await page
-    .getByRole("link", { name: "Optimization Center", exact: true })
-    .click();
+  await selectOrganization(page, fixture.organization.id);
+  await page.getByRole("link", { name: "Optimisation", exact: true }).click();
   await page
     .getByRole("combobox", { name: "Modèle publié à exécuter", exact: true })
     .selectOption(modelId);
@@ -271,7 +268,7 @@ for (const [name, fixture, objective] of [
         objective,
       );
       await page
-        .getByRole("link", { name: "Optimization Center", exact: true })
+        .getByRole("link", { name: "Optimisation", exact: true })
         .click();
       await page.getByRole("link", { name: submitted.id, exact: true }).click();
       await expect(page.getByTestId("job-state")).toHaveText("SUCCEEDED");
@@ -291,9 +288,7 @@ for (const [name, fixture, objective] of [
           fullPage: true,
         });
         await page.setViewportSize({ width: 1440, height: 1040 });
-        await page
-          .getByRole("combobox", { name: "Organisation", exact: true })
-          .selectOption(university.organization.id);
+        await selectOrganization(page, university.organization.id);
         await expect(page.getByTestId("job-state")).toHaveCount(0);
         await expect(page.getByTestId("recorded-objective")).toHaveCount(0);
         await expect(
