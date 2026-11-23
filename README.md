@@ -272,7 +272,10 @@ jobs autorisés et consulte leurs résultats historiques vérifiés. La
 et incomplets, accessibles en lecture seule dans le Studio et l'API sécurisée.
 La [première tranche de 5B](docs/scenario-lab-phase-5b.md) permet de créer des
 scénarios identiques et isolés, avec provenance et publication explicite avant
-résolution. Les modifications d'hypothèses et comparaisons restent à construire.
+résolution. La [tranche 5B-2](docs/controlled-scenarios-phase-5b2.md) ajoute les
+changements numériques sous politiques publiées, accords de responsables,
+prévisualisation et nouveaux graphes/modèles DRAFT. Les comparaisons, gains et
+analyses de sensibilité restent à construire.
 La Phase 5C, le LLM et les optimisations avancées restent hors périmètre.
 
 **Règle de conception :** benchmarker et prouver l'apport de chaque couche algorithmique avant de l'ajouter. Un algorithme complexe n'est utile que s'il améliore la qualité, la vitesse de résolution, la robustesse ou l'explicabilité.

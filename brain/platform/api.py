@@ -17,7 +17,18 @@ from starlette.responses import Response
 
 from brain.kernel.schema import _invalid_constant, _unique_object
 from brain.organization.composition import checksum
-from . import auth, service, scenarios
+from . import auth, service, scenarios, change_policies, scenario_changes
+from .change_contracts import (
+    ChangePolicyCreate,
+    ChangePolicyResponse,
+    ExpectedPolicy,
+    ChangeTargetsResponse,
+    ChangePreview,
+    ControlledProposal,
+    ControlledCommit,
+)
+from .change_errors import ChangeError, ChangeErrorResponse
+from .models import ScenarioChangePolicy
 from .diagnostics import artifact_diagnostics
 from .database import SCHEMA_REVISION, Settings, make_engine, sessions
 from .models import (
@@ -88,6 +99,8 @@ class SecureJSONRoute(APIRoute):
                     422,
                     [{key: error[key] for key in ("loc", "type", "msg")} for error in exc.errors()],
                 ) from exc
+            except ChangeError as exc:
+                raise HTTPException(exc.status, {"code": exc.code}) from exc
             except service.ServiceError as exc:
                 raise HTTPException(exc.status, str(exc)) from exc
             except IntegrityError as exc:
@@ -131,6 +144,10 @@ def current_user(
 
 
 Actor = Annotated[User, Depends(current_user)]
+CHANGE_RESPONSES: dict[int | str, dict[str, Any]] = {
+    status: {"model": ChangeErrorResponse} for status in (403, 409, 422)
+}
+
 router = APIRouter(prefix="/api/v1", route_class=SecureJSONRoute)
 
 
@@ -557,6 +574,101 @@ def scenario_create(
     organization_id: str, body: ScenarioCreate, session: DB, actor: Actor
 ) -> object:
     return scenarios.create_scenario(session, actor, organization_id, body)
+
+
+@router.get(
+    "/organizations/{organization_id}/model-versions/{identity}/scenario-targets",
+    response_model=ChangeTargetsResponse,
+)
+def scenario_targets(organization_id: str, identity: str, session: DB, actor: Actor) -> object:
+    return change_policies.targets(session, actor, organization_id, identity)
+
+
+@router.post(
+    "/organizations/{organization_id}/scenario-change-policies",
+    response_model=ChangePolicyResponse,
+    status_code=201,
+)
+def change_policy_create(
+    organization_id: str, body: ChangePolicyCreate, session: DB, actor: Actor
+) -> object:
+    return change_policies.create_policy(session, actor, organization_id, body)
+
+
+@router.get(
+    "/organizations/{organization_id}/scenario-change-policies",
+    response_model=Page[ChangePolicyResponse],
+)
+def change_policy_list(
+    organization_id: str, session: DB, actor: Actor, limit: Limit = 50, offset: Offset = 0
+) -> object:
+    service.tenant(session, actor, organization_id)
+    identities = session.scalars(
+        select(ScenarioChangePolicy.id)
+        .where(ScenarioChangePolicy.organization_id == organization_id)
+        .order_by(ScenarioChangePolicy.key, ScenarioChangePolicy.version)
+        .limit(limit)
+        .offset(offset)
+    )
+    return {
+        "items": [
+            change_policies.policy_view(session, organization_id, identity)
+            for identity in identities
+        ],
+        "limit": limit,
+        "offset": offset,
+    }
+
+
+@router.get(
+    "/organizations/{organization_id}/scenario-change-policies/{identity}",
+    response_model=ChangePolicyResponse,
+)
+def change_policy_get(organization_id: str, identity: str, session: DB, actor: Actor) -> object:
+    service.tenant(session, actor, organization_id)
+    return change_policies.policy_view(session, organization_id, identity)
+
+
+@router.post(
+    "/organizations/{organization_id}/scenario-change-policies/{identity}/owner-approval",
+    response_model=ChangePolicyResponse,
+)
+def change_policy_owner_approval(
+    organization_id: str, identity: str, body: ExpectedPolicy, session: DB, actor: Actor
+) -> object:
+    return change_policies.approve_owner(session, actor, organization_id, identity, body)
+
+
+@router.post(
+    "/organizations/{organization_id}/scenario-change-policies/{identity}/publish",
+    response_model=ChangePolicyResponse,
+)
+def change_policy_publish(
+    organization_id: str, identity: str, body: ExpectedPolicy, session: DB, actor: Actor
+) -> object:
+    return change_policies.publish_policy(session, actor, organization_id, identity, body)
+
+
+@router.post(
+    "/organizations/{organization_id}/controlled-scenarios/preview",
+    response_model=ChangePreview,
+    responses=CHANGE_RESPONSES,
+)
+def controlled_scenario_preview(
+    organization_id: str, body: ControlledProposal, session: DB, actor: Actor
+) -> object:
+    return scenario_changes.preview(session, actor, organization_id, body)
+
+
+@router.post(
+    "/organizations/{organization_id}/controlled-scenarios",
+    status_code=201,
+    response_model=ScenarioResponse,
+)
+def controlled_scenario_create(
+    organization_id: str, body: ControlledCommit, session: DB, actor: Actor
+) -> object:
+    return scenario_changes.create_controlled(session, actor, organization_id, body)
 
 
 @router.get("/organizations/{organization_id}/scenarios", response_model=Page[ScenarioResponse])

@@ -4,6 +4,7 @@ import { ApiClient, ApiError, canBuild } from "../../api/client";
 import type { Artifact, Organization, ScenarioCreate } from "../../api/types";
 import { useLoad } from "../../shared/async";
 import { Empty, ErrorNotice, JsonView, Status } from "../../shared/ui";
+import { ControlledScenarios } from "./ControlledScenarios";
 
 function ScenarioDetail({
   client,
@@ -24,8 +25,9 @@ function ScenarioDetail({
       <h2>{document.name}</h2>
       <Status value={record.model_state} />
       <p>
-        Copie identique isolée. Les équations, paramètres et données de
-        référence sont conservés.
+        {document.kind === "CONTROLLED_CHANGES"
+          ? "Hypothèses modifiées sous politique publiée. La référence est conservée."
+          : "Copie identique isolée. Les équations, paramètres et données de référence sont conservés."}
       </p>
       <dl>
         <dt>Identité / version du scénario</dt>
@@ -62,6 +64,26 @@ function ScenarioDetail({
         <dt>Empreinte du modèle dérivé</dt>
         <dd>{document.model_content_hash}</dd>
       </dl>
+      {document.kind === "CONTROLLED_CHANGES" && (
+        <>
+          <p>
+            Politique : {document.policy_version_id} ·{" "}
+            {document.policy_content_hash}. Parent :{" "}
+            {document.parent_scenario_id || "référence"}.
+          </p>
+          <Link
+            data-testid="scenario-graph-link"
+            to={`/organizations/${org}/graphs/${document.graph_snapshot_id}`}
+          >
+            Consulter et publier le nouveau graphe
+          </Link>
+          <JsonView
+            title="Changements approuvés et provenance"
+            value={document.changes}
+          />
+          <p>Publier explicitement le nouveau graphe avant le modèle.</p>
+        </>
+      )}
       <p className="notice">
         {record.model_state === "DRAFT"
           ? "Le modèle du scénario doit être publié explicitement par ADMIN ou APPROVER avant tout calcul."
@@ -166,8 +188,8 @@ function CreateScenario({
     >
       <h2>Créer un scénario identique</h2>
       <p>
-        Cette première tranche conserve toutes les hypothèses. Les modifications
-        de paramètres ou de contraintes ne sont pas proposées.
+        Cette copie conserve toutes les hypothèses. Les modifications contrôlées
+        nécessitent une politique publiée dans le formulaire dédié.
       </p>
       <ErrorNotice message={error} />
       <label>
@@ -249,11 +271,13 @@ export function ScenarioLab({
   organization,
   models,
   refresh,
+  userId = "",
 }: {
   client: ApiClient;
   organization: Organization;
   models: Artifact[];
   refresh: () => void;
+  userId?: string;
 }) {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -266,7 +290,7 @@ export function ScenarioLab({
   return (
     <>
       <div className="page-heading">
-        <span className="eyebrow">SCENARIO LAB · PREMIÈRE TRANCHE</span>
+        <span className="eyebrow">SCENARIO LAB · HYPOTHÈSES CONTRÔLÉES</span>
         <h1>Scénarios isolés et traçables</h1>
         <p>
           La référence publiée reste immuable. Chaque création conserve une
@@ -300,6 +324,19 @@ export function ScenarioLab({
             }}
           />
         )
+      )}
+      {!id && (
+        <ControlledScenarios
+          key={`controlled:${organization.id}`}
+          client={client}
+          organization={organization}
+          userId={userId}
+          models={models}
+          onCreated={(identity) => {
+            navigate(`/organizations/${organization.id}/scenarios/${identity}`);
+            refresh();
+          }}
+        />
       )}
       <section className="panel">
         <h2>Historique des scénarios</h2>

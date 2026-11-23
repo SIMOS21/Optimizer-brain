@@ -14,7 +14,7 @@ from .schemas import ModelCreate, ScenarioCreate, ScenarioDocument, ScenarioResp
 
 
 def _checked_model(
-    session: Session, organization_id: str, identity: str
+    session: Session, organization_id: str, identity: str, *, require_published_graph: bool = True
 ) -> tuple[ModelVersion, Composition, GraphSnapshot]:
     model = service.get_model(session, organization_id, identity)
     composition = compose_organization_model(json.loads(model.payload)["organization_model"])
@@ -27,8 +27,11 @@ def _checked_model(
     ) != (ir.model_id, ir.model_version, ir.model_hash, ir.data_snapshot_id):
         raise service.ServiceError(409, "Reconstruction du modèle historique incompatible")
     graph = service.get_graph(session, organization_id, model.graph_snapshot_id)
-    if graph.state != "PUBLISHED" or graph.payload != service.graph_document(
-        composition.source.graph, composition.source.shared_parameters
+    if (
+        graph.state not in ("DRAFT", "PUBLISHED")
+        or (require_published_graph and graph.state != "PUBLISHED")
+        or graph.payload
+        != service.graph_document(composition.source.graph, composition.source.shared_parameters)
     ):
         raise service.ServiceError(409, "Snapshot du modèle incompatible")
     return model, composition, graph
@@ -47,6 +50,10 @@ def scenario_view(
 ) -> ScenarioResponse:
     if record.organization_id != organization_id or checksum(record.payload) != record.content_hash:
         raise service.ServiceError(409, "Intégrité du scénario invalide")
+    if json.loads(record.payload).get("kind") == "CONTROLLED_CHANGES":
+        from .scenario_changes import controlled_view
+
+        return controlled_view(session, organization_id, record)
     document = ScenarioDocument.model_validate_json(record.payload)
     source, composition, graph = _checked_model(
         session, organization_id, record.source_model_version_id
@@ -121,6 +128,23 @@ def create_scenario(
     session: Session, actor: User, organization_id: str, body: ScenarioCreate
 ) -> ScenarioResponse:
     scope = service.tenant(session, actor, organization_id, roles=("ADMIN", "BUILDER"), lock=True)
+    from .models import ScenarioChangeLink
+
+    if session.scalar(
+        select(ScenarioChangeLink.scenario_version_id)
+        .join(
+            ScenarioVersion,
+            (ScenarioVersion.id == ScenarioChangeLink.scenario_version_id)
+            & (ScenarioVersion.organization_id == ScenarioChangeLink.organization_id),
+        )
+        .where(
+            ScenarioVersion.organization_id == organization_id,
+            ScenarioVersion.model_version_id == body.source_model_version_id,
+        )
+    ):
+        raise service.ServiceError(
+            409, "Un scénario contrôlé doit conserver sa politique via le parcours contrôlé"
+        )
     source, composition, graph = _checked_model(
         session, organization_id, body.source_model_version_id
     )

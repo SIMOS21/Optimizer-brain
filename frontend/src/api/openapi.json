@@ -1505,6 +1505,485 @@
         }
       }
     },
+    "/api/v1/organizations/{organization_id}/model-versions/{identity}/scenario-targets": {
+      "get": {
+        "summary": "Scenario Targets",
+        "operationId": "scenario_targets_api_v1_organizations__organization_id__model_versions__identity__scenario_targets_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "organization_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Organization Id"
+            }
+          },
+          {
+            "name": "identity",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Identity"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChangeTargetsResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/organizations/{organization_id}/scenario-change-policies": {
+      "post": {
+        "summary": "Change Policy Create",
+        "operationId": "change_policy_create_api_v1_organizations__organization_id__scenario_change_policies_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "organization_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Organization Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChangePolicyCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChangePolicyResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "Change Policy List",
+        "operationId": "change_policy_list_api_v1_organizations__organization_id__scenario_change_policies_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "organization_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Organization Id"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 50,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Page_ChangePolicyResponse_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/organizations/{organization_id}/scenario-change-policies/{identity}": {
+      "get": {
+        "summary": "Change Policy Get",
+        "operationId": "change_policy_get_api_v1_organizations__organization_id__scenario_change_policies__identity__get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "organization_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Organization Id"
+            }
+          },
+          {
+            "name": "identity",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Identity"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChangePolicyResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/organizations/{organization_id}/scenario-change-policies/{identity}/owner-approval": {
+      "post": {
+        "summary": "Change Policy Owner Approval",
+        "operationId": "change_policy_owner_approval_api_v1_organizations__organization_id__scenario_change_policies__identity__owner_approval_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "organization_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Organization Id"
+            }
+          },
+          {
+            "name": "identity",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Identity"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExpectedPolicy"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChangePolicyResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/organizations/{organization_id}/scenario-change-policies/{identity}/publish": {
+      "post": {
+        "summary": "Change Policy Publish",
+        "operationId": "change_policy_publish_api_v1_organizations__organization_id__scenario_change_policies__identity__publish_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "organization_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Organization Id"
+            }
+          },
+          {
+            "name": "identity",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Identity"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExpectedPolicy"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChangePolicyResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/organizations/{organization_id}/controlled-scenarios/preview": {
+      "post": {
+        "summary": "Controlled Scenario Preview",
+        "operationId": "controlled_scenario_preview_api_v1_organizations__organization_id__controlled_scenarios_preview_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "organization_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Organization Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ControlledProposal"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChangePreview"
+                }
+              }
+            }
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChangeErrorResponse"
+                }
+              }
+            },
+            "description": "Forbidden"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChangeErrorResponse"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChangeErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Content"
+          }
+        }
+      }
+    },
+    "/api/v1/organizations/{organization_id}/controlled-scenarios": {
+      "post": {
+        "summary": "Controlled Scenario Create",
+        "operationId": "controlled_scenario_create_api_v1_organizations__organization_id__controlled_scenarios_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "organization_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Organization Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ControlledCommit"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ScenarioResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/organizations/{organization_id}/scenarios/{identity}": {
       "get": {
         "summary": "Scenario Get",
@@ -1830,6 +2309,707 @@
           "created_at"
         ],
         "title": "AuditResponse"
+      },
+      "ChangeErrorDetail": {
+        "properties": {
+          "code": {
+            "type": "string",
+            "enum": [
+              "UNIT_CHANGE_FORBIDDEN",
+              "CHANGE_NOT_DELEGATED",
+              "CHANGE_OUT_OF_RANGE",
+              "INTEGER_REQUIRED",
+              "RULE_NOT_ALLOWED",
+              "POLICY_NOT_PUBLISHED",
+              "POLICY_AUTHORITY_REVOKED",
+              "PREVIEW_CHANGED"
+            ],
+            "title": "Code"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "code"
+        ],
+        "title": "ChangeErrorDetail"
+      },
+      "ChangeErrorResponse": {
+        "properties": {
+          "detail": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ChangeErrorDetail"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "items": {},
+                "type": "array"
+              }
+            ],
+            "title": "Detail"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "detail"
+        ],
+        "title": "ChangeErrorResponse"
+      },
+      "ChangePolicyCreate": {
+        "properties": {
+          "key": {
+            "type": "string",
+            "maxLength": 100,
+            "pattern": "^[A-Za-z][A-Za-z0-9_]*$",
+            "title": "Key"
+          },
+          "version": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 1,
+            "title": "Version"
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 1,
+            "title": "Name"
+          },
+          "reason": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 1,
+            "title": "Reason"
+          },
+          "source_model_version_id": {
+            "type": "string",
+            "title": "Source Model Version Id"
+          },
+          "expected_source_content_hash": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$",
+            "title": "Expected Source Content Hash"
+          },
+          "rules": {
+            "items": {
+              "$ref": "#/components/schemas/ChangeRule-Input"
+            },
+            "type": "array",
+            "maxItems": 50,
+            "minItems": 1,
+            "title": "Rules"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "key",
+          "version",
+          "name",
+          "reason",
+          "source_model_version_id",
+          "expected_source_content_hash",
+          "rules"
+        ],
+        "title": "ChangePolicyCreate"
+      },
+      "ChangePolicyDocument": {
+        "properties": {
+          "schema_version": {
+            "type": "string",
+            "const": "5B.2",
+            "title": "Schema Version",
+            "default": "5B.2"
+          },
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "organization_id": {
+            "type": "string",
+            "title": "Organization Id"
+          },
+          "author_id": {
+            "type": "string",
+            "title": "Author Id"
+          },
+          "key": {
+            "type": "string",
+            "title": "Key"
+          },
+          "version": {
+            "type": "string",
+            "title": "Version"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "reason": {
+            "type": "string",
+            "title": "Reason"
+          },
+          "source_model_version_id": {
+            "type": "string",
+            "title": "Source Model Version Id"
+          },
+          "source_content_hash": {
+            "type": "string",
+            "title": "Source Content Hash"
+          },
+          "rules": {
+            "items": {
+              "$ref": "#/components/schemas/ChangeRule-Output"
+            },
+            "type": "array",
+            "title": "Rules"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "organization_id",
+          "author_id",
+          "key",
+          "version",
+          "name",
+          "reason",
+          "source_model_version_id",
+          "source_content_hash",
+          "rules"
+        ],
+        "title": "ChangePolicyDocument"
+      },
+      "ChangePolicyResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "organization_id": {
+            "type": "string",
+            "title": "Organization Id"
+          },
+          "key": {
+            "type": "string",
+            "title": "Key"
+          },
+          "version": {
+            "type": "string",
+            "title": "Version"
+          },
+          "created_by": {
+            "type": "string",
+            "title": "Created By"
+          },
+          "created_at": {
+            "type": "integer",
+            "title": "Created At"
+          },
+          "content_hash": {
+            "type": "string",
+            "title": "Content Hash"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "DRAFT",
+              "PUBLISHED"
+            ],
+            "title": "State"
+          },
+          "published_by": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Published By"
+          },
+          "published_at": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Published At"
+          },
+          "document": {
+            "$ref": "#/components/schemas/ChangePolicyDocument"
+          },
+          "approvals": {
+            "items": {
+              "$ref": "#/components/schemas/PolicyApprovalResponse"
+            },
+            "type": "array",
+            "title": "Approvals"
+          },
+          "usable": {
+            "type": "boolean",
+            "title": "Usable"
+          },
+          "unavailability_reasons": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Unavailability Reasons"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "organization_id",
+          "key",
+          "version",
+          "created_by",
+          "created_at",
+          "content_hash",
+          "state",
+          "published_by",
+          "published_at",
+          "document",
+          "approvals",
+          "usable",
+          "unavailability_reasons"
+        ],
+        "title": "ChangePolicyResponse"
+      },
+      "ChangePreview": {
+        "properties": {
+          "organization_id": {
+            "type": "string",
+            "title": "Organization Id"
+          },
+          "source_model_version_id": {
+            "type": "string",
+            "title": "Source Model Version Id"
+          },
+          "source_content_hash": {
+            "type": "string",
+            "title": "Source Content Hash"
+          },
+          "policy_version_id": {
+            "type": "string",
+            "title": "Policy Version Id"
+          },
+          "policy_content_hash": {
+            "type": "string",
+            "title": "Policy Content Hash"
+          },
+          "parent_scenario_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Parent Scenario Id"
+          },
+          "preview_hash": {
+            "type": "string",
+            "title": "Preview Hash"
+          },
+          "model_hash": {
+            "type": "string",
+            "title": "Model Hash"
+          },
+          "changes": {
+            "items": {
+              "$ref": "#/components/schemas/RecordedChange"
+            },
+            "type": "array",
+            "title": "Changes"
+          },
+          "affected_constraint_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Affected Constraint Ids"
+          },
+          "affects_objective": {
+            "type": "boolean",
+            "title": "Affects Objective"
+          },
+          "creates_new_snapshot": {
+            "type": "boolean",
+            "const": true,
+            "title": "Creates New Snapshot",
+            "default": true
+          },
+          "requires_graph_publication": {
+            "type": "boolean",
+            "const": true,
+            "title": "Requires Graph Publication",
+            "default": true
+          },
+          "requires_model_publication": {
+            "type": "boolean",
+            "const": true,
+            "title": "Requires Model Publication",
+            "default": true
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "organization_id",
+          "source_model_version_id",
+          "source_content_hash",
+          "policy_version_id",
+          "policy_content_hash",
+          "parent_scenario_id",
+          "preview_hash",
+          "model_hash",
+          "changes",
+          "affected_constraint_ids",
+          "affects_objective"
+        ],
+        "title": "ChangePreview"
+      },
+      "ChangeRule-Input": {
+        "properties": {
+          "unit": {
+            "type": "string",
+            "maxLength": 128,
+            "title": "Unit"
+          },
+          "id": {
+            "type": "string",
+            "maxLength": 100,
+            "pattern": "^[A-Za-z][A-Za-z0-9_]*$",
+            "title": "Id"
+          },
+          "target": {
+            "$ref": "#/components/schemas/ChangeTarget"
+          },
+          "operation": {
+            "type": "string",
+            "const": "SET",
+            "title": "Operation",
+            "default": "SET"
+          },
+          "domain": {
+            "type": "string",
+            "enum": [
+              "INTEGER",
+              "DECIMAL"
+            ],
+            "title": "Domain"
+          },
+          "minimum": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 128,
+                "pattern": "^[+-]?(?:[0-9]+(?:\\.[0-9]*)?|\\.[0-9]+)(?:[eE][+-]?[0-9]+)?$"
+              },
+              {
+                "type": "number"
+              }
+            ],
+            "title": "Minimum",
+            "description": "Décimal fini ; 100 chiffres, exposant [-100,100]. Chaîne recommandée."
+          },
+          "maximum": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 128,
+                "pattern": "^[+-]?(?:[0-9]+(?:\\.[0-9]*)?|\\.[0-9]+)(?:[eE][+-]?[0-9]+)?$"
+              },
+              {
+                "type": "number"
+              }
+            ],
+            "title": "Maximum",
+            "description": "Décimal fini ; 100 chiffres, exposant [-100,100]. Chaîne recommandée."
+          },
+          "owner_department": {
+            "type": "string",
+            "maxLength": 100,
+            "pattern": "^[A-Za-z][A-Za-z0-9_]*$",
+            "title": "Owner Department"
+          },
+          "owner_user_id": {
+            "type": "string",
+            "title": "Owner User Id"
+          },
+          "allowed_user_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "maxItems": 100,
+            "minItems": 1,
+            "title": "Allowed User Ids"
+          },
+          "approval": {
+            "type": "string",
+            "const": "OWNER_ACK_AND_PUBLICATION",
+            "title": "Approval",
+            "default": "OWNER_ACK_AND_PUBLICATION"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "unit",
+          "id",
+          "target",
+          "domain",
+          "minimum",
+          "maximum",
+          "owner_department",
+          "owner_user_id",
+          "allowed_user_ids"
+        ],
+        "title": "ChangeRule"
+      },
+      "ChangeRule-Output": {
+        "properties": {
+          "unit": {
+            "type": "string",
+            "maxLength": 128,
+            "title": "Unit"
+          },
+          "id": {
+            "type": "string",
+            "maxLength": 100,
+            "pattern": "^[A-Za-z][A-Za-z0-9_]*$",
+            "title": "Id"
+          },
+          "target": {
+            "$ref": "#/components/schemas/ChangeTarget"
+          },
+          "operation": {
+            "type": "string",
+            "const": "SET",
+            "title": "Operation",
+            "default": "SET"
+          },
+          "domain": {
+            "type": "string",
+            "enum": [
+              "INTEGER",
+              "DECIMAL"
+            ],
+            "title": "Domain"
+          },
+          "minimum": {
+            "type": "string",
+            "title": "Minimum"
+          },
+          "maximum": {
+            "type": "string",
+            "title": "Maximum"
+          },
+          "owner_department": {
+            "type": "string",
+            "maxLength": 100,
+            "pattern": "^[A-Za-z][A-Za-z0-9_]*$",
+            "title": "Owner Department"
+          },
+          "owner_user_id": {
+            "type": "string",
+            "title": "Owner User Id"
+          },
+          "allowed_user_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "maxItems": 100,
+            "minItems": 1,
+            "title": "Allowed User Ids"
+          },
+          "approval": {
+            "type": "string",
+            "const": "OWNER_ACK_AND_PUBLICATION",
+            "title": "Approval",
+            "default": "OWNER_ACK_AND_PUBLICATION"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "unit",
+          "id",
+          "target",
+          "domain",
+          "minimum",
+          "maximum",
+          "owner_department",
+          "owner_user_id",
+          "allowed_user_ids"
+        ],
+        "title": "ChangeRule"
+      },
+      "ChangeTarget": {
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "SHARED_PARAMETER",
+              "DEPARTMENT_PARAMETER",
+              "RESOURCE_CAPACITY"
+            ],
+            "title": "Kind"
+          },
+          "parameter_id": {
+            "type": "string",
+            "maxLength": 100,
+            "pattern": "^[A-Za-z][A-Za-z0-9_]*$",
+            "title": "Parameter Id"
+          },
+          "fragment_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 100,
+                "pattern": "^[A-Za-z][A-Za-z0-9_]*$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fragment Id"
+          },
+          "resource_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 100,
+                "pattern": "^[A-Za-z][A-Za-z0-9_]*$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Resource Id"
+          },
+          "path": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 1,
+            "title": "Path"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "kind",
+          "parameter_id",
+          "path"
+        ],
+        "title": "ChangeTarget"
+      },
+      "ChangeTargetInfo": {
+        "properties": {
+          "target": {
+            "$ref": "#/components/schemas/ChangeTarget"
+          },
+          "unit": {
+            "type": "string",
+            "title": "Unit"
+          },
+          "value": {
+            "type": "string",
+            "title": "Value"
+          },
+          "owner_department": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Owner Department"
+          },
+          "registered_owner_user_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Registered Owner User Id"
+          },
+          "affected_constraint_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Affected Constraint Ids"
+          },
+          "affects_objective": {
+            "type": "boolean",
+            "title": "Affects Objective"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "target",
+          "unit",
+          "value",
+          "owner_department",
+          "registered_owner_user_id",
+          "affected_constraint_ids",
+          "affects_objective"
+        ],
+        "title": "ChangeTargetInfo"
+      },
+      "ChangeTargetsResponse": {
+        "properties": {
+          "organization_id": {
+            "type": "string",
+            "title": "Organization Id"
+          },
+          "source_model_version_id": {
+            "type": "string",
+            "title": "Source Model Version Id"
+          },
+          "source_content_hash": {
+            "type": "string",
+            "title": "Source Content Hash"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/ChangeTargetInfo"
+            },
+            "type": "array",
+            "title": "Items"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "organization_id",
+          "source_model_version_id",
+          "source_content_hash",
+          "items"
+        ],
+        "title": "ChangeTargetsResponse"
       },
       "CompositionDocument": {
         "properties": {
@@ -2313,6 +3493,246 @@
           "source_paths"
         ],
         "title": "ConstraintTraceDocument"
+      },
+      "ControlledCommit": {
+        "properties": {
+          "proposal": {
+            "$ref": "#/components/schemas/ControlledProposal"
+          },
+          "expected_preview_hash": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$",
+            "title": "Expected Preview Hash"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "proposal",
+          "expected_preview_hash"
+        ],
+        "title": "ControlledCommit"
+      },
+      "ControlledProposal": {
+        "properties": {
+          "key": {
+            "type": "string",
+            "maxLength": 100,
+            "pattern": "^[A-Za-z][A-Za-z0-9_]*$",
+            "title": "Key"
+          },
+          "version": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 1,
+            "title": "Version"
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 1,
+            "title": "Name"
+          },
+          "reason": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 1,
+            "title": "Reason"
+          },
+          "source_model_version_id": {
+            "type": "string",
+            "title": "Source Model Version Id"
+          },
+          "expected_source_content_hash": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$",
+            "title": "Expected Source Content Hash"
+          },
+          "policy_version_id": {
+            "type": "string",
+            "title": "Policy Version Id"
+          },
+          "expected_policy_content_hash": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$",
+            "title": "Expected Policy Content Hash"
+          },
+          "parent_scenario_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Parent Scenario Id"
+          },
+          "changes": {
+            "items": {
+              "$ref": "#/components/schemas/RequestedChange"
+            },
+            "type": "array",
+            "maxItems": 50,
+            "minItems": 1,
+            "title": "Changes"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "key",
+          "version",
+          "name",
+          "reason",
+          "source_model_version_id",
+          "expected_source_content_hash",
+          "policy_version_id",
+          "expected_policy_content_hash",
+          "changes"
+        ],
+        "title": "ControlledProposal"
+      },
+      "ControlledScenarioDocument": {
+        "properties": {
+          "schema_version": {
+            "type": "string",
+            "const": "5B.2",
+            "title": "Schema Version",
+            "default": "5B.2"
+          },
+          "kind": {
+            "type": "string",
+            "const": "CONTROLLED_CHANGES",
+            "title": "Kind",
+            "default": "CONTROLLED_CHANGES"
+          },
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "organization_id": {
+            "type": "string",
+            "title": "Organization Id"
+          },
+          "key": {
+            "type": "string",
+            "title": "Key"
+          },
+          "version": {
+            "type": "string",
+            "title": "Version"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "reason": {
+            "type": "string",
+            "title": "Reason"
+          },
+          "author_id": {
+            "type": "string",
+            "title": "Author Id"
+          },
+          "source_model_version_id": {
+            "type": "string",
+            "title": "Source Model Version Id"
+          },
+          "source_content_hash": {
+            "type": "string",
+            "title": "Source Content Hash"
+          },
+          "source_graph_snapshot_id": {
+            "type": "string",
+            "title": "Source Graph Snapshot Id"
+          },
+          "source_data_snapshot_id": {
+            "type": "string",
+            "title": "Source Data Snapshot Id"
+          },
+          "model_version_id": {
+            "type": "string",
+            "title": "Model Version Id"
+          },
+          "model_content_hash": {
+            "type": "string",
+            "title": "Model Content Hash"
+          },
+          "graph_snapshot_id": {
+            "type": "string",
+            "title": "Graph Snapshot Id"
+          },
+          "graph_content_hash": {
+            "type": "string",
+            "title": "Graph Content Hash"
+          },
+          "data_snapshot_id": {
+            "type": "string",
+            "title": "Data Snapshot Id"
+          },
+          "scenario_id": {
+            "type": "string",
+            "title": "Scenario Id"
+          },
+          "policy_version_id": {
+            "type": "string",
+            "title": "Policy Version Id"
+          },
+          "policy_content_hash": {
+            "type": "string",
+            "title": "Policy Content Hash"
+          },
+          "parent_scenario_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Parent Scenario Id"
+          },
+          "preview_hash": {
+            "type": "string",
+            "title": "Preview Hash"
+          },
+          "changes": {
+            "items": {
+              "$ref": "#/components/schemas/RecordedChange"
+            },
+            "type": "array",
+            "title": "Changes"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "organization_id",
+          "key",
+          "version",
+          "name",
+          "reason",
+          "author_id",
+          "source_model_version_id",
+          "source_content_hash",
+          "source_graph_snapshot_id",
+          "source_data_snapshot_id",
+          "model_version_id",
+          "model_content_hash",
+          "graph_snapshot_id",
+          "graph_content_hash",
+          "data_snapshot_id",
+          "scenario_id",
+          "policy_version_id",
+          "policy_content_hash",
+          "parent_scenario_id",
+          "preview_hash",
+          "changes"
+        ],
+        "title": "ControlledScenarioDocument"
       },
       "Department": {
         "properties": {
@@ -2971,6 +4391,21 @@
           "report"
         ],
         "title": "DiagnosticsResponse"
+      },
+      "ExpectedPolicy": {
+        "properties": {
+          "expected_policy_content_hash": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$",
+            "title": "Expected Policy Content Hash"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "expected_policy_content_hash"
+        ],
+        "title": "ExpectedPolicy"
       },
       "Finding": {
         "properties": {
@@ -4417,6 +5852,33 @@
         ],
         "title": "Page[AuditResponse]"
       },
+      "Page_ChangePolicyResponse_": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/ChangePolicyResponse"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "limit": {
+            "type": "integer",
+            "title": "Limit"
+          },
+          "offset": {
+            "type": "integer",
+            "title": "Offset"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "items",
+          "limit",
+          "offset"
+        ],
+        "title": "Page[ChangePolicyResponse]"
+      },
       "Page_DepartmentResponse_": {
         "properties": {
           "items": {
@@ -4699,6 +6161,147 @@
           "parameter"
         ],
         "title": "ParameterRef"
+      },
+      "PolicyApprovalResponse": {
+        "properties": {
+          "user_id": {
+            "type": "string",
+            "title": "User Id"
+          },
+          "created_at": {
+            "type": "integer",
+            "title": "Created At"
+          },
+          "policy_content_hash": {
+            "type": "string",
+            "title": "Policy Content Hash"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "user_id",
+          "created_at",
+          "policy_content_hash"
+        ],
+        "title": "PolicyApprovalResponse"
+      },
+      "RecordedChange": {
+        "properties": {
+          "rule_id": {
+            "type": "string",
+            "title": "Rule Id"
+          },
+          "target": {
+            "$ref": "#/components/schemas/ChangeTarget"
+          },
+          "unit": {
+            "type": "string",
+            "title": "Unit"
+          },
+          "domain": {
+            "type": "string",
+            "enum": [
+              "INTEGER",
+              "DECIMAL"
+            ],
+            "title": "Domain"
+          },
+          "owner_department": {
+            "type": "string",
+            "title": "Owner Department"
+          },
+          "owner_user_id": {
+            "type": "string",
+            "title": "Owner User Id"
+          },
+          "original_value": {
+            "type": "string",
+            "title": "Original Value"
+          },
+          "previous_value": {
+            "type": "string",
+            "title": "Previous Value"
+          },
+          "proposed_value": {
+            "type": "string",
+            "title": "Proposed Value"
+          },
+          "source": {
+            "type": "string",
+            "title": "Source"
+          },
+          "changed_by": {
+            "type": "string",
+            "title": "Changed By"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "rule_id",
+          "target",
+          "unit",
+          "domain",
+          "owner_department",
+          "owner_user_id",
+          "original_value",
+          "previous_value",
+          "proposed_value",
+          "source",
+          "changed_by"
+        ],
+        "title": "RecordedChange"
+      },
+      "RequestedChange": {
+        "properties": {
+          "unit": {
+            "type": "string",
+            "maxLength": 128,
+            "title": "Unit"
+          },
+          "rule_id": {
+            "type": "string",
+            "maxLength": 100,
+            "pattern": "^[A-Za-z][A-Za-z0-9_]*$",
+            "title": "Rule Id"
+          },
+          "operation": {
+            "type": "string",
+            "const": "SET",
+            "title": "Operation",
+            "default": "SET"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 128,
+                "pattern": "^[+-]?(?:[0-9]+(?:\\.[0-9]*)?|\\.[0-9]+)(?:[eE][+-]?[0-9]+)?$"
+              },
+              {
+                "type": "number"
+              }
+            ],
+            "title": "Value",
+            "description": "Décimal fini ; 100 chiffres, exposant [-100,100]. Chaîne recommandée."
+          },
+          "source": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 1,
+            "title": "Source"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "unit",
+          "rule_id",
+          "value",
+          "source"
+        ],
+        "title": "RequestedChange"
       },
       "ResourceNode": {
         "properties": {
@@ -5307,7 +6910,22 @@
             "title": "Model State"
           },
           "document": {
-            "$ref": "#/components/schemas/ScenarioDocument"
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/ScenarioDocument"
+              },
+              {
+                "$ref": "#/components/schemas/ControlledScenarioDocument"
+              }
+            ],
+            "title": "Document",
+            "discriminator": {
+              "propertyName": "kind",
+              "mapping": {
+                "CONTROLLED_CHANGES": "#/components/schemas/ControlledScenarioDocument",
+                "IDENTICAL_CLONE": "#/components/schemas/ScenarioDocument"
+              }
+            }
           }
         },
         "additionalProperties": false,

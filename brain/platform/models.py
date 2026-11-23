@@ -179,6 +179,75 @@ class ScenarioVersion(Base):
     )
 
 
+class ScenarioChangePolicy(Artifact, Base):
+    __tablename__ = "scenario_change_policies"
+    source_model_version_id: Mapped[str] = mapped_column(String(36))
+    __table_args__ = (
+        UniqueConstraint("organization_id", "key", "version"),
+        UniqueConstraint("organization_id", "id"),
+        CheckConstraint(
+            "(state='DRAFT' AND published_by IS NULL AND published_at IS NULL) OR (state='PUBLISHED' AND published_by IS NOT NULL AND published_at IS NOT NULL)",
+            name="policy_publication",
+        ),
+        ForeignKeyConstraint(
+            ["organization_id", "source_model_version_id"],
+            ["model_versions.organization_id", "model_versions.id"],
+        ),
+        ForeignKeyConstraint(
+            ["organization_id", "created_by"],
+            ["memberships.organization_id", "memberships.user_id"],
+        ),
+        ForeignKeyConstraint(
+            ["organization_id", "published_by"],
+            ["memberships.organization_id", "memberships.user_id"],
+        ),
+    )
+
+
+class ScenarioPolicyApproval(Base):
+    __tablename__ = "scenario_policy_approvals"
+    organization_id: Mapped[str] = mapped_column(String(36), primary_key=True)
+    policy_version_id: Mapped[str] = mapped_column(String(36), primary_key=True)
+    user_id: Mapped[str] = mapped_column(String(36), primary_key=True)
+    policy_content_hash: Mapped[str] = mapped_column(String(64))
+    created_at: Mapped[int] = mapped_column(BigInteger, default=now)
+    __table_args__ = (
+        ForeignKeyConstraint(
+            ["organization_id", "policy_version_id"],
+            ["scenario_change_policies.organization_id", "scenario_change_policies.id"],
+        ),
+        ForeignKeyConstraint(
+            ["organization_id", "user_id"], ["memberships.organization_id", "memberships.user_id"]
+        ),
+    )
+
+
+class ScenarioChangeLink(Base):
+    __tablename__ = "scenario_change_links"
+    organization_id: Mapped[str] = mapped_column(String(36), primary_key=True)
+    scenario_version_id: Mapped[str] = mapped_column(String(36), primary_key=True)
+    policy_version_id: Mapped[str] = mapped_column(String(36))
+    parent_scenario_id: Mapped[str | None] = mapped_column(String(36), nullable=True)
+    __table_args__ = (
+        CheckConstraint(
+            "parent_scenario_id IS NULL OR parent_scenario_id <> scenario_version_id",
+            name="scenario_parent_distinct",
+        ),
+        ForeignKeyConstraint(
+            ["organization_id", "scenario_version_id"],
+            ["scenario_versions.organization_id", "scenario_versions.id"],
+        ),
+        ForeignKeyConstraint(
+            ["organization_id", "parent_scenario_id"],
+            ["scenario_versions.organization_id", "scenario_versions.id"],
+        ),
+        ForeignKeyConstraint(
+            ["organization_id", "policy_version_id"],
+            ["scenario_change_policies.organization_id", "scenario_change_policies.id"],
+        ),
+    )
+
+
 class OptimizationRun(Base):
     __tablename__ = "optimization_runs"
     id: Mapped[str] = mapped_column(String(36), primary_key=True)

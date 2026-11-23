@@ -551,6 +551,7 @@ export function Workspace({
                 <ScenarioLab
                   client={client}
                   organization={organization}
+                  userId={userId}
                   models={models}
                   refresh={refresh}
                 />

@@ -6,6 +6,7 @@ from brain.constraint_diagnostics import DiagnosticsReport
 from brain.kernel.schema import Identifier, ModelDSL, Parameter, StrictModel, Text
 from brain.organization.schema import OrganizationGraph, OrganizationModel
 from brain.solvers.contracts import SolveSettings
+from .change_contracts import ControlledScenarioDocument
 
 Role = Literal["ADMIN", "BUILDER", "APPROVER", "VIEWER"]
 
@@ -233,4 +234,4 @@ class ScenarioResponse(StrictModel):
     model_version_id: str
     source_model_version_id: str
     model_state: Literal["DRAFT", "PUBLISHED"]
-    document: ScenarioDocument
+    document: Annotated[ScenarioDocument | ControlledScenarioDocument, Field(discriminator="kind")]

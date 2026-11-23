@@ -76,6 +76,7 @@ def execute_job(organization_id: str, job_id: str, attempt_id: str, parent_pid: 
             model = service.get_model(session, organization_id, job.model_version_id)
             if model.state != "PUBLISHED":
                 raise ValueError("Le modèle publié est indisponible")
+            service.authorize_model_execution(session, user, organization_id, model.id)
             raw_model = json.loads(model.payload)["organization_model"]
             settings = SolveSettings.model_validate(json.loads(job.settings))
             model_version_id = job.model_version_id
@@ -84,6 +85,9 @@ def execute_job(organization_id: str, job_id: str, attempt_id: str, parent_pid: 
 
         with factory.begin() as session:
             service.tenant(session, user, organization_id, roles=("ADMIN", "BUILDER"), lock=True)
+            # Acquire all policy account locks in stable order before the existing
+            # actor lock; recheck revocations after computation and before publishing.
+            service.authorize_model_execution(session, user, organization_id, model_version_id)
             # The solving transaction ended before computation. Re-read identity
             # under a row lock so a committed account revocation also fences
             # publication, and a concurrent disable waits for this transaction.
