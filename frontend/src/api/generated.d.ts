@@ -384,6 +384,126 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/organizations/{organization_id}/model-versions/{identity}/scenario-targets": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Scenario Targets */
+        get: operations["scenario_targets_api_v1_organizations__organization_id__model_versions__identity__scenario_targets_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/organizations/{organization_id}/scenario-change-policies": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Change Policy List */
+        get: operations["change_policy_list_api_v1_organizations__organization_id__scenario_change_policies_get"];
+        put?: never;
+        /** Change Policy Create */
+        post: operations["change_policy_create_api_v1_organizations__organization_id__scenario_change_policies_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/organizations/{organization_id}/scenario-change-policies/{identity}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Change Policy Get */
+        get: operations["change_policy_get_api_v1_organizations__organization_id__scenario_change_policies__identity__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/organizations/{organization_id}/scenario-change-policies/{identity}/owner-approval": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Change Policy Owner Approval */
+        post: operations["change_policy_owner_approval_api_v1_organizations__organization_id__scenario_change_policies__identity__owner_approval_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/organizations/{organization_id}/scenario-change-policies/{identity}/publish": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Change Policy Publish */
+        post: operations["change_policy_publish_api_v1_organizations__organization_id__scenario_change_policies__identity__publish_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/organizations/{organization_id}/controlled-scenarios/preview": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Controlled Scenario Preview */
+        post: operations["controlled_scenario_preview_api_v1_organizations__organization_id__controlled_scenarios_preview_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/organizations/{organization_id}/controlled-scenarios": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Controlled Scenario Create */
+        post: operations["controlled_scenario_create_api_v1_organizations__organization_id__controlled_scenarios_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/organizations/{organization_id}/scenarios/{identity}": {
         parameters: {
             query?: never;
@@ -485,6 +605,260 @@ export interface components {
             target_id: string;
             /** Created At */
             created_at: number;
+        };
+        /** ChangeErrorDetail */
+        ChangeErrorDetail: {
+            /**
+             * Code
+             * @enum {string}
+             */
+            code: "UNIT_CHANGE_FORBIDDEN" | "CHANGE_NOT_DELEGATED" | "CHANGE_OUT_OF_RANGE" | "INTEGER_REQUIRED" | "RULE_NOT_ALLOWED" | "POLICY_NOT_PUBLISHED" | "POLICY_AUTHORITY_REVOKED" | "PREVIEW_CHANGED";
+        };
+        /** ChangeErrorResponse */
+        ChangeErrorResponse: {
+            /** Detail */
+            detail: components["schemas"]["ChangeErrorDetail"] | string | unknown[];
+        };
+        /** ChangePolicyCreate */
+        ChangePolicyCreate: {
+            /** Key */
+            key: string;
+            /** Version */
+            version: string;
+            /** Name */
+            name: string;
+            /** Reason */
+            reason: string;
+            /** Source Model Version Id */
+            source_model_version_id: string;
+            /** Expected Source Content Hash */
+            expected_source_content_hash: string;
+            /** Rules */
+            rules: components["schemas"]["ChangeRule-Input"][];
+        };
+        /** ChangePolicyDocument */
+        ChangePolicyDocument: {
+            /**
+             * Schema Version
+             * @default 5B.2
+             * @constant
+             */
+            schema_version: "5B.2";
+            /** Id */
+            id: string;
+            /** Organization Id */
+            organization_id: string;
+            /** Author Id */
+            author_id: string;
+            /** Key */
+            key: string;
+            /** Version */
+            version: string;
+            /** Name */
+            name: string;
+            /** Reason */
+            reason: string;
+            /** Source Model Version Id */
+            source_model_version_id: string;
+            /** Source Content Hash */
+            source_content_hash: string;
+            /** Rules */
+            rules: components["schemas"]["ChangeRule-Output"][];
+        };
+        /** ChangePolicyResponse */
+        ChangePolicyResponse: {
+            /** Id */
+            id: string;
+            /** Organization Id */
+            organization_id: string;
+            /** Key */
+            key: string;
+            /** Version */
+            version: string;
+            /** Created By */
+            created_by: string;
+            /** Created At */
+            created_at: number;
+            /** Content Hash */
+            content_hash: string;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "DRAFT" | "PUBLISHED";
+            /** Published By */
+            published_by: string | null;
+            /** Published At */
+            published_at: number | null;
+            document: components["schemas"]["ChangePolicyDocument"];
+            /** Approvals */
+            approvals: components["schemas"]["PolicyApprovalResponse"][];
+            /** Usable */
+            usable: boolean;
+            /** Unavailability Reasons */
+            unavailability_reasons: string[];
+        };
+        /** ChangePreview */
+        ChangePreview: {
+            /** Organization Id */
+            organization_id: string;
+            /** Source Model Version Id */
+            source_model_version_id: string;
+            /** Source Content Hash */
+            source_content_hash: string;
+            /** Policy Version Id */
+            policy_version_id: string;
+            /** Policy Content Hash */
+            policy_content_hash: string;
+            /** Parent Scenario Id */
+            parent_scenario_id: string | null;
+            /** Preview Hash */
+            preview_hash: string;
+            /** Model Hash */
+            model_hash: string;
+            /** Changes */
+            changes: components["schemas"]["RecordedChange"][];
+            /** Affected Constraint Ids */
+            affected_constraint_ids: string[];
+            /** Affects Objective */
+            affects_objective: boolean;
+            /**
+             * Creates New Snapshot
+             * @default true
+             * @constant
+             */
+            creates_new_snapshot: true;
+            /**
+             * Requires Graph Publication
+             * @default true
+             * @constant
+             */
+            requires_graph_publication: true;
+            /**
+             * Requires Model Publication
+             * @default true
+             * @constant
+             */
+            requires_model_publication: true;
+        };
+        /** ChangeRule */
+        "ChangeRule-Input": {
+            /** Unit */
+            unit: string;
+            /** Id */
+            id: string;
+            target: components["schemas"]["ChangeTarget"];
+            /**
+             * Operation
+             * @default SET
+             * @constant
+             */
+            operation: "SET";
+            /**
+             * Domain
+             * @enum {string}
+             */
+            domain: "INTEGER" | "DECIMAL";
+            /**
+             * Minimum
+             * @description Décimal fini ; 100 chiffres, exposant [-100,100]. Chaîne recommandée.
+             */
+            minimum: string | number;
+            /**
+             * Maximum
+             * @description Décimal fini ; 100 chiffres, exposant [-100,100]. Chaîne recommandée.
+             */
+            maximum: string | number;
+            /** Owner Department */
+            owner_department: string;
+            /** Owner User Id */
+            owner_user_id: string;
+            /** Allowed User Ids */
+            allowed_user_ids: string[];
+            /**
+             * Approval
+             * @default OWNER_ACK_AND_PUBLICATION
+             * @constant
+             */
+            approval: "OWNER_ACK_AND_PUBLICATION";
+        };
+        /** ChangeRule */
+        "ChangeRule-Output": {
+            /** Unit */
+            unit: string;
+            /** Id */
+            id: string;
+            target: components["schemas"]["ChangeTarget"];
+            /**
+             * Operation
+             * @default SET
+             * @constant
+             */
+            operation: "SET";
+            /**
+             * Domain
+             * @enum {string}
+             */
+            domain: "INTEGER" | "DECIMAL";
+            /** Minimum */
+            minimum: string;
+            /** Maximum */
+            maximum: string;
+            /** Owner Department */
+            owner_department: string;
+            /** Owner User Id */
+            owner_user_id: string;
+            /** Allowed User Ids */
+            allowed_user_ids: string[];
+            /**
+             * Approval
+             * @default OWNER_ACK_AND_PUBLICATION
+             * @constant
+             */
+            approval: "OWNER_ACK_AND_PUBLICATION";
+        };
+        /** ChangeTarget */
+        ChangeTarget: {
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "SHARED_PARAMETER" | "DEPARTMENT_PARAMETER" | "RESOURCE_CAPACITY";
+            /** Parameter Id */
+            parameter_id: string;
+            /** Fragment Id */
+            fragment_id?: string | null;
+            /** Resource Id */
+            resource_id?: string | null;
+            /** Path */
+            path: string;
+        };
+        /** ChangeTargetInfo */
+        ChangeTargetInfo: {
+            target: components["schemas"]["ChangeTarget"];
+            /** Unit */
+            unit: string;
+            /** Value */
+            value: string;
+            /** Owner Department */
+            owner_department: string | null;
+            /** Registered Owner User Id */
+            registered_owner_user_id: string | null;
+            /** Affected Constraint Ids */
+            affected_constraint_ids: string[];
+            /** Affects Objective */
+            affects_objective: boolean;
+        };
+        /** ChangeTargetsResponse */
+        ChangeTargetsResponse: {
+            /** Organization Id */
+            organization_id: string;
+            /** Source Model Version Id */
+            source_model_version_id: string;
+            /** Source Content Hash */
+            source_content_hash: string;
+            /** Items */
+            items: components["schemas"]["ChangeTargetInfo"][];
         };
         /** CompositionDocument */
         CompositionDocument: {
@@ -646,6 +1020,93 @@ export interface components {
             resource_id: string | null;
             /** Source Paths */
             source_paths: string[];
+        };
+        /** ControlledCommit */
+        ControlledCommit: {
+            proposal: components["schemas"]["ControlledProposal"];
+            /** Expected Preview Hash */
+            expected_preview_hash: string;
+        };
+        /** ControlledProposal */
+        ControlledProposal: {
+            /** Key */
+            key: string;
+            /** Version */
+            version: string;
+            /** Name */
+            name: string;
+            /** Reason */
+            reason: string;
+            /** Source Model Version Id */
+            source_model_version_id: string;
+            /** Expected Source Content Hash */
+            expected_source_content_hash: string;
+            /** Policy Version Id */
+            policy_version_id: string;
+            /** Expected Policy Content Hash */
+            expected_policy_content_hash: string;
+            /** Parent Scenario Id */
+            parent_scenario_id?: string | null;
+            /** Changes */
+            changes: components["schemas"]["RequestedChange"][];
+        };
+        /** ControlledScenarioDocument */
+        ControlledScenarioDocument: {
+            /**
+             * Schema Version
+             * @default 5B.2
+             * @constant
+             */
+            schema_version: "5B.2";
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            kind: "CONTROLLED_CHANGES";
+            /** Id */
+            id: string;
+            /** Organization Id */
+            organization_id: string;
+            /** Key */
+            key: string;
+            /** Version */
+            version: string;
+            /** Name */
+            name: string;
+            /** Reason */
+            reason: string;
+            /** Author Id */
+            author_id: string;
+            /** Source Model Version Id */
+            source_model_version_id: string;
+            /** Source Content Hash */
+            source_content_hash: string;
+            /** Source Graph Snapshot Id */
+            source_graph_snapshot_id: string;
+            /** Source Data Snapshot Id */
+            source_data_snapshot_id: string;
+            /** Model Version Id */
+            model_version_id: string;
+            /** Model Content Hash */
+            model_content_hash: string;
+            /** Graph Snapshot Id */
+            graph_snapshot_id: string;
+            /** Graph Content Hash */
+            graph_content_hash: string;
+            /** Data Snapshot Id */
+            data_snapshot_id: string;
+            /** Scenario Id */
+            scenario_id: string;
+            /** Policy Version Id */
+            policy_version_id: string;
+            /** Policy Content Hash */
+            policy_content_hash: string;
+            /** Parent Scenario Id */
+            parent_scenario_id: string | null;
+            /** Preview Hash */
+            preview_hash: string;
+            /** Changes */
+            changes: components["schemas"]["RecordedChange"][];
         };
         /** Department */
         Department: {
@@ -860,6 +1321,11 @@ export interface components {
             /** Model Content Hash */
             model_content_hash: string;
             report: components["schemas"]["DiagnosticsReport"];
+        };
+        /** ExpectedPolicy */
+        ExpectedPolicy: {
+            /** Expected Policy Content Hash */
+            expected_policy_content_hash: string;
         };
         /** Finding */
         Finding: {
@@ -1304,6 +1770,15 @@ export interface components {
             /** Offset */
             offset: number;
         };
+        /** Page[ChangePolicyResponse] */
+        Page_ChangePolicyResponse_: {
+            /** Items */
+            items: components["schemas"]["ChangePolicyResponse"][];
+            /** Limit */
+            limit: number;
+            /** Offset */
+            offset: number;
+        };
         /** Page[DepartmentResponse] */
         Page_DepartmentResponse_: {
             /** Items */
@@ -1393,6 +1868,62 @@ export interface components {
         ParameterRef: {
             /** Parameter */
             parameter: string;
+        };
+        /** PolicyApprovalResponse */
+        PolicyApprovalResponse: {
+            /** User Id */
+            user_id: string;
+            /** Created At */
+            created_at: number;
+            /** Policy Content Hash */
+            policy_content_hash: string;
+        };
+        /** RecordedChange */
+        RecordedChange: {
+            /** Rule Id */
+            rule_id: string;
+            target: components["schemas"]["ChangeTarget"];
+            /** Unit */
+            unit: string;
+            /**
+             * Domain
+             * @enum {string}
+             */
+            domain: "INTEGER" | "DECIMAL";
+            /** Owner Department */
+            owner_department: string;
+            /** Owner User Id */
+            owner_user_id: string;
+            /** Original Value */
+            original_value: string;
+            /** Previous Value */
+            previous_value: string;
+            /** Proposed Value */
+            proposed_value: string;
+            /** Source */
+            source: string;
+            /** Changed By */
+            changed_by: string;
+        };
+        /** RequestedChange */
+        RequestedChange: {
+            /** Unit */
+            unit: string;
+            /** Rule Id */
+            rule_id: string;
+            /**
+             * Operation
+             * @default SET
+             * @constant
+             */
+            operation: "SET";
+            /**
+             * Value
+             * @description Décimal fini ; 100 chiffres, exposant [-100,100]. Chaîne recommandée.
+             */
+            value: string | number;
+            /** Source */
+            source: string;
         };
         /** ResourceNode */
         ResourceNode: {
@@ -1530,9 +2061,8 @@ export interface components {
              */
             schema_version: "5B.1";
             /**
-             * Kind
-             * @default IDENTICAL_CLONE
-             * @constant
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
              */
             kind: "IDENTICAL_CLONE";
             /** Id */
@@ -1596,7 +2126,8 @@ export interface components {
              * @enum {string}
              */
             model_state: "DRAFT" | "PUBLISHED";
-            document: components["schemas"]["ScenarioDocument"];
+            /** Document */
+            document: components["schemas"]["ScenarioDocument"] | components["schemas"]["ControlledScenarioDocument"];
         };
         /** SolveSettings */
         "SolveSettings-Input": {
@@ -2700,6 +3231,299 @@ export interface operations {
         requestBody: {
             content: {
                 "application/json": components["schemas"]["ScenarioCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ScenarioResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    scenario_targets_api_v1_organizations__organization_id__model_versions__identity__scenario_targets_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                organization_id: string;
+                identity: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ChangeTargetsResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    change_policy_list_api_v1_organizations__organization_id__scenario_change_policies_get: {
+        parameters: {
+            query?: {
+                limit?: number;
+                offset?: number;
+            };
+            header?: never;
+            path: {
+                organization_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Page_ChangePolicyResponse_"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    change_policy_create_api_v1_organizations__organization_id__scenario_change_policies_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                organization_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ChangePolicyCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ChangePolicyResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    change_policy_get_api_v1_organizations__organization_id__scenario_change_policies__identity__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                organization_id: string;
+                identity: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ChangePolicyResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    change_policy_owner_approval_api_v1_organizations__organization_id__scenario_change_policies__identity__owner_approval_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                organization_id: string;
+                identity: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ExpectedPolicy"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ChangePolicyResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    change_policy_publish_api_v1_organizations__organization_id__scenario_change_policies__identity__publish_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                organization_id: string;
+                identity: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ExpectedPolicy"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ChangePolicyResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    controlled_scenario_preview_api_v1_organizations__organization_id__controlled_scenarios_preview_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                organization_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ControlledProposal"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ChangePreview"];
+                };
+            };
+            /** @description Forbidden controlled change */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ChangeErrorResponse"];
+                };
+            };
+            /** @description Controlled change conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ChangeErrorResponse"];
+                };
+            };
+            /** @description Invalid controlled change */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ChangeErrorResponse"];
+                };
+            };
+        };
+    };
+    controlled_scenario_create_api_v1_organizations__organization_id__controlled_scenarios_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                organization_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ControlledCommit"];
             };
         };
         responses: {

@@ -295,13 +295,18 @@ def get_model(session: Session, organization_id: str, identity: str) -> ModelVer
 
 
 def create_model(
-    session: Session, user: User, organization_id: str, body: ModelCreate
+    session: Session,
+    user: User,
+    organization_id: str,
+    body: ModelCreate,
+    *,
+    allow_draft_graph: bool = False,
 ) -> ModelVersion:
     scope = tenant(session, user, organization_id, roles=("ADMIN", "BUILDER"), lock=True)
     graph = get_graph(session, organization_id, body.graph_snapshot_id)
     composition = compose_organization_model(body.model)
     if (
-        graph.state != "PUBLISHED"
+        graph.state not in (("DRAFT", "PUBLISHED") if allow_draft_graph else ("PUBLISHED",))
         or graph_document(composition.source.graph, composition.source.shared_parameters)
         != graph.payload
     ):
@@ -311,6 +316,10 @@ def create_model(
     if composition.source.graph.organization.id != scope.organization_key:
         raise ServiceError(422, "Organisation du modèle incompatible")
     payload = canonical_json(composition.to_dict())
+    if not allow_draft_graph:
+        from .scenario_changes import protect_graph_reuse
+
+        protect_graph_reuse(session, user, organization_id, graph.id, payload)
     existing = session.scalar(
         select(ModelVersion).where(
             ModelVersion.organization_id == organization_id,
@@ -349,6 +358,13 @@ def publish(
         if model
         else get_graph(session, organization_id, identity)
     )
+    from .scenario_changes import guard_artifact
+
+    guard_artifact(session, user, organization_id, record.id, model=model, execution=False)
+    if model:
+        assert isinstance(record, ModelVersion)
+        if get_graph(session, organization_id, record.graph_snapshot_id).state != "PUBLISHED":
+            raise ServiceError(409, "Publier le graphe du scénario avant son modèle")
     if record.state == "PUBLISHED":
         return record
     record.state, record.published_by, record.published_at = "PUBLISHED", user.id, now()
@@ -365,6 +381,7 @@ def record_run(
     model = get_model(session, organization_id, model_version_id)
     if model.state != "PUBLISHED":
         raise ServiceError(409, "Modèle publié requis")
+    authorize_model_execution(session, user, organization_id, model_version_id)
     composition = compose_organization_model(json.loads(model.payload)["organization_model"])
     report = build_report(composition, result)
     payload = canonical_json({"solve": result.to_dict(), "report": report})
@@ -392,6 +409,15 @@ def record_run(
     return record
 
 
+def authorize_model_execution(
+    session: Session, user: User, organization_id: str, model_version_id: str
+) -> None:
+    """Additional checks only for models linked to a controlled scenario."""
+    from .scenario_changes import guard_artifact
+
+    guard_artifact(session, user, organization_id, model_version_id, model=True, execution=True)
+
+
 def create_optimization_job(
     session: Session,
     user: User,
@@ -404,6 +430,7 @@ def create_optimization_job(
     model = get_model(session, organization_id, model_version_id)
     if model.state != "PUBLISHED":
         raise ServiceError(409, "Modèle publié requis")
+    authorize_model_execution(session, user, organization_id, model_version_id)
 
     settings = body.settings.model_dump(mode="json")
     settings_json = canonical_json(settings)

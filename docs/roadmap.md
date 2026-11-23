@@ -10,7 +10,7 @@
 | 4B — Visual Organization Studio | Livrée : React/TypeScript, canvas fidèle aux snapshots, import/édition versionnée, publication, inspecteurs et historique ; parcours API réelle usine/université validés, voir validation-phase-4b.md |
 | 4C — Asynchronous Optimization Execution Center | Backend et frontend livrés : modèles publiés, lancement idempotent, suivi et annulation serveur, cockpit et historique immuables ; parcours réels usine/université, INFEASIBLE et TIME_LIMIT ; voir validation-phase-4c.md |
 | 5A — Constraint Diagnostics | Livrée : preuves statiques exactes et incomplètes, mesures indépendantes, provenance, GET sécurisés et consultation Studio en lecture seule ; voir constraint-diagnostics-phase-5a.md |
-| 5B — Scenario Lab | Première tranche : registre immuable de clones identiques, API/RLS, création et historique Studio, publication et worker existants ; paramètres modifiables et comparaisons non livrés ; voir scenario-lab-phase-5b.md |
+| 5B — Scenario Lab | Tranches 1 et 2 : clones identiques et changements numériques sous politique explicite, accords, snapshots DRAFT, API/RLS et Studio ; publications et worker existants ; comparaisons et gains non livrés ; voir controlled-scenarios-phase-5b2.md |
 | 5C et 6 à 8 | Non implémentées |
 
 La phase 2 livre IR → matrices → résultat brut → vérification indépendante →

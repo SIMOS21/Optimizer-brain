@@ -60,6 +60,11 @@ function request(): ScenarioCreate {
 }
 function client() {
   const result = new ApiClient();
+  vi.spyOn(result, "policies").mockResolvedValue({
+    items: [],
+    limit: 50,
+    offset: 0,
+  });
   vi.spyOn(result, "scenarios").mockResolvedValue({
     items: [],
     limit: 50,

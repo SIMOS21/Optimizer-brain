@@ -11,6 +11,10 @@ import type {
   SolveSettings,
   Scenario,
   ScenarioCreate,
+  ChangePolicy,
+  PolicyCreate,
+  ControlledProposal,
+  ControlledCommit,
 } from "./types";
 import { decode, parsePrecise } from "./validation";
 
@@ -23,10 +27,32 @@ const messages: Record<number, string> = {
   422: "Document invalide : contrôlez références, unités, versions et champs obligatoires.",
 };
 export class ApiError extends Error {
-  constructor(readonly status: number) {
-    super(messages[status] || "Le service est indisponible. Réessayez.");
+  constructor(
+    readonly status: number,
+    code?: string,
+  ) {
+    super(
+      (code && changeMessages[code]) ||
+        messages[status] ||
+        "Le service est indisponible. Réessayez.",
+    );
   }
 }
+const changeMessages: Record<string, string> = {
+  UNIT_CHANGE_FORBIDDEN: "Le changement d’unité est interdit.",
+  CHANGE_NOT_DELEGATED:
+    "Cette règle ne vous délègue pas le droit de modifier la valeur.",
+  CHANGE_OUT_OF_RANGE:
+    "La valeur proposée dépasse les bornes autorisées par la politique.",
+  INTEGER_REQUIRED: "Cette politique exige une valeur entière.",
+  RULE_NOT_ALLOWED: "La modification ne figure pas dans la politique publiée.",
+  POLICY_NOT_PUBLISHED:
+    "La politique doit être publiée avant toute modification.",
+  POLICY_AUTHORITY_REVOKED:
+    "La politique n’est plus utilisable : une autorité ou une approbation est révoquée.",
+  PREVIEW_CHANGED:
+    "La prévisualisation a changé ; faites-la valider à nouveau.",
+};
 export class ApiClient {
   private token: string | null = null;
   private controllers = new Set<AbortController>();
@@ -67,11 +93,24 @@ export class ApiClient {
       });
       controller.signal.throwIfAborted();
       if (!response.ok) {
+        let code: string | undefined;
+        if ([403, 409, 422].includes(response.status)) {
+          // Only closed public codes are displayed. Never echo arbitrary server text.
+          const detail = (await response.json().catch(() => null)) as {
+            detail?: { code?: unknown };
+          } | null;
+          controller.signal.throwIfAborted();
+          if (
+            typeof detail?.detail?.code === "string" &&
+            Object.hasOwn(changeMessages, detail.detail.code)
+          )
+            code = detail.detail.code;
+        }
         if (response.status === 401 && this.token) {
           this.clear();
           this.onExpired();
         }
-        throw new ApiError(response.status);
+        throw new ApiError(response.status, code);
       }
       const value = parsePrecise(await response.text());
       controller.signal.throwIfAborted();
@@ -250,6 +289,144 @@ export class ApiClient {
       result.document.source_content_hash !== body.expected_source_content_hash
     )
       throw new Error("Scénario incompatible avec la demande de création.");
+    return result;
+  }
+  async memberships(org: string) {
+    const members: Schemas["MembershipResponse"][] = [];
+    for (let offset = 0; ; offset += 100) {
+      const result = await this.request(
+        `/organizations/${encodeURIComponent(org)}/memberships?limit=100&offset=${offset}`,
+        "Page_MembershipResponse_",
+      );
+      if (result.items.some((m) => m.organization_id !== org))
+        throw new Error("Membres hors organisation.");
+      members.push(...result.items);
+      if (result.items.length < 100) return members;
+    }
+  }
+  async changeTargets(org: string, model: string) {
+    const result = await this.request(
+      `/organizations/${encodeURIComponent(org)}/model-versions/${encodeURIComponent(model)}/scenario-targets`,
+      "ChangeTargetsResponse",
+    );
+    if (
+      result.organization_id !== org ||
+      result.source_model_version_id !== model
+    )
+      throw new Error("Cibles hors référence.");
+    return result;
+  }
+  private checkPolicy(record: ChangePolicy, org: string): ChangePolicy {
+    const doc = record.document;
+    if (
+      record.organization_id !== org ||
+      doc.organization_id !== org ||
+      record.id !== doc.id ||
+      record.key !== doc.key ||
+      record.version !== doc.version ||
+      record.created_by !== doc.author_id ||
+      record.approvals.some(
+        (a) => a.policy_content_hash !== record.content_hash,
+      )
+    )
+      throw new Error(
+        "Politique incompatible avec l’organisation ou sa provenance.",
+      );
+    return record;
+  }
+  async policies(org: string, offset = 0) {
+    const result = await this.request(
+      `/organizations/${encodeURIComponent(org)}/scenario-change-policies?limit=50&offset=${offset}`,
+      "Page_ChangePolicyResponse_",
+    );
+    result.items.forEach((r) => this.checkPolicy(r, org));
+    return result;
+  }
+  async createPolicy(org: string, body: PolicyCreate) {
+    const result = this.checkPolicy(
+      await this.request(
+        `/organizations/${encodeURIComponent(org)}/scenario-change-policies`,
+        "ChangePolicyResponse",
+        "POST",
+        body,
+      ),
+      org,
+    );
+    if (
+      result.document.source_model_version_id !==
+        body.source_model_version_id ||
+      result.document.source_content_hash !==
+        body.expected_source_content_hash ||
+      result.key !== body.key ||
+      result.version !==
+        body.version.replace(/^\p{White_Space}+|\p{White_Space}+$/gu, "")
+    )
+      throw new Error("Politique hors demande.");
+    return result;
+  }
+  async policyAction(
+    org: string,
+    policy: ChangePolicy,
+    action: "owner-approval" | "publish",
+  ) {
+    const result = this.checkPolicy(
+      await this.request(
+        `/organizations/${encodeURIComponent(org)}/scenario-change-policies/${encodeURIComponent(policy.id)}/${action}`,
+        "ChangePolicyResponse",
+        "POST",
+        { expected_policy_content_hash: policy.content_hash },
+      ),
+      org,
+    );
+    if (result.id !== policy.id || result.content_hash !== policy.content_hash)
+      throw new Error("Politique différente de la version approuvée.");
+    return result;
+  }
+  async previewChanges(org: string, proposal: ControlledProposal) {
+    const result = await this.request(
+      `/organizations/${encodeURIComponent(org)}/controlled-scenarios/preview`,
+      "ChangePreview",
+      "POST",
+      proposal,
+    );
+    if (
+      result.organization_id !== org ||
+      result.source_model_version_id !== proposal.source_model_version_id ||
+      result.source_content_hash !== proposal.expected_source_content_hash ||
+      result.policy_version_id !== proposal.policy_version_id ||
+      result.policy_content_hash !== proposal.expected_policy_content_hash ||
+      result.parent_scenario_id !== (proposal.parent_scenario_id ?? null)
+    )
+      throw new Error("Prévisualisation hors référence ou politique.");
+    return result;
+  }
+  async commitChanges(org: string, body: ControlledCommit) {
+    const result = this.checkScenario(
+      await this.request(
+        `/organizations/${encodeURIComponent(org)}/controlled-scenarios`,
+        "ScenarioResponse",
+        "POST",
+        body,
+      ),
+      org,
+    );
+    const doc = result.document;
+    if (
+      doc.kind !== "CONTROLLED_CHANGES" ||
+      doc.preview_hash !== body.expected_preview_hash ||
+      doc.policy_version_id !== body.proposal.policy_version_id ||
+      doc.policy_content_hash !== body.proposal.expected_policy_content_hash ||
+      doc.source_content_hash !== body.proposal.expected_source_content_hash ||
+      result.source_model_version_id !==
+        body.proposal.source_model_version_id ||
+      result.key !== body.proposal.key ||
+      result.version !==
+        body.proposal.version.replace(
+          /^\p{White_Space}+|\p{White_Space}+$/gu,
+          "",
+        )
+    )
+      throw new Error("Scénario hors prévisualisation approuvée.");
     return result;
   }
   async jobs(org: string, offset = 0): Promise<Page<OptimizationJob>> {

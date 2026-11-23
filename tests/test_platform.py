@@ -294,7 +294,7 @@ def test_migrations_match_entities_and_roundtrip(tmp_path):
     engine = create_engine(f"sqlite:///{tmp_path / 'migrations.sqlite3'}")
     migrate(engine)
     with engine.connect() as connection:
-        assert connection.scalar(text("SELECT version_num FROM alembic_version")) == "0005_5b"
+        assert connection.scalar(text("SELECT version_num FROM alembic_version")) == "0006_5b2"
         assert compare_metadata(MigrationContext.configure(connection), Base.metadata) == []
     migrate(engine, "base", downgrade=True)
     assert inspect(engine).get_table_names() == ["alembic_version"]

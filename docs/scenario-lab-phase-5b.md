@@ -1,5 +1,9 @@
 # Scenario Lab — première tranche de Phase 5B
 
+Ce document décrit le contrat historique 5B-1, toujours conservé. L'extension
+[5B-2 — hypothèses contrôlées](controlled-scenarios-phase-5b2.md) ajoute des
+politiques explicites et de nouvelles routes ; le schéma courant est `0006_5b2`.
+
 ## Livré et non livré
 
 Créer une copie identique isolée d'une référence publiée, la consulter avec sa
