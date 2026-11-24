@@ -3,6 +3,37 @@ import { ApiClient, ApiError, canBuild, canPublish } from "../src/api/client";
 import fixture from "./fixtures/factory.json";
 
 afterEach(() => vi.unstubAllGlobals());
+it("rejects a detail response from another organization", async () => {
+  vi.stubGlobal(
+    "fetch",
+    vi.fn(async () => new Response(JSON.stringify(fixture.organization))),
+  );
+  await expect(
+    new ApiClient().organization("another-organization"),
+  ).rejects.toThrow("Organisation incompatible");
+});
+it("reads all authorized catalogue pages before declaring a global search complete", async () => {
+  const first = Array.from({ length: 100 }, (_, index) => ({
+    ...fixture.organization,
+    id: `authorized_${index}`,
+    key: `organization_${index}`,
+  }));
+  const fetch = vi.fn(
+    async (url: string) =>
+      new Response(
+        JSON.stringify({
+          items: url.includes("offset=100") ? [fixture.organization] : first,
+          limit: 100,
+          offset: url.includes("offset=100") ? 100 : 0,
+        }),
+      ),
+  );
+  vi.stubGlobal("fetch", fetch);
+  const organizations = await new ApiClient().organizations();
+  expect(organizations).toHaveLength(101);
+  expect(organizations[100]!.id).toBe(fixture.organization.id);
+  expect(fetch).toHaveBeenCalledTimes(2);
+});
 it.each(["ADMIN", "BUILDER", "APPROVER", "VIEWER"] as const)(
   "exposes only supported actions for %s",
   (role) => {

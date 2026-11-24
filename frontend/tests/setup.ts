@@ -3,6 +3,14 @@ import { afterEach } from "vitest";
 import { cleanup } from "@testing-library/react";
 
 afterEach(cleanup);
+// Native dialog focus trapping is exercised in real Chromium. This DOM stub
+// only models its open/closed state for deterministic component tests.
+HTMLDialogElement.prototype.showModal = function () {
+  this.setAttribute("open", "");
+};
+HTMLDialogElement.prototype.close = function () {
+  this.removeAttribute("open");
+};
 class ResizeObserverStub implements ResizeObserver {
   private targets = new Set<Element>();
   constructor(private callback: ResizeObserverCallback) {}

@@ -1,0 +1,24 @@
+:root {
+  --brand-navy: #17304a;
+  --brand-navy-raised: #294760;
+  --brand-teal: #087d70;
+  --brand-teal-strong: #07655b;
+  --text-primary: #20334a;
+  --text-secondary: #536b7e;
+  --surface-page: #f5f8fb;
+  --surface-card: #fff;
+  --surface-soft: #edf4f7;
+  --border-muted: #dce5ee;
+  --state-warning: #9b641e;
+  --state-error: #a03e3b;
+  --focus-ring: #b57820;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-12: 48px;
+  --radius-control: 8px;
+  --radius-card: 14px;
+}

@@ -20,7 +20,15 @@ from brain.platform.models import User
 ROOT = Path(__file__).resolve().parents[1]
 
 
-def seed(*, username: str, password: str, history: bool, fixtures: bool = False) -> None:
+def seed(
+    *,
+    username: str,
+    password: str,
+    history: bool,
+    fixtures: bool = False,
+    fixture_directory: Path | None = None,
+    manifest_path: Path | None = None,
+) -> None:
     """Use governance API for publications and the existing trusted hook for history."""
     url = os.environ.get("BRAIN_MIGRATION_DATABASE_URL")
     if not url:
@@ -66,7 +74,17 @@ def seed(*, username: str, password: str, history: bool, fixtures: bool = False)
             authenticated=False,
         )
         headers = {"Authorization": "Bearer " + login["access_token"]}
-        accessible = request("GET", "/organizations?limit=100")["items"]
+
+        def collection(path: str) -> list[Any]:
+            result: list[Any] = []
+            for offset in range(0, 1_000_000, 100):
+                page = request("GET", f"{path}?limit=100&offset={offset}")["items"]
+                result.extend(page)
+                if len(page) < 100:
+                    return result
+            raise ValueError("Catalogue trop volumineux pour ce provisionnement explicite")
+
+        accessible = collection("/organizations")
         for example in ("factory", "university"):
             source = load_organization_file(ROOT / f"examples/organizations/{example}/project.json")
             key = source.graph.organization.id
@@ -82,9 +100,7 @@ def seed(*, username: str, password: str, history: bool, fixtures: bool = False)
                     request(
                         "PUT", base + "/memberships", {"user_id": users[role], "role": role.upper()}
                     )
-            registered = {
-                item["key"] for item in request("GET", base + "/departments?limit=100")["items"]
-            }
+            registered = {item["key"] for item in collection(base + "/departments")}
             for department in source.graph.departments:
                 if department.id not in registered:
                     request(
@@ -114,7 +130,7 @@ def seed(*, username: str, password: str, history: bool, fixtures: bool = False)
                 {"graph_snapshot_id": graph["id"], "model": source.model_dump(mode="json")},
             )
             model = request("POST", base + f"/model-versions/{model['id']}/publish")
-            runs = request("GET", base + "/optimization-runs?limit=100")["items"]
+            runs = collection(base + "/optimization-runs")
             existing_run = next(
                 (run for run in runs if run["model_version_id"] == model["id"]), None
             )
@@ -136,7 +152,7 @@ def seed(*, username: str, password: str, history: bool, fixtures: bool = False)
                 "run_id": run_id,
             }
             if fixtures:
-                target = ROOT / "frontend/tests/fixtures" / f"{example}.json"
+                target = (fixture_directory or ROOT / "frontend/tests/fixtures") / f"{example}.json"
                 target.parent.mkdir(parents=True, exist_ok=True)
                 target.write_text(
                     json.dumps(
@@ -153,12 +169,10 @@ def seed(*, username: str, password: str, history: bool, fixtures: bool = False)
                     encoding="utf-8",
                 )
         client.post("/api/v1/auth/logout", headers=headers)
-    target = ROOT / ".local/studio/manifest.json"
+    target = manifest_path or ROOT / ".local/studio/manifest.json"
     target.parent.mkdir(parents=True, exist_ok=True)
     target.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
-    print(
-        "Deux organisations synthétiques publiées ; manifeste local sans secret : .local/studio/manifest.json"
-    )
+    print("Deux organisations synthétiques publiées ; manifeste sans secret enregistré.")
 
 
 def main() -> None:
@@ -176,6 +190,8 @@ def main() -> None:
         action="store_true",
         help="Exporter uniquement les réponses métier non secrètes pour les tests contractuels",
     )
+    parser.add_argument("--fixture-directory", type=Path)
+    parser.add_argument("--manifest-path", type=Path)
     args = parser.parse_args()
     seed(
         username=args.username_prefix,
@@ -183,6 +199,8 @@ def main() -> None:
         or getpass.getpass("Mot de passe des comptes synthétiques : "),
         history=args.with_history,
         fixtures=args.fixtures,
+        fixture_directory=args.fixture_directory,
+        manifest_path=args.manifest_path,
     )
 
 

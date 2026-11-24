@@ -278,4 +278,21 @@ prévisualisation et nouveaux graphes/modèles DRAFT. Les comparaisons, gains et
 analyses de sensibilité restent à construire.
 La Phase 5C, le LLM et les optimisations avancées restent hors périmètre.
 
+La [fondation UX-F1](docs/validation-ux-f1.md) ajoute navigation responsive,
+catalogue d'organisations et modes de présentation métier/expert. Les pages et
+leurs permissions restent disponibles aux URL existantes. Le
+[guide E2E isolé](docs/ux-f1-e2e-isolation.md) décrit le lancement des tests sur une
+base PostgreSQL dédiée, sans purge de la démonstration :
+
+```powershell
+python -m scripts.studio_e2e --env-file .local/e2e.env
+# Studio interactif E2E sur 5181, API sur 8002 ; arrêt par Ctrl+C
+python -m scripts.studio_e2e --env-file .local/e2e.env --serve
+```
+
+Le fichier privé contient uniquement les URLs E2E et, facultativement, son
+mot de passe synthétique. Aucun secret ni base de démonstration ne doit être
+utilisé pour ces tests. Le lancement de démonstration existant reste décrit dans
+[le guide Studio](docs/studio-phase-4b.md).
+
 **Règle de conception :** benchmarker et prouver l'apport de chaque couche algorithmique avant de l'ajouter. Un algorithme complexe n'est utile que s'il améliore la qualité, la vitesse de résolution, la robustesse ou l'explicabilité.

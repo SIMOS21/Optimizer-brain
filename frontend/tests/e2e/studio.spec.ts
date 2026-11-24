@@ -1,7 +1,7 @@
+import { selectOrganization } from "./support/navigation";
 import { expect, test, type Page } from "@playwright/test";
 import { readFile } from "node:fs/promises";
-import factory from "../fixtures/factory.json" with { type: "json" };
-import university from "../fixtures/university.json" with { type: "json" };
+import { factory, university } from "./support/fixtures";
 
 const examples = [
   ["factory", factory, "4100"],
@@ -22,16 +22,14 @@ async function login(page: Page, role = "admin") {
   await page.getByLabel("Mot de passe", { exact: true }).fill(password);
   await page.getByRole("button", { name: "Accéder au workspace" }).click();
   await expect(
-    page.getByRole("heading", { name: "Choisissez votre espace de travail." }),
+    page.getByRole("heading", { name: "Votre espace de décision" }),
   ).toBeVisible();
 }
 async function openGraph(
   page: Page,
   fixture: typeof factory | typeof university,
 ) {
-  await page
-    .getByRole("combobox", { name: "Organisation", exact: true })
-    .selectOption(fixture.organization.id);
+  await selectOrganization(page, fixture.organization.id);
   await page
     .locator(
       `a[href="/organizations/${fixture.organization.id}/graphs/${fixture.graph.id}"]`,
@@ -120,7 +118,7 @@ for (const [name, fixture, objective] of examples) {
       .getByRole("button", { name: "Confirmer la publication", exact: true })
       .click();
     await expect(page.getByText("PUBLISHED", { exact: true })).toBeVisible();
-    await page.getByRole("link", { name: "Modèles & contraintes" }).click();
+    await page.getByRole("link", { name: "Modèles & validations" }).click();
     await page
       .locator(
         `a[href="/organizations/${fixture.organization.id}/models/${fixture.model.id}"]`,
@@ -150,7 +148,7 @@ for (const [name, fixture, objective] of examples) {
     await expect(
       page.getByRole("cell", { name: "model_version", exact: true }),
     ).toBeVisible();
-    await page.getByRole("link", { name: "Historique vérifié" }).click();
+    await page.getByRole("link", { name: "Décisions & historique" }).click();
     await page.getByLabel("Résultat historique").selectOption(fixture.run.id);
     await expect(page.getByTestId("recorded-objective")).toHaveText(objective);
     await expect(
@@ -183,9 +181,7 @@ test("changement de tenant, purge et rechargement sans session persistante", asy
   await page
     .getByText(factory.graph.document.graph.resources[0]!.name, { exact: true })
     .click();
-  await page
-    .getByRole("combobox", { name: "Organisation", exact: true })
-    .selectOption(university.organization.id);
+  await selectOrganization(page, university.organization.id);
   await expect(
     page.getByRole("heading", { name: "Une organisation. Un modèle commun." }),
   ).toBeVisible();
@@ -206,11 +202,15 @@ test("VIEWER sans action de publication ni autre organisation", async ({
   page,
 }) => {
   await login(page, "viewer");
+  await page.getByRole("button", { name: "Changer d’organisation" }).click();
   await expect(
     page
-      .getByRole("combobox", { name: "Organisation", exact: true })
-      .locator(`option[value="${university.organization.id}"]`),
+      .getByRole("dialog", { name: "Choisir une organisation" })
+      .locator(`a[href="/organizations/${university.organization.id}"]`),
   ).toHaveCount(0);
+  await page
+    .getByRole("button", { name: "Fermer : Choisir une organisation" })
+    .click();
   await openGraph(page, factory);
   await expect(
     page.getByRole("button", { name: "Créer un nouveau brouillon" }),
@@ -252,9 +252,7 @@ for (const status of [401, 403, 404, 409, 422, 413]) {
           json: { detail: "sensitive-response-must-not-be-shown" },
         }),
     );
-    await page
-      .getByRole("combobox", { name: "Organisation", exact: true })
-      .selectOption(factory.organization.id);
+    await selectOrganization(page, factory.organization.id);
     await page
       .locator(
         `a[href="/organizations/${factory.organization.id}/graphs/${factory.graph.id}"]`,
@@ -292,7 +290,7 @@ test("organisation vide → départements → import graphe → modèle, sans ru
 }) => {
   await login(page);
   const key = `studio_import_${Date.now()}`;
-  await page.getByRole("button", { name: "Créer une organisation" }).click();
+  await page.getByText("Créer une organisation", { exact: true }).click();
   await page.getByLabel("Clé de l’organisation").fill(key);
   await page
     .getByLabel("Nom de l’organisation")
@@ -316,7 +314,7 @@ test("organisation vide → départements → import graphe → modèle, sans ru
   graph.graph.organization.name = "Organisation synthétique importée";
   graph.graph.organization.data_snapshot_id = `${key}_data`;
   await page
-    .getByRole("link", { name: "Organization Graph", exact: true })
+    .getByRole("link", { name: "Mon organisation", exact: true })
     .click();
   await page.getByRole("button", { name: "Importer un graphe JSON" }).click();
   await page.getByLabel("Document JSON à importer").fill(JSON.stringify(graph));
@@ -336,7 +334,7 @@ test("organisation vide → départements → import graphe → modèle, sans ru
   source.fragments.forEach((fragment) => {
     fragment.organization_id = key;
   });
-  await page.getByRole("link", { name: "Modèles & contraintes" }).click();
+  await page.getByRole("link", { name: "Modèles & validations" }).click();
   await page.getByRole("button", { name: "Importer un modèle JSON" }).click();
   await page
     .getByRole("combobox", { name: "Graphe publié de l’import", exact: true })
@@ -349,7 +347,7 @@ test("organisation vide → départements → import graphe → modèle, sans ru
     .click();
   await expect(page.getByText("DRAFT", { exact: true })).toBeVisible();
   await expect(page.getByText("Contraintes compilées · 3")).toBeVisible();
-  await page.getByRole("link", { name: "Historique vérifié" }).click();
+  await page.getByRole("link", { name: "Décisions & historique" }).click();
   await expect(
     page.getByText(/Aucun run enregistré pour cette organisation/),
   ).toBeVisible();

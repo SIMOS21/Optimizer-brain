@@ -1,9 +1,9 @@
+import { selectOrganization } from "./support/navigation";
 import { expect, test } from "@playwright/test";
 import { spawn, type ChildProcess } from "node:child_process";
 import { once } from "node:events";
 import { fileURLToPath } from "node:url";
-import factory from "../fixtures/factory.json" with { type: "json" };
-import university from "../fixtures/university.json" with { type: "json" };
+import { factory, university } from "./support/fixtures";
 import type { ChangePolicy, Scenario } from "../../src/api/types";
 
 function startWorker() {
@@ -68,10 +68,8 @@ for (const [sector, fixture, parameter, low, high, proposed] of [
     );
     await page.getByRole("button", { name: "Accéder au workspace" }).click();
     const user = (await (await me).json()) as { id: string };
-    await page
-      .getByRole("combobox", { name: "Organisation", exact: true })
-      .selectOption(fixture.organization.id);
-    await page.getByRole("link", { name: "Scenario Lab", exact: true }).click();
+    await selectOrganization(page, fixture.organization.id);
+    await page.getByRole("link", { name: "Scénarios", exact: true }).click();
     await page
       .getByText("Nouvelle politique de changement", { exact: true })
       .click();
@@ -173,7 +171,7 @@ for (const [sector, fixture, parameter, low, high, proposed] of [
       .getByRole("button", { name: "Confirmer la publication", exact: true })
       .click();
     await expect(page.getByText("PUBLISHED", { exact: true })).toBeVisible();
-    await page.getByRole("link", { name: "Scenario Lab", exact: true }).click();
+    await page.getByRole("link", { name: "Scénarios", exact: true }).click();
     await page
       .locator(
         `a[href="/organizations/${fixture.organization.id}/scenarios/${scenario.id}"]`,
@@ -187,9 +185,7 @@ for (const [sector, fixture, parameter, low, high, proposed] of [
       .getByRole("button", { name: "Confirmer la publication", exact: true })
       .click();
     await expect(page.getByText("PUBLISHED", { exact: true })).toBeVisible();
-    await page
-      .getByRole("link", { name: "Optimization Center", exact: true })
-      .click();
+    await page.getByRole("link", { name: "Optimisation", exact: true }).click();
     await page
       .getByRole("combobox", { name: "Modèle publié à exécuter", exact: true })
       .selectOption(scenario.model_version_id);

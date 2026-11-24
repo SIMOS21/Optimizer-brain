@@ -84,14 +84,13 @@ npm.cmd test
 npm.cmd run build
 ```
 
-Pour Playwright, démarrer API et preview, provisionner les exemples selon le guide
-4B et définir dans le terminal de tests `BRAIN_DATABASE_URL` runtime,
-`BRAIN_DEMO_PASSWORD` de démonstration synthétique et
-`STUDIO_BASE_URL=http://127.0.0.1:5180`. `STUDIO_PYTHON` peut désigner le Python
-du venv ; par défaut les tests utilisent `python` du PATH.
+Depuis UX-F1, Playwright exige la base `optimizer_brain_e2e`, indépendante de
+la démonstration et des tests Python. Le lanceur fournit l'API, le Studio compilé,
+les fixtures et les identifiants synthétiques ; voir le
+[guide E2E isolé](ux-f1-e2e-isolation.md). Depuis la racine :
 
 ```powershell
-npm.cmd run test:e2e
+python -m scripts.studio_e2e --env-file .local/e2e.env
 ```
 
 Ne pas démarrer un worker externe sur cette base dédiée aux parcours navigateur :

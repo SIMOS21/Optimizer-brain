@@ -116,24 +116,24 @@ OpenAPI et generated.d.ts sont versionnés ; les générateurs restent reproduct
 AJV valide les réponses contre ce même schéma. Le code source n'importe aucun
 template métier ni donnée de fixture ; seuls les tests et scripts de démo le font.
 
-Pour les parcours réels, garder l'API et Vite actifs ; fournir le mot de passe de
-démonstration par variable d'environnement locale, sans le commiter :
+Depuis UX-F1, les parcours réels utilisent exclusivement une base PostgreSQL E2E
+dédiée. Installer Chromium dans `frontend`, puis lancer depuis la racine :
 
 ```powershell
 Set-Location frontend
 npm.cmd exec playwright -- install chromium
-# BRAIN_DEMO_PASSWORD est fourni par votre environnement privé.
-npm.cmd run test:e2e
+Set-Location ..
+python -m scripts.studio_e2e --env-file .local/e2e.env
 ```
 
-Pour tester le code compilé : lancer `npm.cmd run preview` dans une autre console,
-puis `$env:STUDIO_BASE_URL = 'http://127.0.0.1:5180'` avant test:e2e. Preview reprend
-le proxy sécurisé ; c'est une vérification locale, pas un serveur de production.
-Les tests réels créent des versions et une organisation synthétique supplémentaire.
-Utiliser une base de démonstration, pas une base de données métier. Traces/vidéos
-sont désactivées ; les captures explicites n'incluent ni formulaire de login ni jeton.
-STUDIO_SCREENSHOT_DIR permet de changer leur répertoire ; la CI utilise
-frontend/test-results/screenshots pour ne publier que les images de son exécution.
+Le lanceur construit le Studio, démarre sa propre API et preview sur 8002/5181,
+puis les arrête à sa sortie. Il refuse la base de démonstration et les ports
+occupés, sans reset ni purge. Les tests ajoutent uniquement des artefacts
+synthétiques à `optimizer_brain_e2e`. Voir le [guide E2E](ux-f1-e2e-isolation.md)
+pour le fichier privé et les comptes distincts ; `npm run test:e2e` seul refuse
+un environnement non isolé. Traces/vidéos sont désactivées ; les captures explicites
+n'incluent ni formulaire de login ni jeton. La CI publie seulement les images de
+son exécution sous `frontend/test-results/screenshots`.
 
 Les contrôles Python restent ceux de 4A avec les variables BRAIN_TEST_* :
 `python -m pytest -q`, `python -m ruff check brain tests scripts migrations`,

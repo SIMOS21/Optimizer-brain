@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { canonical } from "../api/validation";
+import { EmptyState, StatusChip } from "./design-system";
 
 export function ErrorNotice({ message }: { message?: string }) {
   return message ? (
@@ -9,13 +10,13 @@ export function ErrorNotice({ message }: { message?: string }) {
   ) : null;
 }
 export function Empty({ children }: { children: ReactNode }) {
-  return <div className="empty">{children}</div>;
+  return <EmptyState>{children}</EmptyState>;
 }
 export function Status({ value }: { value?: string | null }) {
   return (
-    <span className={`badge ${value === "PUBLISHED" ? "published" : "draft"}`}>
+    <StatusChip tone={value === "PUBLISHED" ? "positive" : "neutral"}>
       {value || "Non renseigné"}
-    </span>
+    </StatusChip>
   );
 }
 export function JsonView({
