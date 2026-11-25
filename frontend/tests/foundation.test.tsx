@@ -216,9 +216,9 @@ it.each(["ADMIN", "BUILDER", "APPROVER", "VIEWER"] as const)(
     const client = api(role);
     const request = vi.spyOn(client, "request");
     const storage = vi.spyOn(Storage.prototype, "setItem");
-    mount(client, `/organizations/${organization.id}`);
+    mount(client, `/organizations/${organization.id}/graphs`);
     await screen.findByRole("heading", {
-      name: "Une organisation. Un modèle commun.",
+      name: "Départements enregistrés",
     });
     const toggle = screen.getByRole("switch", { name: "Mode expert" });
     expect(toggle).toHaveAttribute("aria-checked", "false");
@@ -321,7 +321,7 @@ it("keeps pending workspace loads alive when the current organization is selecte
   const client = api();
   const abort = vi.spyOn(client, "abort");
   let finish!: () => void;
-  vi.mocked(client.departments).mockImplementation(
+  vi.mocked(client.artifacts).mockImplementation(
     () =>
       new Promise((resolve) => {
         finish = () => resolve([]);
@@ -342,7 +342,7 @@ it("keeps pending workspace loads alive when the current organization is selecte
   await act(async () => finish());
   expect(
     await screen.findByRole("heading", {
-      name: "Une organisation. Un modèle commun.",
+      name: "Aucun résultat disponible",
     }),
   ).toBeInTheDocument();
 });

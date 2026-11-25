@@ -67,12 +67,16 @@ test("les quatre rôles conservent leurs capacités en métier et expert", async
           `a[href="/organizations/${factory.organization.id}/graphs/${draftId}"]`,
         )
         .click();
-    } else
+    } else {
+      await page
+        .getByRole("link", { name: "Mon organisation", exact: true })
+        .click();
       await page
         .locator(
           `a[href="/organizations/${factory.organization.id}/graphs/${factory.graph.id}"]`,
         )
         .click();
+    }
     const mode = page.getByRole("switch", { name: "Mode expert" });
     await expect(mode).toHaveAttribute("aria-checked", "false");
     for (const expert of [false, true]) {
@@ -166,8 +170,8 @@ test("changement de tenant : identité effacée immédiatement et réponse tardi
 }) => {
   await login(page);
   await selectOrganization(page, factory.organization.id);
-  const oldGraph = `#main-content a[href="/organizations/${factory.organization.id}/graphs/${factory.graph.id}"]`;
-  await expect(page.locator(oldGraph)).toBeVisible();
+  const oldDashboardLink = `#main-content a[href="/organizations/${factory.organization.id}/history/${factory.run.id}"]`;
+  await expect(page.locator(oldDashboardLink)).toBeVisible();
   let release!: () => void;
   const gate = new Promise<void>((resolve) => {
     release = resolve;
@@ -185,13 +189,13 @@ test("changement de tenant : identité effacée immédiatement et réponse tardi
     await expect(page.getByTestId("active-organization")).toHaveText(
       "Chargement de l’organisation…",
     );
-    await expect(page.locator(oldGraph)).toHaveCount(0);
+    await expect(page.locator(oldDashboardLink)).toHaveCount(0);
     await page.goBack();
     await expect(page.getByTestId("active-organization")).toHaveText(
       factory.organization.name,
     );
     release();
-    await expect(page.locator(oldGraph)).toBeVisible();
+    await expect(page.locator(oldDashboardLink)).toBeVisible();
     await expect(page.getByTestId("active-organization")).not.toContainText(
       university.organization.name,
     );

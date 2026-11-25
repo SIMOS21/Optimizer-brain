@@ -10,6 +10,7 @@ import type {
 } from "../../api/types";
 import { useLoad } from "../../shared/async";
 import { Empty, ErrorNotice, JsonView, Status } from "../../shared/ui";
+import { Skeleton } from "../../shared/design-system";
 import { Publish } from "../../shared/Publish";
 import { GraphEditor } from "../graph/GraphEditor";
 import { History } from "../history/History";
@@ -19,6 +20,7 @@ import { exportGraph } from "../graph/projection";
 import { ArtifactImport } from "./ArtifactImport";
 import { StoredRun } from "../execution/DecisionCockpit";
 import { ConstraintDiagnostics } from "../diagnostics/ConstraintDiagnostics";
+import { Dashboard } from "../dashboard/Dashboard";
 
 const OptimizationCenter = lazy(() =>
   import("../execution/OptimizationCenter").then((module) => ({
@@ -461,13 +463,286 @@ function GraphRoute(props: Omit<Parameters<typeof GraphPage>[0], "id">) {
   const { id = "" } = useParams();
   return <GraphPage key={id} {...props} id={id} />;
 }
-function ModelRoute(props: Omit<Parameters<typeof ModelPage>[0], "id">) {
+function ModelRoute({
+  client,
+  organization,
+}: {
+  client: ApiClient;
+  organization: Organization;
+}) {
   const { id = "" } = useParams();
-  return <ModelPage key={id} {...props} id={id} />;
+  const [revision, setRevision] = useState(0);
+  const loaded = useLoad(
+    () =>
+      Promise.all([
+        client.artifacts(organization.id, "graphs"),
+        client.artifacts(organization.id, "model-versions"),
+      ]),
+    [client, organization.id, revision],
+  );
+  if (loaded.loading) return <Skeleton label="Chargement des versions…" />;
+  if (!loaded.data)
+    return (
+      <div className="v2-retry-panel">
+        <ErrorNotice message={loaded.error} />
+        <button type="button" onClick={() => setRevision((r) => r + 1)}>
+          Réessayer
+        </button>
+      </div>
+    );
+  const [graphs, models] = loaded.data;
+  return (
+    <ModelPage
+      key={id}
+      client={client}
+      organization={organization}
+      id={id}
+      graphs={graphs}
+      models={models}
+      refresh={() => setRevision((r) => r + 1)}
+    />
+  );
 }
 function RunRoute({ client, org }: { client: ApiClient; org: string }) {
   const { id = "" } = useParams();
   return <StoredRun key={id} client={client} org={org} id={id} />;
+}
+function GraphsRoute({
+  client,
+  organization,
+  base,
+}: {
+  client: ApiClient;
+  organization: Organization;
+  base: string;
+}) {
+  const navigate = useNavigate();
+  const [graphsRevision, setGraphsRevision] = useState(0);
+  const [deptsRevision, setDeptsRevision] = useState(0);
+  const graphsLoad = useLoad(
+    () => client.artifacts(organization.id, "graphs"),
+    [client, organization.id, graphsRevision],
+  );
+  const deptsLoad = useLoad(
+    () => client.departments(organization.id),
+    [client, organization.id, deptsRevision],
+  );
+  return (
+    <>
+      <div className="page-heading">
+        <span className="eyebrow">ORGANIZATION GRAPH</span>
+        <h1>La structure, rendue explicite.</h1>
+        <p>
+          Départements, ressources et relations tels qu’enregistrés dans chaque
+          snapshot.
+        </p>
+      </div>
+      {graphsLoad.loading ? (
+        <Skeleton label="Chargement des graphes…" />
+      ) : graphsLoad.error ? (
+        <div className="v2-retry-panel">
+          <ErrorNotice message={graphsLoad.error} />
+          <button
+            type="button"
+            onClick={() => setGraphsRevision((r) => r + 1)}
+          >
+            Réessayer
+          </button>
+        </div>
+      ) : (
+        <>
+          <ArtifactList
+            title="Versions de graphe"
+            records={graphsLoad.data ?? []}
+            base={`${base}/graphs`}
+          />
+          <ArtifactImport
+            client={client}
+            organization={organization}
+            kind="graphs"
+            onSaved={(id) => {
+              setGraphsRevision((r) => r + 1);
+              navigate(`${base}/graphs/${id}`);
+            }}
+          />
+        </>
+      )}
+      {deptsLoad.loading ? (
+        <Skeleton label="Chargement des départements…" />
+      ) : deptsLoad.error ? (
+        <div className="v2-retry-panel">
+          <ErrorNotice message={deptsLoad.error} />
+          <button type="button" onClick={() => setDeptsRevision((r) => r + 1)}>
+            Réessayer
+          </button>
+        </div>
+      ) : (
+        <DepartmentRegistry
+          client={client}
+          organization={organization}
+          departments={deptsLoad.data ?? []}
+          refresh={() => setDeptsRevision((r) => r + 1)}
+        />
+      )}
+    </>
+  );
+}
+function ModelsRoute({
+  client,
+  organization,
+  base,
+}: {
+  client: ApiClient;
+  organization: Organization;
+  base: string;
+}) {
+  const navigate = useNavigate();
+  const [revision, setRevision] = useState(0);
+  const loaded = useLoad(
+    () =>
+      Promise.all([
+        client.artifacts(organization.id, "model-versions"),
+        client.artifacts(organization.id, "graphs"),
+      ]),
+    [client, organization.id, revision],
+  );
+  if (loaded.loading) return <Skeleton label="Chargement des modèles…" />;
+  if (!loaded.data)
+    return (
+      <div className="v2-retry-panel">
+        <ErrorNotice message={loaded.error} />
+        <button type="button" onClick={() => setRevision((r) => r + 1)}>
+          Réessayer
+        </button>
+      </div>
+    );
+  const [models, graphs] = loaded.data;
+  return (
+    <>
+      <div className="page-heading">
+        <span className="eyebrow">MODEL INSPECTOR</span>
+        <h1>Des règles aux équations.</h1>
+        <p>
+          La DSL compilée et l’IR sont les sources mathématiques, sans
+          interprétation du canvas.
+        </p>
+      </div>
+      <ArtifactList
+        title="Versions de modèle"
+        records={models}
+        base={`${base}/models`}
+      />
+      <ArtifactImport
+        client={client}
+        organization={organization}
+        kind="model-versions"
+        graphs={graphs}
+        onSaved={(id) => {
+          setRevision((r) => r + 1);
+          navigate(`${base}/models/${id}`);
+        }}
+      />
+    </>
+  );
+}
+function ScenariosRoute({
+  client,
+  organization,
+  userId,
+}: {
+  client: ApiClient;
+  organization: Organization;
+  userId: string;
+}) {
+  const [revision, setRevision] = useState(0);
+  const loaded = useLoad(
+    () => client.artifacts(organization.id, "model-versions"),
+    [client, organization.id, revision],
+  );
+  if (loaded.loading)
+    return <Skeleton label="Chargement des modèles pour les scénarios…" />;
+  if (!loaded.data)
+    return (
+      <div className="v2-retry-panel">
+        <ErrorNotice message={loaded.error} />
+        <button type="button" onClick={() => setRevision((r) => r + 1)}>
+          Réessayer
+        </button>
+      </div>
+    );
+  return (
+    <Suspense fallback={<Skeleton label="Chargement du Scenario Lab…" />}>
+      <ScenarioLab
+        client={client}
+        organization={organization}
+        userId={userId}
+        models={loaded.data}
+        refresh={() => setRevision((r) => r + 1)}
+      />
+    </Suspense>
+  );
+}
+function ExecutionRoute({
+  client,
+  organization,
+  userId,
+}: {
+  client: ApiClient;
+  organization: Organization;
+  userId: string;
+}) {
+  const [revision, setRevision] = useState(0);
+  const loaded = useLoad(
+    () => client.artifacts(organization.id, "model-versions"),
+    [client, organization.id, revision],
+  );
+  if (loaded.loading)
+    return <Skeleton label="Chargement des modèles pour l’exécution…" />;
+  if (!loaded.data)
+    return (
+      <div className="v2-retry-panel">
+        <ErrorNotice message={loaded.error} />
+        <button type="button" onClick={() => setRevision((r) => r + 1)}>
+          Réessayer
+        </button>
+      </div>
+    );
+  return (
+    <Suspense fallback={<Skeleton label="Chargement du centre d’exécution…" />}>
+      <OptimizationCenter
+        client={client}
+        organization={organization}
+        userId={userId}
+        models={loaded.data}
+      />
+    </Suspense>
+  );
+}
+function HistoryRoute({
+  client,
+  organization,
+}: {
+  client: ApiClient;
+  organization: Organization;
+}) {
+  const [revision, setRevision] = useState(0);
+  const loaded = useLoad(
+    () => client.artifacts(organization.id, "optimization-runs"),
+    [client, organization.id, revision],
+  );
+  if (loaded.loading) return <Skeleton label="Chargement de l’historique…" />;
+  if (!loaded.data)
+    return (
+      <div className="v2-retry-panel">
+        <ErrorNotice message={loaded.error} />
+        <button type="button" onClick={() => setRevision((r) => r + 1)}>
+          Réessayer
+        </button>
+      </div>
+    );
+  return (
+    <History client={client} organization={organization} records={loaded.data} />
+  );
 }
 
 export function Workspace({
@@ -481,61 +756,48 @@ export function Workspace({
   userId: string;
   authorizedOrganization?: Organization;
 }) {
-  const navigate = useNavigate();
-  const [revision, setRevision] = useState(0);
-  const loaded = useLoad(async () => {
-    const organization =
-      authorizedOrganization ?? (await client.organization(organizationId));
-    const [departments, graphs, models, runs] = await Promise.all([
-      client.departments(organizationId),
-      client.artifacts(organizationId, "graphs"),
-      client.artifacts(organizationId, "model-versions"),
-      client.artifacts(organizationId, "optimization-runs"),
-    ]);
-    return { organization, departments, graphs, models, runs };
-  }, [client, organizationId, revision, authorizedOrganization]);
-  if (loaded.loading)
+  const [orgRevision, setOrgRevision] = useState(0);
+  const loadedOrg = useLoad(
+    () =>
+      authorizedOrganization
+        ? Promise.resolve(authorizedOrganization)
+        : client.organization(organizationId),
+    [client, organizationId, authorizedOrganization, orgRevision],
+  );
+  if (!authorizedOrganization && loadedOrg.loading)
+    return <Skeleton label="Chargement de l’organisation autorisée…" />;
+  const organization = authorizedOrganization ?? loadedOrg.data;
+  if (!organization)
     return (
-      <p className="page-loading" role="status">
-        Chargement de l’organisation autorisée…
-      </p>
+      <div className="v2-retry-panel">
+        <ErrorNotice message={loadedOrg.error} />
+        <button type="button" onClick={() => setOrgRevision((r) => r + 1)}>
+          Réessayer
+        </button>
+      </div>
     );
-  if (!loaded.data) return <ErrorNotice message={loaded.error} />;
-  const { organization, departments, graphs, models, runs } = loaded.data;
   const base = `/organizations/${organizationId}`;
-  const refresh = () => setRevision((value) => value + 1);
   return (
     <div className="legacy-workspace">
       <Routes>
         <Route
           path="scenarios/:id?"
           element={
-            <Suspense
-              fallback={<p role="status">Chargement du Scenario Lab…</p>}
-            >
-              <ScenarioLab
-                client={client}
-                organization={organization}
-                userId={userId}
-                models={models}
-                refresh={refresh}
-              />
-            </Suspense>
+            <ScenariosRoute
+              client={client}
+              organization={organization}
+              userId={userId}
+            />
           }
         />
         <Route
           path="execution/:jobId?"
           element={
-            <Suspense
-              fallback={<p role="status">Chargement du centre d’exécution…</p>}
-            >
-              <OptimizationCenter
-                client={client}
-                organization={organization}
-                userId={userId}
-                models={models}
-              />
-            </Suspense>
+            <ExecutionRoute
+              client={client}
+              organization={organization}
+              userId={userId}
+            />
           }
         />
         <Route
@@ -544,71 +806,16 @@ export function Workspace({
         />
         <Route
           index
-          element={
-            <>
-              <div className="page-heading">
-                <span className="eyebrow">WORKSPACE</span>
-                <h1>Une organisation. Un modèle commun.</h1>
-                <p>
-                  Explorez les responsabilités, les ressources partagées et les
-                  règles qui relient vos départements.
-                </p>
-              </div>
-              <div className="metrics overview-metrics">
-                <div>
-                  <span>Départements enregistrés</span>
-                  <strong>{departments.length}</strong>
-                </div>
-                <div>
-                  <span>Versions de graphe</span>
-                  <strong>{graphs.length}</strong>
-                </div>
-                <div>
-                  <span>Versions de modèle</span>
-                  <strong>{models.length}</strong>
-                </div>
-              </div>
-              <ArtifactList
-                title="Graphes de l’organisation"
-                records={graphs}
-                base={`${base}/graphs`}
-              />
-              <DepartmentRegistry
-                client={client}
-                organization={organization}
-                departments={departments}
-                refresh={refresh}
-              />
-            </>
-          }
+          element={<Dashboard client={client} organization={organization} />}
         />
         <Route
           path="graphs"
           element={
-            <>
-              <div className="page-heading">
-                <span className="eyebrow">ORGANIZATION GRAPH</span>
-                <h1>La structure, rendue explicite.</h1>
-                <p>
-                  Départements, ressources et relations tels qu’enregistrés dans
-                  chaque snapshot.
-                </p>
-              </div>
-              <ArtifactList
-                title="Versions de graphe"
-                records={graphs}
-                base={`${base}/graphs`}
-              />
-              <ArtifactImport
-                client={client}
-                organization={organization}
-                kind="graphs"
-                onSaved={(id) => {
-                  refresh();
-                  navigate(`${base}/graphs/${id}`);
-                }}
-              />
-            </>
+            <GraphsRoute
+              client={client}
+              organization={organization}
+              base={base}
+            />
           }
         />
         <Route
@@ -617,61 +824,27 @@ export function Workspace({
             <GraphRoute
               client={client}
               organization={organization}
-              refresh={refresh}
+              refresh={() => undefined}
             />
           }
         />
         <Route
           path="models"
           element={
-            <>
-              <div className="page-heading">
-                <span className="eyebrow">MODEL INSPECTOR</span>
-                <h1>Des règles aux équations.</h1>
-                <p>
-                  La DSL compilée et l’IR sont les sources mathématiques, sans
-                  interprétation du canvas.
-                </p>
-              </div>
-              <ArtifactList
-                title="Versions de modèle"
-                records={models}
-                base={`${base}/models`}
-              />
-              <ArtifactImport
-                client={client}
-                organization={organization}
-                kind="model-versions"
-                graphs={graphs}
-                onSaved={(id) => {
-                  refresh();
-                  navigate(`${base}/models/${id}`);
-                }}
-              />
-            </>
+            <ModelsRoute
+              client={client}
+              organization={organization}
+              base={base}
+            />
           }
         />
         <Route
           path="models/:id"
-          element={
-            <ModelRoute
-              client={client}
-              organization={organization}
-              graphs={graphs}
-              models={models}
-              refresh={refresh}
-            />
-          }
+          element={<ModelRoute client={client} organization={organization} />}
         />
         <Route
           path="history"
-          element={
-            <History
-              client={client}
-              organization={organization}
-              records={runs}
-            />
-          }
+          element={<HistoryRoute client={client} organization={organization} />}
         />
         <Route
           path="*"

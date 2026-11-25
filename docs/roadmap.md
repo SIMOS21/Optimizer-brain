@@ -11,7 +11,8 @@
 | 4C — Asynchronous Optimization Execution Center | Backend et frontend livrés : modèles publiés, lancement idempotent, suivi et annulation serveur, cockpit et historique immuables ; parcours réels usine/université, INFEASIBLE et TIME_LIMIT ; voir validation-phase-4c.md |
 | 5A — Constraint Diagnostics | Livrée : preuves statiques exactes et incomplètes, mesures indépendantes, provenance, GET sécurisés et consultation Studio en lecture seule ; voir constraint-diagnostics-phase-5a.md |
 | 5B — Scenario Lab | Tranches 1 et 2 : clones identiques et changements numériques sous politique explicite, accords, snapshots DRAFT, API/RLS et Studio ; publications et worker existants ; comparaisons et gains non livrés ; voir controlled-scenarios-phase-5b2.md |
-| UX V2 — UX-F1 | Shell responsive, navigation et catalogue paginé/recherchable, présentation métier/expert en mémoire, primitives accessibles et E2E PostgreSQL isolés ; voir validation-ux-f1.md. Dashboard UX-F2 et graphe UX-F3 non commencés |
+| UX V2 — UX-F1 | Shell responsive, navigation et catalogue paginé/recherchable, présentation métier/expert en mémoire, primitives accessibles et E2E PostgreSQL isolés ; voir validation-ux-f1.md. |
+| UX V2 — UX-F2 | Dashboard métier connecté aux runs vérifiés, qualification mathématique stricte, distinction dernier run / dernier plan vérifié, chargement paresseux par route dans Workspace, skeletons et retry locaux ; voir validation-ux-f2.md. Graphe UX-F3 non commencé |
 | 5C et 6 à 8 | Non implémentées |
 
 La phase 2 livre IR → matrices → résultat brut → vérification indépendante →

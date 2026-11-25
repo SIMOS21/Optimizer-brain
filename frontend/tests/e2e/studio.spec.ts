@@ -31,6 +31,9 @@ async function openGraph(
 ) {
   await selectOrganization(page, fixture.organization.id);
   await page
+    .getByRole("link", { name: "Mon organisation", exact: true })
+    .click();
+  await page
     .locator(
       `a[href="/organizations/${fixture.organization.id}/graphs/${fixture.graph.id}"]`,
     )
@@ -254,6 +257,9 @@ for (const status of [401, 403, 404, 409, 422, 413]) {
     );
     await selectOrganization(page, factory.organization.id);
     await page
+      .getByRole("link", { name: "Mon organisation", exact: true })
+      .click();
+    await page
       .locator(
         `a[href="/organizations/${factory.organization.id}/graphs/${factory.graph.id}"]`,
       )
@@ -296,6 +302,9 @@ test("organisation vide → départements → import graphe → modèle, sans ru
     .getByLabel("Nom de l’organisation")
     .fill("Organisation synthétique importée");
   await page.getByRole("button", { name: "Créer l’espace" }).click();
+  await page
+    .getByRole("link", { name: "Mon organisation", exact: true })
+    .click();
   await expect(
     page.getByRole("heading", { name: "Départements enregistrés" }),
   ).toBeVisible();
