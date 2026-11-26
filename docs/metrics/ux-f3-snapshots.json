@@ -1,0 +1,20 @@
+[
+  {
+    "count": 7,
+    "id": "345ff822-6ce8-47df-a22f-56f9fa2895bd",
+    "content_hash": "0ab1b62136f6227191e0b4852eef866764c25770889c1356a02d0391c3a69e6d",
+    "snapshot": "ux_f3_measure_7_v1"
+  },
+  {
+    "count": 50,
+    "id": "e2a1c601-d61b-4ceb-b932-df0c810950aa",
+    "content_hash": "91bfe56955d74180dc6b01be36c7642f4751ae73b17e892b85724950761bcb02",
+    "snapshot": "ux_f3_measure_50_v1"
+  },
+  {
+    "count": 200,
+    "id": "c78d8078-a2c7-49f0-9690-8b16ea948837",
+    "content_hash": "1d64c19ba1c9ff896281bfc534529bd47ce47441897e2430bbd22917e608e347",
+    "snapshot": "ux_f3_measure_200_v1"
+  }
+]

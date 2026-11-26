@@ -253,6 +253,7 @@ def main() -> int:
     parser.add_argument("--serve", action="store_true")
     parser.add_argument("--skip-build", action="store_true")
     parser.add_argument("--measure", choices=("before", "after"))
+    parser.add_argument("--graph-measure", choices=("before", "after"))
     args, tests = parser.parse_known_args()
     if args.env_file:
         load_environment(args.env_file)
@@ -297,7 +298,7 @@ def main() -> int:
             [
                 node,
                 "node_modules/vite/bin/vite.js",
-                "preview",
+                "dev" if args.graph_measure else "preview",
                 "--host",
                 "127.0.0.1",
                 "--port",
@@ -316,6 +317,12 @@ def main() -> int:
                         raise RuntimeError("Service E2E interrompu")
                     time.sleep(1)
             test_env = {**env, "BRAIN_DEMO_PASSWORD": password}
+            if args.graph_measure:
+                return subprocess.call(
+                    [node, str(ROOT / "scripts/measure_graph.mjs"), args.graph_measure],
+                    cwd=frontend,
+                    env=test_env,
+                )
             if args.measure:
                 return subprocess.call(
                     [node, str(ROOT / "scripts/measure_studio.mjs"), args.measure],

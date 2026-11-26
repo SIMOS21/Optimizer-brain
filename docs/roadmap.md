@@ -12,7 +12,8 @@
 | 5A — Constraint Diagnostics | Livrée : preuves statiques exactes et incomplètes, mesures indépendantes, provenance, GET sécurisés et consultation Studio en lecture seule ; voir constraint-diagnostics-phase-5a.md |
 | 5B — Scenario Lab | Tranches 1 et 2 : clones identiques et changements numériques sous politique explicite, accords, snapshots DRAFT, API/RLS et Studio ; publications et worker existants ; comparaisons et gains non livrés ; voir controlled-scenarios-phase-5b2.md |
 | UX V2 — UX-F1 | Shell responsive, navigation et catalogue paginé/recherchable, présentation métier/expert en mémoire, primitives accessibles et E2E PostgreSQL isolés ; voir validation-ux-f1.md. |
-| UX V2 — UX-F2 | Dashboard métier connecté aux runs vérifiés, qualification mathématique stricte, distinction dernier run / dernier plan vérifié, chargement paresseux par route dans Workspace, skeletons et retry locaux ; voir validation-ux-f2.md. Graphe UX-F3 non commencé |
+| UX V2 — UX-F2 | Dashboard métier connecté aux runs vérifiés, qualification mathématique stricte, distinction dernier run / dernier plan vérifié, chargement paresseux par route dans Workspace, skeletons et retry locaux ; voir validation-ux-f2.md. |
+| UX V2 — UX-F3 | Carte interactive métier/expert depuis les snapshots autorisés, inspecteur, filtres, focus, reset par version/tenant, responsive et mesures 7/50/200 nœuds ; livré sur branche de revue, voir validation-ux-f3.md et ADR 0012. UX-F4/F5 non commencés. |
 | 5C et 6 à 8 | Non implémentées |
 
 La phase 2 livre IR → matrices → résultat brut → vérification indépendante →

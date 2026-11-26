@@ -23,7 +23,9 @@ describe.each([
 ] as const)("%s components", (_, fixture) => {
   it("renders only recorded graph edges and exposes provenance via selection", async () => {
     const record = decode("GraphArtifactResponse", fixture.graph);
-    const { container } = render(<GraphCanvas document={record.document} />);
+    const { container } = render(
+      <GraphCanvas document={record.document} mode="expert" />,
+    );
     expect(container.querySelectorAll(".react-flow__node")).toHaveLength(
       record.document.graph.departments.length +
         record.document.graph.resources.length,
@@ -34,10 +36,12 @@ describe.each([
       ),
     );
     const node = record.document.graph.resources[0]!;
-    fireEvent.click(screen.getByText(node.name));
+    fireEvent.click(
+      container.querySelector(`.react-flow__node[data-id="${node.id}"]`)!,
+    );
     expect(
-      screen.getByText(node.source, { selector: "dd" }),
-    ).toBeInTheDocument();
+      screen.getByText("Provenance", { selector: "dt" }).nextElementSibling,
+    ).toHaveTextContent(node.source);
     expect(
       screen.getByText(node.capacity.parameter, { selector: "dd" }),
     ).toBeInTheDocument();

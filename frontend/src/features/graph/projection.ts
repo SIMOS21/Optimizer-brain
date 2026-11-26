@@ -6,6 +6,7 @@ export type StudioNode = Node<
     label: string;
     kind: "department" | "resource";
     owner: string;
+    ownerLabel: string;
     capacity?: string;
     source: string;
     version: string;
@@ -17,6 +18,9 @@ export function project(document: GraphDocument): {
   edges: Edge[];
 } {
   const graph = document.graph;
+  const departmentNames = new Map(
+    graph.departments.map((node) => [node.id, node.name]),
+  );
   const byId = (a: { id: string }, b: { id: string }) =>
     a.id < b.id ? -1 : a.id > b.id ? 1 : 0;
   const departments: StudioNode[] = [...graph.departments]
@@ -24,11 +28,12 @@ export function project(document: GraphDocument): {
     .map((node, index) => ({
       id: node.id,
       type: "studio",
-      position: { x: 0, y: index * 160 },
+      position: { x: 0, y: index * 220 },
       data: {
         label: node.name,
         kind: "department",
         owner: node.owner_id,
+        ownerLabel: node.owner_id,
         source: node.source,
         version: node.version,
       },
@@ -42,11 +47,13 @@ export function project(document: GraphDocument): {
       return {
         id: node.id,
         type: "studio",
-        position: { x: 420, y: index * 190 + 30 },
+        position: { x: 420, y: index * 250 + 30 },
         data: {
           label: node.name,
           kind: "resource",
           owner: node.owner_department,
+          ownerLabel:
+            departmentNames.get(node.owner_department) || node.owner_department,
           source: node.source,
           version: node.version,
           capacity: parameter
