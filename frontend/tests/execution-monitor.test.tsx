@@ -47,6 +47,27 @@ it("never overlaps automatic GETs and waits until completion before scheduling",
   await act(() => vi.advanceTimersByTimeAsync(100));
   expect(read).toHaveBeenCalledTimes(2);
 });
+it("does not overlap a manual refresh with a pending job read", async () => {
+  const client = new ApiClient();
+  let complete!: (record: ReturnType<typeof job>) => void;
+  const read = vi
+    .spyOn(client, "job")
+    .mockImplementationOnce(
+      () =>
+        new Promise((resolve) => {
+          complete = resolve;
+        }),
+    )
+    .mockResolvedValue(job());
+  const { result } = renderHook(() =>
+    useJobMonitor(client, job().organization_id, job().id, 100),
+  );
+  await act(async () => result.current.refresh());
+  expect(read).toHaveBeenCalledTimes(1);
+  await act(async () => complete(job()));
+  await act(async () => result.current.refresh());
+  expect(read).toHaveBeenCalledTimes(2);
+});
 it("bounds automatic reads and resumes only on an explicit refresh", async () => {
   const client = new ApiClient();
   const read = vi.spyOn(client, "job").mockResolvedValue(job());

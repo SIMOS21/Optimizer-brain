@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { ApiClient } from "../../api/client";
 import type { OptimizationJob } from "../../api/types";
 
@@ -13,6 +13,7 @@ export function useJobMonitor(
   maxReads = 300,
 ) {
   const [revision, setRevision] = useState(0);
+  const reading = useRef<AbortController | null>(null);
   // A fresh identity immediately hides state from another resource/refresh.
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const identity = useMemo(() => ({}), [client, org, id, revision]);
@@ -34,6 +35,7 @@ export function useJobMonitor(
       if (!active || busy || stopped || document.hidden) return;
       if (timer !== undefined) clearTimeout(timer);
       busy = true;
+      reading.current = controller;
       reads += 1;
       try {
         const job = await client.job(org, id, controller.signal);
@@ -56,6 +58,7 @@ export function useJobMonitor(
               : "Consultation indisponible.",
         });
       } finally {
+        if (reading.current === controller) reading.current = null;
         busy = false;
         if (active && !stopped && !document.hidden)
           timer = setTimeout(() => void read(), interval);
@@ -76,5 +79,11 @@ export function useJobMonitor(
   }, [client, org, id, identity, interval, maxReads]);
   const current: Partial<typeof state> =
     state.identity === identity ? state : {};
-  return { ...current, refresh: () => setRevision((value) => value + 1) };
+  return {
+    ...current,
+    refresh: () => {
+      if (!reading.current || reading.current.signal.aborted)
+        setRevision((value) => value + 1);
+    },
+  };
 }
