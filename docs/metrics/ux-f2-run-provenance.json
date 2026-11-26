@@ -1,0 +1,54 @@
+[
+  {
+    "sector": "factory",
+    "context": "reference",
+    "organization_id": "58af5e0d-3cbc-437a-9fe0-1f1df574aee0",
+    "run_id": "25bb5d59-e9b6-4daa-8582-0504ef8092a6",
+    "model_version_id": "ca60f5d9-8a9c-4191-bb33-68e90bd1bb57",
+    "scenario_id": "base",
+    "snapshot": "synthetic_demo_v1",
+    "model_hash": "6067a4939fd2c2b42ade6387c12e72cf4df95c5581ab0375babdc134b0108ba0",
+    "objective": "4100",
+    "status": "OPTIMAL",
+    "independent_verification": true
+  },
+  {
+    "sector": "factory",
+    "context": "controlled",
+    "organization_id": "58af5e0d-3cbc-437a-9fe0-1f1df574aee0",
+    "run_id": "c0b24917-c727-4fe0-833a-20e52b06f345",
+    "model_version_id": "ba4727c6-5538-42bb-bbc5-804ffbf07e7b",
+    "scenario_id": "scenario_0d678685c083468f862601bc57a75c42",
+    "snapshot": "data_scenario_0d678685c083468f862601bc57a75c42",
+    "model_hash": "643221f685b7160b579215dc0e923afcc8918f27eb0b36a6abf377b62b61d905",
+    "objective": "3500",
+    "status": "OPTIMAL",
+    "independent_verification": true
+  },
+  {
+    "sector": "university",
+    "context": "reference",
+    "organization_id": "c87775c3-505b-42d9-a914-1a99717e1a72",
+    "run_id": "033d7710-c62d-42db-bd86-58a7e03e37e4",
+    "model_version_id": "37aade4c-c984-49b7-931d-e83ca2f71be7",
+    "scenario_id": "base",
+    "snapshot": "synthetic_university_v1",
+    "model_hash": "309b55d1d67a09260b66e45632e84e78bbfd3cf356031530360364b8181bbbf9",
+    "objective": "17",
+    "status": "OPTIMAL",
+    "independent_verification": true
+  },
+  {
+    "sector": "university",
+    "context": "controlled",
+    "organization_id": "c87775c3-505b-42d9-a914-1a99717e1a72",
+    "run_id": "24d6726a-cc3d-46b7-afec-6bd09ce0dc4a",
+    "model_version_id": "9b6474e9-68ca-4c50-a097-75b50110e640",
+    "scenario_id": "scenario_aa9747a524304074a1d6d7d1d39c74cd",
+    "snapshot": "data_scenario_aa9747a524304074a1d6d7d1d39c74cd",
+    "model_hash": "72c54769452ae3f980ef9267e72184349378d5699524e5a6b0182fff5d62877f",
+    "objective": "10",
+    "status": "OPTIMAL",
+    "independent_verification": true
+  }
+]

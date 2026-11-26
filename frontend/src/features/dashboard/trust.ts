@@ -55,6 +55,7 @@ export function assessTrust(record: RunArtifact): TrustAssessment {
     report.has_verified_plan === true &&
     object(solve.decision_values) !== undefined &&
     ["OPTIMAL", "FEASIBLE", "TIME_LIMIT"].includes(String(solve.status)) &&
+    (record.status !== "OPTIMAL" || solve.status === "OPTIMAL") &&
     ["OPTIMAL", "FEASIBLE_NOT_PROVEN_OPTIMAL"].includes(record.status || "") &&
     record.status === solve.public_status &&
     report.status === solve.public_status;
@@ -165,9 +166,7 @@ export function extractDecisions(
 }
 
 /** Extract resources from report. */
-export function extractResources(
-  record: RunArtifact,
-): {
+export function extractResources(record: RunArtifact): {
   id: string;
   state: string;
   consumption: string;
@@ -189,9 +188,7 @@ export function extractResources(
 }
 
 /** Extract constraints from report. */
-export function extractConstraints(
-  record: RunArtifact,
-): {
+export function extractConstraints(record: RunArtifact): {
   id: string;
   state: string;
   lhs: string;

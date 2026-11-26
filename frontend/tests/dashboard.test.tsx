@@ -1,17 +1,32 @@
-import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within,
+} from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router-dom";
 import { afterEach, expect, it, vi } from "vitest";
 import { ApiClient } from "../src/api/client";
-import type { Artifact, Organization, Role, RunArtifact } from "../src/api/types";
+import type {
+  Artifact,
+  Organization,
+  Role,
+  RunArtifact,
+} from "../src/api/types";
 import { AuthenticatedApp } from "../src/app/AuthenticatedApp";
 import { Dashboard } from "../src/features/dashboard/Dashboard";
+import { assessTrust } from "../src/features/dashboard/trust";
 import { PresentationProvider } from "../src/shared/presentation/PresentationProvider";
 import factory from "./fixtures/factory.json";
 import university from "./fixtures/university.json";
 
 const factoryOrg: Organization = { ...factory.organization, role: "ADMIN" };
-const universityOrg: Organization = { ...university.organization, role: "ADMIN" };
+const universityOrg: Organization = {
+  ...university.organization,
+  role: "ADMIN",
+};
 const factoryRun: RunArtifact = factory.run as unknown as RunArtifact;
 const universityRun: RunArtifact = university.run as unknown as RunArtifact;
 
@@ -21,7 +36,10 @@ const user = {
   display_name: "Utilisateur synthétique",
 };
 
-function makeRunMeta(run: RunArtifact, overrides: Partial<Artifact> = {}): Artifact {
+function makeRunMeta(
+  run: RunArtifact,
+  overrides: Partial<Artifact> = {},
+): Artifact {
   return {
     id: run.id,
     organization_id: run.organization_id,
@@ -70,16 +88,28 @@ it("displays real verified factory results (4100 EUR, decisions, resources, satu
   await waitFor(() =>
     expect(screen.getByTestId("dashboard-objective")).toHaveTextContent("4100"),
   );
-  expect(screen.getByTestId("dashboard-objective-unit")).toHaveTextContent("EUR");
+  expect(screen.getByTestId("dashboard-objective-unit")).toHaveTextContent(
+    "EUR",
+  );
   expect(screen.getByTestId("dashboard-decisions")).toHaveTextContent("qty_A");
   expect(screen.getByTestId("dashboard-decisions")).toHaveTextContent("40");
   expect(screen.getByTestId("dashboard-decisions")).toHaveTextContent("qty_B");
   expect(screen.getByTestId("dashboard-decisions")).toHaveTextContent("15");
-  expect(screen.getByTestId("dashboard-resources")).toHaveTextContent("95 / 100 hour");
-  expect(screen.getByTestId("dashboard-resources")).toHaveTextContent("7000 / 8000 EUR");
-  expect(screen.getByTestId("dashboard-resources")).toHaveTextContent("55 / 55 unit");
-  expect(screen.getByTestId("dashboard-saturated")).toHaveTextContent("logistics_delivery");
-  expect(screen.getByTestId("dashboard-model-version")).toHaveTextContent("v1.0.0");
+  expect(screen.getByTestId("dashboard-resources")).toHaveTextContent(
+    "95 / 100 hour",
+  );
+  expect(screen.getByTestId("dashboard-resources")).toHaveTextContent(
+    "7000 / 8000 EUR",
+  );
+  expect(screen.getByTestId("dashboard-resources")).toHaveTextContent(
+    "55 / 55 unit",
+  );
+  expect(screen.getByTestId("dashboard-saturated")).toHaveTextContent(
+    "logistics_delivery",
+  );
+  expect(screen.getByTestId("dashboard-model-version")).toHaveTextContent(
+    "v1.0.0",
+  );
 
   // Only optimization-runs fetched, not departments/graphs/models
   expect(artifactsSpy).toHaveBeenCalledTimes(1);
@@ -187,9 +217,7 @@ it("never treats OPTIMAL without independent verification as a valid plan", asyn
 
   renderDashboard(client, factoryOrg);
 
-  await waitFor(() =>
-    expect(screen.getByText("Non vérifié")).toBeVisible(),
-  );
+  await waitFor(() => expect(screen.getByText("Non vérifié")).toBeVisible());
   expect(screen.queryByTestId("dashboard-objective")).not.toBeInTheDocument();
   expect(screen.queryByTestId("dashboard-decisions")).not.toBeInTheDocument();
 });
@@ -234,7 +262,9 @@ it("distinguishes latest unverified/infeasible run from earlier verified plan", 
     ),
   );
   expect(screen.getByText("Dernier run disponible")).toBeVisible();
-  expect(screen.getByTestId("dashboard-verified-plan")).toHaveTextContent("4100");
+  expect(screen.getByTestId("dashboard-verified-plan")).toHaveTextContent(
+    "4100",
+  );
   expect(screen.queryByTestId("dashboard-objective")).not.toBeInTheDocument();
 });
 
@@ -280,7 +310,9 @@ it("provides local retry when loading runs fails", async () => {
   renderDashboard(client, factoryOrg);
 
   await waitFor(() =>
-    expect(screen.getByRole("alert")).toHaveTextContent("Erreur réseau simulée"),
+    expect(screen.getByRole("alert")).toHaveTextContent(
+      "Erreur réseau simulée",
+    ),
   );
   await userActor.click(screen.getByTestId("dashboard-retry"));
   await waitFor(() =>
@@ -355,7 +387,9 @@ it("isolates organizations on switch without leaking previous tenant values", as
   await userActor.click(
     screen.getByRole("button", { name: "Changer d’organisation" }),
   );
-  const dialog = screen.getByRole("dialog", { name: "Choisir une organisation" });
+  const dialog = screen.getByRole("dialog", {
+    name: "Choisir une organisation",
+  });
   await userActor.click(
     within(dialog).getByRole("link", { name: new RegExp(universityOrg.name) }),
   );
@@ -381,10 +415,14 @@ it("paginates recent runs deterministically", async () => {
   renderDashboard(client, factoryOrg);
 
   await waitFor(() =>
-    expect(screen.getByRole("heading", { name: /Runs récents \(7\)/ })).toBeVisible(),
+    expect(
+      screen.getByRole("heading", { name: /Runs récents \(7\)/ }),
+    ).toBeVisible(),
   );
   const region = screen.getByRole("region", { name: "Runs récents" });
-  expect(within(region).getAllByRole("button", { pressed: undefined })).toBeTruthy();
+  expect(
+    within(region).getAllByRole("button", { pressed: undefined }),
+  ).toBeTruthy();
   expect(within(region).getByText("Page 1 / 2")).toBeVisible();
   fireEvent.click(within(region).getByRole("button", { name: "Suivant" }));
   expect(within(region).getByText("Page 2 / 2")).toBeVisible();
@@ -404,4 +442,275 @@ it("works for BUILDER role with optimization CTA", async () => {
   expect(
     screen.getByRole("link", { name: "Lancer une optimisation" }),
   ).toBeVisible();
+});
+
+it("keeps the latest real scenario selected by default and lets the reference be selected by identity", async () => {
+  const scenario: RunArtifact = {
+    ...factoryRun,
+    id: "scenario-run",
+    created_at: factoryRun.created_at + 100,
+    model_version_id: "derived-model",
+    document: {
+      ...factoryRun.document,
+      solve: {
+        ...factoryRun.document.solve,
+        objective_value: "3500",
+        scenario_id: "scenario-controlled",
+        model_version: "scenario-version",
+      },
+    },
+  };
+  const client = new ApiClient();
+  vi.spyOn(client, "artifacts").mockResolvedValue([
+    makeRunMeta(factoryRun),
+    makeRunMeta(scenario),
+  ]);
+  vi.spyOn(client, "run").mockImplementation(async (_org, id) =>
+    id === scenario.id ? scenario : factoryRun,
+  );
+  renderDashboard(client);
+  expect(await screen.findByTestId("dashboard-objective")).toHaveTextContent(
+    "3500",
+  );
+  expect(screen.getByTestId("dashboard-run-context")).toHaveTextContent(
+    "scenario-controlled",
+  );
+  fireEvent.change(screen.getByLabelText("Résultat du tableau de bord"), {
+    target: { value: factoryRun.id },
+  });
+  await waitFor(() =>
+    expect(screen.getByTestId("dashboard-objective")).toHaveTextContent("4100"),
+  );
+  expect(screen.getByTestId("dashboard-run-context")).toHaveTextContent(
+    String(factoryRun.document.solve.scenario_id),
+  );
+  expect(screen.getByTestId("dashboard-latest-run")).toHaveTextContent(
+    "Run sélectionné",
+  );
+  fireEvent.change(screen.getByLabelText("Résultat du tableau de bord"), {
+    target: { value: "" },
+  });
+  await waitFor(() =>
+    expect(screen.getByTestId("dashboard-objective")).toHaveTextContent("3500"),
+  );
+});
+
+it("continues past an unverified favourable candidate to find the actual last verified plan", async () => {
+  const latest: RunArtifact = {
+    ...factoryRun,
+    id: "latest",
+    created_at: factoryRun.created_at + 200,
+    status: "INFEASIBLE",
+    document: {
+      ...factoryRun.document,
+      solve: {
+        ...factoryRun.document.solve,
+        status: "INFEASIBLE",
+        public_status: "INFEASIBLE",
+        decision_values: null,
+      },
+      report: {
+        ...factoryRun.document.report,
+        has_verified_plan: false,
+        status: "INFEASIBLE",
+      },
+    },
+  };
+  const unverified: RunArtifact = {
+    ...factoryRun,
+    id: "unverified",
+    created_at: factoryRun.created_at + 100,
+    document: {
+      ...factoryRun.document,
+      solve: {
+        ...factoryRun.document.solve,
+        validation_report: { valid: false },
+      },
+    },
+  };
+  const records = [factoryRun, unverified, latest];
+  const client = new ApiClient();
+  vi.spyOn(client, "artifacts").mockResolvedValue(
+    records.map((r) => makeRunMeta(r)),
+  );
+  const load = vi
+    .spyOn(client, "run")
+    .mockImplementation(async (_org, id) => records.find((r) => r.id === id)!);
+  renderDashboard(client);
+  expect(
+    await screen.findByTestId("dashboard-verified-plan"),
+  ).toHaveTextContent("4100");
+  expect(load.mock.calls.map((args) => args[1])).toEqual([
+    latest.id,
+    unverified.id,
+    factoryRun.id,
+  ]);
+});
+
+it("does not call a newer plan an earlier verified fallback for a selected old run", async () => {
+  const older: RunArtifact = {
+    ...factoryRun,
+    id: "older-unverified",
+    created_at: factoryRun.created_at - 100,
+    document: {
+      ...factoryRun.document,
+      solve: {
+        ...factoryRun.document.solve,
+        validation_report: { valid: false },
+      },
+    },
+  };
+  const client = new ApiClient();
+  vi.spyOn(client, "artifacts").mockResolvedValue([
+    makeRunMeta(older),
+    makeRunMeta(factoryRun),
+  ]);
+  const load = vi
+    .spyOn(client, "run")
+    .mockImplementation(async (_org, id) =>
+      id === older.id ? older : factoryRun,
+    );
+  renderDashboard(client);
+  await screen.findByTestId("dashboard-objective");
+  fireEvent.change(screen.getByLabelText("Résultat du tableau de bord"), {
+    target: { value: older.id },
+  });
+  await screen.findByText("Non vérifié");
+  expect(
+    screen.queryByTestId("dashboard-verified-plan"),
+  ).not.toBeInTheDocument();
+  expect(load).toHaveBeenCalledTimes(2);
+});
+
+it("never promotes a merely feasible native solver status to verified optimality", () => {
+  const corrupt: RunArtifact = {
+    ...factoryRun,
+    document: {
+      ...factoryRun.document,
+      solve: { ...factoryRun.document.solve, status: "FEASIBLE" },
+    },
+  };
+  expect(assessTrust(corrupt).hasVerifiedPlan).toBe(false);
+  expect(assessTrust(corrupt).level).toBe("UNVERIFIED");
+});
+
+it("keeps rational resource measures exact without fabricating a zero-percent bar", async () => {
+  const fractionRun: RunArtifact = {
+    ...factoryRun,
+    document: {
+      ...factoryRun.document,
+      report: {
+        ...factoryRun.document.report,
+        resources: [
+          {
+            id: "fractional",
+            state: "AVAILABLE",
+            consumption: "1/3",
+            capacity: "2/3",
+            remaining: "1/3",
+            unit: "hour",
+            owner_department: "production",
+          },
+        ],
+      },
+    },
+  };
+  const client = new ApiClient();
+  vi.spyOn(client, "artifacts").mockResolvedValue([makeRunMeta(fractionRun)]);
+  vi.spyOn(client, "run").mockResolvedValue(fractionRun);
+  renderDashboard(client);
+  const resources = await screen.findByTestId("dashboard-resources");
+  expect(resources).toHaveTextContent("1/3 / 2/3 hour");
+  expect(resources).toHaveTextContent("Marge : 1/3 hour");
+  expect(resources.querySelector(".v2-resource-bar")).toBeNull();
+});
+
+it("surfaces a historical read failure and retries without claiming a fallback plan", async () => {
+  const invalid: RunArtifact = {
+    ...factoryRun,
+    id: "invalid-latest",
+    created_at: factoryRun.created_at + 100,
+    document: {
+      ...factoryRun.document,
+      solve: {
+        ...factoryRun.document.solve,
+        validation_report: { valid: false },
+      },
+    },
+  };
+  const client = new ApiClient();
+  vi.spyOn(client, "artifacts").mockResolvedValue([
+    makeRunMeta(invalid),
+    makeRunMeta(factoryRun),
+  ]);
+  let failure = true;
+  vi.spyOn(client, "run").mockImplementation(async (_org, id) => {
+    if (id === invalid.id) return invalid;
+    if (failure) throw new Error("Lecture historique refusée");
+    return factoryRun;
+  });
+  renderDashboard(client);
+  expect(await screen.findByRole("alert")).toHaveTextContent(
+    "Lecture historique refusée",
+  );
+  expect(
+    screen.queryByTestId("dashboard-verified-plan"),
+  ).not.toBeInTheDocument();
+  failure = false;
+  fireEvent.click(
+    screen.getByRole("button", {
+      name: "Réessayer la recherche du plan vérifié",
+    }),
+  );
+  expect(
+    await screen.findByTestId("dashboard-verified-plan"),
+  ).toHaveTextContent("4100");
+});
+
+it("treats SUCCEEDED as a technical status without a mathematical proof", () => {
+  const technical: RunArtifact = {
+    ...factoryRun,
+    status: "SUCCEEDED",
+    document: {
+      ...factoryRun.document,
+      solve: {
+        ...factoryRun.document.solve,
+        status: "SUCCEEDED",
+        public_status: "SUCCEEDED",
+      },
+      report: { ...factoryRun.document.report, status: "SUCCEEDED" },
+    },
+  };
+  expect(assessTrust(technical).level).toBe("UNVERIFIED");
+  expect(assessTrust(technical).hasVerifiedPlan).toBe(false);
+});
+
+it("does not call an unmodeled resource available or invent its consumption", async () => {
+  const record: RunArtifact = {
+    ...factoryRun,
+    document: {
+      ...factoryRun.document,
+      report: {
+        ...factoryRun.document.report,
+        resources: [
+          {
+            id: "unmodeled",
+            state: "UNMODELED",
+            capacity: "40",
+            consumption: null,
+            remaining: null,
+            unit: "hour",
+          },
+        ],
+      },
+    },
+  };
+  const client = new ApiClient();
+  vi.spyOn(client, "artifacts").mockResolvedValue([makeRunMeta(record)]);
+  vi.spyOn(client, "run").mockResolvedValue(record);
+  renderDashboard(client);
+  const resources = await screen.findByTestId("dashboard-resources");
+  expect(resources).toHaveTextContent("Capacité non modélisée");
+  expect(resources).toHaveTextContent("Non fourni / 40 hour");
+  expect(resources).not.toHaveTextContent("Disponible");
 });

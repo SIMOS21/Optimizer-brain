@@ -170,8 +170,16 @@ test("changement de tenant : identité effacée immédiatement et réponse tardi
 }) => {
   await login(page);
   await selectOrganization(page, factory.organization.id);
-  const oldDashboardLink = `#main-content a[href="/organizations/${factory.organization.id}/history/${factory.run.id}"]`;
-  await expect(page.locator(oldDashboardLink)).toBeVisible();
+  const resultLink = page.getByRole("link", {
+    name: "Comprendre ce résultat",
+    exact: true,
+  });
+  await expect(resultLink).toBeVisible();
+  const recordedHref = await resultLink.getAttribute("href");
+  expect(recordedHref).toMatch(
+    new RegExp(`^/organizations/${factory.organization.id}/history/`),
+  );
+  const oldDashboardLink = `#main-content a[href="${recordedHref}"]`;
   let release!: () => void;
   const gate = new Promise<void>((resolve) => {
     release = resolve;
@@ -195,7 +203,7 @@ test("changement de tenant : identité effacée immédiatement et réponse tardi
       factory.organization.name,
     );
     release();
-    await expect(page.locator(oldDashboardLink)).toBeVisible();
+    await expect(page.locator(oldDashboardLink).first()).toBeVisible();
     await expect(page.getByTestId("active-organization")).not.toContainText(
       university.organization.name,
     );
@@ -211,7 +219,7 @@ test("390 px : menu modal, clavier, retour du focus et absence de débordement",
   await login(page);
   await selectOrganization(page, factory.organization.id);
   await expect(
-    page.getByRole("heading", { name: "Une organisation. Un modèle commun." }),
+    page.getByRole("heading", { name: factory.organization.name, exact: true }),
   ).toBeVisible();
   const trigger = page.getByRole("button", {
     name: "Ouvrir le menu",

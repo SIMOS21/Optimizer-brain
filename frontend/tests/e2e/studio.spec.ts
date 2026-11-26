@@ -1,4 +1,4 @@
-import { selectOrganization } from "./support/navigation";
+import { selectOrganization, navigateOrganization } from "./support/navigation";
 import { expect, test, type Page } from "@playwright/test";
 import { readFile } from "node:fs/promises";
 import { factory, university } from "./support/fixtures";
@@ -30,9 +30,7 @@ async function openGraph(
   fixture: typeof factory | typeof university,
 ) {
   await selectOrganization(page, fixture.organization.id);
-  await page
-    .getByRole("link", { name: "Mon organisation", exact: true })
-    .click();
+  await navigateOrganization(page, "Mon organisation");
   await page
     .locator(
       `a[href="/organizations/${fixture.organization.id}/graphs/${fixture.graph.id}"]`,
@@ -186,7 +184,10 @@ test("changement de tenant, purge et rechargement sans session persistante", asy
     .click();
   await selectOrganization(page, university.organization.id);
   await expect(
-    page.getByRole("heading", { name: "Une organisation. Un modèle commun." }),
+    page.getByRole("heading", {
+      name: university.organization.name,
+      exact: true,
+    }),
   ).toBeVisible();
   await expect(
     page.getByText(factory.graph.document.graph.resources[0]!.name, {
@@ -280,6 +281,7 @@ test("layout mobile sans débordement horizontal du workspace", async ({
   await page.setViewportSize({ width: 390, height: 844 });
   await login(page);
   await openGraph(page, university);
+  await expect(page.getByRole("main")).toBeFocused();
   expect(
     await page.evaluate(
       () => document.documentElement.scrollWidth <= window.innerWidth,

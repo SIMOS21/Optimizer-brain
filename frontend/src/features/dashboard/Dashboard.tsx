@@ -62,35 +62,37 @@ function ResourceMeter({
   unit: string;
   state: string;
 }) {
-  const used = Number(consumption) || 0;
-  const total = Number(capacity) || 0;
-  const pct = total > 0 ? Math.min((used / total) * 100, 100) : 0;
-  const isSaturated = state === "SATURATED";
+  const stateLabels: Record<string, string> = {
+    SATURATED: "Saturée",
+    SATISFIED: "Disponible",
+    VIOLATED: "Violée",
+    UNAVAILABLE: "Mesure indisponible",
+    UNMODELED: "Capacité non modélisée",
+  };
   return (
     <div className="v2-resource-meter" data-state={state}>
       <div className="v2-resource-header">
         <span className="v2-resource-label">{label}</span>
         <span className="v2-resource-values">
-          {consumption} / {capacity} {unit}
+          {consumption || "Non fourni"} / {capacity || "Non fourni"} {unit}
         </span>
-      </div>
-      <div className="v2-resource-bar" aria-hidden="true">
-        <div
-          className="v2-resource-fill"
-          style={{ width: `${pct}%` }}
-          data-saturated={isSaturated}
-        />
       </div>
       <div className="v2-resource-footer">
         <span>
-          {isSaturated ? (
-            <StatusChip tone="warning">Saturée</StatusChip>
-          ) : (
-            <StatusChip tone="neutral">Disponible</StatusChip>
-          )}
+          <StatusChip
+            tone={
+              state === "SATURATED"
+                ? "warning"
+                : state === "VIOLATED"
+                  ? "danger"
+                  : "neutral"
+            }
+          >
+            {stateLabels[state] || state || "État non fourni"}
+          </StatusChip>
         </span>
         <span className="v2-resource-remaining">
-          Marge : {remaining} {unit}
+          Marge : {remaining || "Non fourni"} {unit}
         </span>
       </div>
     </div>
@@ -159,6 +161,17 @@ function DashboardContent({
               v{text(solve.model_version)}
             </Link>
           </small>
+          <div data-testid="dashboard-run-context">
+            <small>
+              Run : <Link to={`${base}/history/${record.id}`}>{record.id}</Link>
+            </small>
+            <small>Modèle enregistré : {text(solve.model_id)}</small>
+            <small>Scénario déclaré : {text(solve.scenario_id)}</small>
+            <small>Snapshot : {text(solve.data_snapshot_id)}</small>
+            <p>
+              Les runs peuvent porter sur des modèles ou scénarios différents.
+            </p>
+          </div>
           {mode === "expert" && (
             <small>
               Run <Link to={`${base}/history/${record.id}`}>{record.id}</Link>
@@ -175,7 +188,10 @@ function DashboardContent({
             <strong className="v2-kpi-value" data-testid="dashboard-objective">
               {text(solve.objective_value)}
             </strong>
-            <span className="v2-kpi-unit" data-testid="dashboard-objective-unit">
+            <span
+              className="v2-kpi-unit"
+              data-testid="dashboard-objective-unit"
+            >
               {unitLabel(solve.objective_unit)}
             </span>
           </div>
@@ -229,6 +245,11 @@ function DashboardContent({
                 </strong>{" "}
                 {unitLabel(verifiedFallback.document.solve.objective_unit)} ·{" "}
                 {formatRunDate(verifiedFallback.created_at)}
+              </span>
+              <span>
+                Modèle : {text(verifiedFallback.model_version_id)} · scénario :{" "}
+                {text(verifiedFallback.document.solve.scenario_id)} · snapshot :{" "}
+                {text(verifiedFallback.document.solve.data_snapshot_id)}
               </span>
               <Link to={`${base}/history/${verifiedFallback.id}`}>
                 Consulter ce plan vérifié
@@ -285,9 +306,9 @@ function DashboardContent({
         <section className="v2-dashboard-section">
           <h2>Contraintes saturées</h2>
           <p className="v2-dashboard-notice">
-            Une contrainte saturée signifie que la ressource est entièrement
-            consommée. Cela n’implique pas automatiquement un gain économique si
-            la capacité était augmentée.
+            Une contrainte saturée est à sa limite selon les tolérances
+            enregistrées. Cela n’implique ni prix d’ombre positif ni gain
+            économique si sa limite était modifiée.
           </p>
           <div
             className="v2-dashboard-saturated"
@@ -471,27 +492,35 @@ export function Dashboard({
     [client, organization.id, activeRunMeta?.id, runRevision],
   );
 
-  // If the active run has no verified plan, locate the most recent candidate
-  // with a verified-capable status so we can clearly distinguish "latest run"
-  // from "last verified plan".
+  // Metadata identifies candidates, never a verified plan. Read each earlier
+  // candidate in deterministic order until the full verification chain passes.
   const activeTrust = runLoad.data ? assessTrust(runLoad.data) : undefined;
-  const fallbackCandidate =
+  const fallbackCandidates =
     activeTrust && !activeTrust.hasVerifiedPlan
-      ? sortedRuns.find(
-          (r) =>
-            r.id !== activeRunMeta?.id &&
-            (r.status === "OPTIMAL" ||
-              r.status === "FEASIBLE_NOT_PROVEN_OPTIMAL"),
-        )
-      : undefined;
+      ? sortedRuns
+          .slice(sortedRuns.findIndex((r) => r.id === activeRunMeta?.id) + 1)
+          .filter(
+            (r) =>
+              r.status === "OPTIMAL" ||
+              r.status === "FEASIBLE_NOT_PROVEN_OPTIMAL",
+          )
+      : [];
+  const fallbackIdentity = JSON.stringify(fallbackCandidates.map((r) => r.id));
+  const [fallbackRevision, setFallbackRevision] = useState(0);
 
-  const fallbackLoad = useLoad(
-    () =>
-      fallbackCandidate
-        ? client.run(organization.id, fallbackCandidate.id)
-        : Promise.resolve(undefined),
-    [client, organization.id, fallbackCandidate?.id],
-  );
+  const fallbackLoad = useLoad(async () => {
+    for (const item of fallbackCandidates) {
+      const candidate = await client.run(organization.id, item.id);
+      if (assessTrust(candidate).hasVerifiedPlan) return candidate;
+    }
+    return undefined;
+  }, [
+    client,
+    organization.id,
+    activeRunMeta?.id,
+    fallbackIdentity,
+    fallbackRevision,
+  ]);
 
   const totalPages = Math.max(1, Math.ceil(sortedRuns.length / RUNS_PAGE_SIZE));
   const currentPage = Math.min(page, totalPages - 1);
@@ -516,6 +545,31 @@ export function Dashboard({
             : "Situation actuelle, dernière décision vérifiée et ressources."}
         </p>
       </PageHeader>
+
+      {sortedRuns.length > 0 && (
+        <section className="panel v2-run-selector">
+          <label>
+            Résultat du tableau de bord
+            <select
+              aria-label="Résultat du tableau de bord"
+              value={selectedRunId ?? ""}
+              onChange={(event) =>
+                setSelectedRunId(event.target.value || undefined)
+              }
+            >
+              <option value="">
+                Dernier run disponible (sélection automatique)
+              </option>
+              {sortedRuns.map((item) => (
+                <option key={item.id} value={item.id}>
+                  {item.status} · {formatRunDate(item.created_at)} · modèle{" "}
+                  {item.model_version_id} · run {item.id}
+                </option>
+              ))}
+            </select>
+          </label>
+        </section>
+      )}
 
       {runsLoad.loading ? (
         <Skeleton label="Chargement des résultats…" />
@@ -554,6 +608,20 @@ export function Dashboard({
             verifiedFallback={fallbackLoad.data}
             base={base}
           />
+          {fallbackCandidates.length > 0 && fallbackLoad.loading && (
+            <Skeleton label="Recherche d’un plan antérieur indépendamment vérifié…" />
+          )}
+          {fallbackLoad.error && (
+            <div className="v2-retry-panel">
+              <ErrorNotice message={fallbackLoad.error} />
+              <button
+                type="button"
+                onClick={() => setFallbackRevision((r) => r + 1)}
+              >
+                Réessayer la recherche du plan vérifié
+              </button>
+            </div>
+          )}
           {sortedRuns.length > 1 && (
             <section
               className="v2-dashboard-section v2-dashboard-runs"
@@ -569,6 +637,7 @@ export function Dashboard({
                         item.id === activeRunMeta.id ? "primary" : undefined
                       }
                       aria-pressed={item.id === activeRunMeta.id}
+                      aria-label={`Afficher le run ${item.id}`}
                       onClick={() => setSelectedRunId(item.id)}
                     >
                       <span>{item.status || "INCONNU"}</span>
