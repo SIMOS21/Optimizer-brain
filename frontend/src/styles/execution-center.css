@@ -1,0 +1,207 @@
+.optimization-center-v2,
+.decision-cockpit,
+.job-monitor,
+.execution-panel {
+  min-width: 0;
+}
+.execution-steps {
+  display: flex;
+  flex-wrap: wrap;
+  list-style: none;
+  gap: 10px;
+  padding: 0;
+  margin: 24px 0;
+}
+.execution-steps li {
+  flex: 1 1 140px;
+  background: var(--surface-card);
+  border: 1px solid var(--border-muted);
+  border-radius: 8px;
+  padding: 14px;
+  font-size: 13px;
+  font-weight: 650;
+  color: var(--brand-navy);
+}
+.optimization-center-v2 select {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+}
+.execution-panel .execution-settings small {
+  display: block;
+  color: var(--text-secondary);
+  font-size: 12px;
+  line-height: 1.55;
+  margin-top: 8px;
+}
+.execution-settings .checkbox-label {
+  flex-wrap: wrap;
+}
+.execution-settings .checkbox-label small {
+  flex-basis: 100%;
+}
+.execution-panel input:disabled,
+.optimization-center-v2 select:disabled {
+  color: var(--text-primary);
+  background: var(--surface-soft);
+}
+.execution-confirm-settings {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px 20px;
+  padding: 16px;
+  background: var(--surface-soft);
+  border-radius: 8px;
+}
+.execution-confirm-settings dd {
+  margin: 0;
+  font-weight: 650;
+}
+.execution-job-list,
+.execution-constraint-list {
+  display: grid;
+  gap: 12px;
+  margin: 20px 0;
+}
+.execution-job-list article,
+.execution-constraint-list article {
+  padding: 18px;
+  border: 1px solid var(--border-muted);
+  border-radius: 10px;
+  overflow-wrap: anywhere;
+}
+.execution-job-list article > div {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+}
+.execution-job-list p {
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+.execution-job-list a {
+  display: inline-block;
+  padding-block: 8px;
+  font-weight: 650;
+}
+.execution-result-context {
+  margin: 20px 0;
+  padding: 16px 20px;
+  background: var(--surface-soft);
+  border-left: 3px solid var(--brand-teal);
+  border-radius: 8px;
+  overflow-wrap: anywhere;
+}
+.execution-result-context p {
+  margin: 6px 0;
+  font-size: 14px;
+}
+.execution-result-context small {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+.decision-cockpit h2,
+.decision-cockpit dd,
+.job-monitor dd,
+.execution-panel p {
+  overflow-wrap: anywhere;
+}
+.decision-cockpit .metrics {
+  margin: 24px 0;
+}
+.execution-decision-grid,
+.execution-resource-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+  gap: 16px;
+  margin: 20px 0;
+}
+.execution-decision-grid .v2-decision-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  overflow-wrap: anywhere;
+}
+.execution-decision-grid strong {
+  font-size: 30px;
+  color: var(--brand-teal);
+}
+.execution-resource {
+  padding: 20px;
+  border: 1px solid var(--border-muted);
+  border-radius: 10px;
+  background: var(--surface-card);
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.execution-resource h4 {
+  margin: 0 0 14px;
+  font-size: 16px;
+}
+.decision-cockpit .execution-resource dl {
+  display: block;
+  margin-bottom: 0;
+}
+.decision-cockpit .execution-resource dt {
+  margin: 16px 0 4px;
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+.decision-cockpit .execution-resource dd {
+  font-size: 18px;
+  margin: 0;
+  font-weight: 650;
+}
+.execution-constraint-list article {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 20px;
+  font-size: 14px;
+}
+.execution-constraint-list strong {
+  flex: 1 1 220px;
+}
+.execution-warnings {
+  padding: 16px 20px;
+  border: 1px solid var(--border-muted);
+  border-radius: 10px;
+  background: var(--surface-soft);
+}
+.execution-warnings li {
+  overflow-wrap: anywhere;
+}
+@media (max-width: 500px) {
+  .execution-steps {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+  .execution-steps li {
+    padding: 10px;
+    font-size: 12px;
+  }
+  .execution-confirm-settings {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 6px;
+  }
+  .execution-confirm-settings dd {
+    margin-bottom: 8px;
+  }
+  .execution-constraint-list article {
+    align-items: start;
+    flex-direction: column;
+  }
+  .execution-constraint-list strong {
+    flex: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .optimization-center-v2 *,
+  .decision-cockpit * {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}

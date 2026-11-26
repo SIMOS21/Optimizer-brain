@@ -254,6 +254,7 @@ def main() -> int:
     parser.add_argument("--skip-build", action="store_true")
     parser.add_argument("--measure", choices=("before", "after"))
     parser.add_argument("--graph-measure", choices=("before", "after"))
+    parser.add_argument("--execution-measure", choices=("before", "after"))
     args, tests = parser.parse_known_args()
     if args.env_file:
         load_environment(args.env_file)
@@ -317,6 +318,12 @@ def main() -> int:
                         raise RuntimeError("Service E2E interrompu")
                     time.sleep(1)
             test_env = {**env, "BRAIN_DEMO_PASSWORD": password}
+            if args.execution_measure:
+                return subprocess.call(
+                    [node, str(ROOT / "scripts/measure_execution.mjs"), args.execution_measure],
+                    cwd=frontend,
+                    env=test_env,
+                )
             if args.graph_measure:
                 return subprocess.call(
                     [node, str(ROOT / "scripts/measure_graph.mjs"), args.graph_measure],

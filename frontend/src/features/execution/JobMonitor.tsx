@@ -5,6 +5,9 @@ import type { Organization } from "../../api/types";
 import { ErrorNotice, JsonView } from "../../shared/ui";
 import { useJobMonitor } from "./useJobMonitor";
 import { StoredRun } from "./DecisionCockpit";
+import { Skeleton } from "../../shared/design-system";
+import { usePresentation } from "../../shared/presentation/context";
+import "../../styles/execution-center.css";
 
 const errors: Record<string, string> = {
   WORKER_LEASE_EXPIRED:
@@ -28,6 +31,7 @@ export function JobMonitor({
   userId: string;
   id: string;
 }) {
+  const { mode } = usePresentation();
   const monitor = useJobMonitor(client, organization.id, id);
   const { job } = monitor;
   const [busy, setBusy] = useState(false);
@@ -71,14 +75,14 @@ export function JobMonitor({
       <section className="panel job-monitor" aria-label="Suivi du job">
         <div className="section-title">
           <div>
-            <span className="eyebrow">JOB MONITOR</span>
+            <span className="eyebrow">ÉTAPE 4 · SUIVRE LE CALCUL</span>
             <h2>État de l’exécution</h2>
           </div>
           <button onClick={monitor.refresh}>Actualiser le job</button>
         </div>
         <ErrorNotice message={monitor.error || error} />
         {!job && !monitor.error && (
-          <p role="status">Consultation du job autorisé…</p>
+          <Skeleton label="Consultation du job autorisé…" />
         )}
         {job && (
           <>
@@ -90,12 +94,26 @@ export function JobMonitor({
                 {job.state}
               </span>
               <span>
-                Statut mathématique :{" "}
+                Statut mathématique enregistré :{" "}
                 <strong data-testid="job-solver-status">
                   {job.solver_status || "Non disponible"}
                 </strong>
               </span>
             </div>
+            <p>
+              État technique du traitement :{" "}
+              {
+                {
+                  QUEUED: "en attente d’un worker",
+                  RUNNING: "calcul en cours",
+                  SUCCEEDED: "traitement déclaré terminé",
+                  FAILED: "échec technique",
+                  CANCELLED: "annulation confirmée",
+                }[job.state]
+              }
+              . Un succès technique n’atteste ni faisabilité ni optimalité ;
+              consultez la vérification du résultat.
+            </p>
             <p className="quiet">
               Réponse reçue à {monitor.received}. Aucun pourcentage de
               progression n’est estimé.
@@ -106,10 +124,34 @@ export function JobMonitor({
                 Actualiser le job » pour reprendre.
               </p>
             )}
-            {job.cancel_requested && job.state !== "CANCELLED" && (
+            {job.cancel_requested &&
+              ["QUEUED", "RUNNING"].includes(job.state) && (
+                <p className="notice" role="status">
+                  Annulation demandée — arrêt non encore confirmé par le
+                  serveur.
+                </p>
+              )}
+            {job.cancel_requested && job.state === "SUCCEEDED" && (
               <p className="notice" role="status">
-                Annulation demandée — arrêt non encore confirmé par le serveur.
+                Le calcul s’est terminé malgré la demande d’annulation. Le
+                résultat enregistré est conservé et doit être qualifié
+                séparément.
               </p>
+            )}
+            {job.cancel_requested && job.state === "FAILED" && (
+              <p className="notice">
+                Une annulation avait été demandée ; le serveur confirme un échec
+                technique, pas une annulation.
+              </p>
+            )}
+            {job.state === "QUEUED" && (
+              <p className="notice">
+                En attente de prise en charge. Si aucun worker n’est disponible,
+                aucun délai de démarrage ne peut être annoncé.
+              </p>
+            )}
+            {job.state === "SUCCEEDED" && !job.run_id && (
+              <ErrorNotice message="Le serveur indique SUCCEEDED sans run lié. Aucun résultat ne peut être présenté ; consultez l’administrateur avec le détail expert du job." />
             )}
             {job.state === "CANCELLED" && (
               <p className="notice">
@@ -123,43 +165,74 @@ export function JobMonitor({
                   "Échec technique. Aucun résultat publiable disponible ; contactez l’administrateur avec l’identifiant du job."}
               </p>
             )}
-            <dl>
-              <dt>Job</dt>
-              <dd>{job.id}</dd>
-              <dt>Modèle publié</dt>
-              <dd>
-                <Link
-                  to={`/organizations/${organization.id}/models/${job.model_version_id}`}
-                >
-                  {job.model_version_id}
-                </Link>
-              </dd>
-              <dt>Créateur</dt>
-              <dd>{job.created_by}</dd>
-              <dt>Tentative</dt>
-              <dd>{job.attempt_number}</dd>
-              <dt>Début</dt>
-              <dd>
-                {job.started_at
-                  ? new Date(job.started_at * 1000).toLocaleString("fr-FR")
-                  : "Non démarré"}
-              </dd>
-              <dt>Fin</dt>
-              <dd>
-                {job.finished_at
-                  ? new Date(job.finished_at * 1000).toLocaleString("fr-FR")
-                  : "Non terminée"}
-              </dd>
-            </dl>
+            {mode === "expert" ? (
+              <dl>
+                <dt>Job</dt>
+                <dd>{job.id}</dd>
+                <dt>Modèle publié</dt>
+                <dd>
+                  <Link
+                    to={`/organizations/${organization.id}/models/${job.model_version_id}`}
+                  >
+                    {job.model_version_id}
+                  </Link>
+                </dd>
+                <dt>Créateur</dt>
+                <dd>{job.created_by}</dd>
+                <dt>Tentative</dt>
+                <dd>{job.attempt_number}</dd>
+                <dt>Début</dt>
+                <dd>
+                  {job.started_at
+                    ? new Date(job.started_at * 1000).toLocaleString("fr-FR")
+                    : "Non démarré"}
+                </dd>
+                <dt>Fin</dt>
+                <dd>
+                  {job.finished_at
+                    ? new Date(job.finished_at * 1000).toLocaleString("fr-FR")
+                    : "Non terminée"}
+                </dd>
+              </dl>
+            ) : (
+              <dl>
+                <dt>Créé le</dt>
+                <dd>
+                  {new Date(job.created_at * 1000).toLocaleString("fr-FR")}
+                </dd>
+                <dt>Début du calcul</dt>
+                <dd>
+                  {job.started_at
+                    ? new Date(job.started_at * 1000).toLocaleString("fr-FR")
+                    : "Non démarré"}
+                </dd>
+                <dt>Fin du calcul</dt>
+                <dd>
+                  {job.finished_at
+                    ? new Date(job.finished_at * 1000).toLocaleString("fr-FR")
+                    : "Non terminée"}
+                </dd>
+                <dt>Version utilisée</dt>
+                <dd>
+                  <Link
+                    to={`/organizations/${organization.id}/models/${job.model_version_id}`}
+                  >
+                    Consulter le modèle publié de ce calcul
+                  </Link>
+                </dd>
+              </dl>
+            )}
             {canCancel && (
               <button disabled={busy} onClick={() => void cancel()}>
                 {busy ? "Demande en cours…" : "Demander l’annulation"}
               </button>
             )}
-            <JsonView
-              title="Paramètres enregistrés du job"
-              value={job.settings}
-            />
+            {mode === "expert" && (
+              <JsonView
+                title="Paramètres enregistrés du job"
+                value={job.settings}
+              />
+            )}
           </>
         )}
       </section>

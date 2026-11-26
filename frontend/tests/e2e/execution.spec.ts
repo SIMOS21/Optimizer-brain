@@ -88,6 +88,7 @@ async function launch(page: Page) {
   await page
     .getByRole("button", { name: "Lancer l’optimisation", exact: true })
     .click();
+  await page.getByRole("dialog", { name: "Confirmer le lancement", exact: true }).getByRole("button", { name: "Confirmer le lancement", exact: true }).click();
   const response = await sent;
   expect(response.status()).toBe(202);
   const job = (await response.json()) as {
@@ -270,7 +271,7 @@ for (const [name, fixture, objective] of [
       await page
         .getByRole("link", { name: "Optimisation", exact: true })
         .click();
-      await page.getByRole("link", { name: submitted.id, exact: true }).click();
+      await page.locator(`a[href="/organizations/${fixture.organization.id}/execution/${submitted.id}"]`).click();
       await expect(page.getByTestId("job-state")).toHaveText("SUCCEEDED");
       const directory =
         process.env.STUDIO_SCREENSHOT_DIR || "test-results/screenshots";
@@ -292,7 +293,7 @@ for (const [name, fixture, objective] of [
         await expect(page.getByTestId("job-state")).toHaveCount(0);
         await expect(page.getByTestId("recorded-objective")).toHaveCount(0);
         await expect(
-          page.getByRole("link", { name: submitted.id, exact: true }),
+          page.locator(`a[href="/organizations/${fixture.organization.id}/execution/${submitted.id}"]`),
         ).toHaveCount(0);
       }
     } finally {
@@ -360,7 +361,7 @@ test("VIEWER consulte les jobs et ne peut ni lancer ni annuler", async ({
   await selectModel(page, factory);
   await expect(
     page.getByRole("button", { name: "Lancer l’optimisation", exact: true }),
-  ).toBeDisabled();
+  ).toHaveCount(0);
   await expect(
     page.getByRole("button", { name: "Demander l’annulation", exact: true }),
   ).toHaveCount(0);
@@ -498,6 +499,7 @@ test("réponse POST perdue puis répétition idempotente, sans deuxième job", a
   await page
     .getByRole("button", { name: "Lancer l’optimisation", exact: true })
     .click();
+  await page.getByRole("dialog", { name: "Confirmer le lancement", exact: true }).getByRole("button", { name: "Confirmer le lancement", exact: true }).click();
   await expect(
     page.getByRole("button", { name: "Réessayer la même demande" }),
   ).toBeVisible();
@@ -538,6 +540,7 @@ for (const status of [401, 403, 404, 409, 422]) {
     await page
       .getByRole("button", { name: "Lancer l’optimisation", exact: true })
       .click();
+    await page.getByRole("dialog", { name: "Confirmer le lancement", exact: true }).getByRole("button", { name: "Confirmer le lancement", exact: true }).click();
     await expect(page.getByRole("alert")).toBeVisible();
     await expect(page.getByText("sensitive-test-marker")).toHaveCount(0);
     if (status === 401)

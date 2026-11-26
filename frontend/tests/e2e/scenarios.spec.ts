@@ -113,6 +113,7 @@ for (const [sector, fixture, objective] of [
     await page
       .getByRole("button", { name: "Lancer l’optimisation", exact: true })
       .click();
+    await page.getByRole("dialog", { name: "Confirmer le lancement", exact: true }).getByRole("button", { name: "Confirmer le lancement", exact: true }).click();
     const worker = startWorker();
     try {
       await expect(page.getByTestId("job-state")).toHaveText("SUCCEEDED", {

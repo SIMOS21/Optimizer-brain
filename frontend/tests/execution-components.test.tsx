@@ -1,11 +1,14 @@
 import {
   act,
   fireEvent,
-  render,
+  render as rtlRender,
   screen,
   waitFor,
 } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import type { ReactElement } from "react";
+import { PresentationProvider } from "../src/shared/presentation/PresentationProvider";
+import { PresentationContext } from "../src/shared/presentation/context";
 import { MemoryRouter } from "react-router-dom";
 import { expect, it, vi } from "vitest";
 import { ApiClient, ApiError } from "../src/api/client";
@@ -23,6 +26,11 @@ import university from "./fixtures/university.json";
 
 const organization = decode("OrganizationResponse", factory.organization);
 const model = decode("ModelArtifactResponse", factory.model);
+function render(ui: ReactElement) { return rtlRender(ui, { wrapper: PresentationProvider }); }
+async function launchConfirmed() {
+  await userEvent.click(screen.getByRole("button", { name: "Lancer l’optimisation" }));
+  await userEvent.click(screen.getByRole("button", { name: "Confirmer le lancement" }));
+}
 function panel(client: ApiClient, submitted = vi.fn()) {
   return render(
     <ExecutionPanel
@@ -41,6 +49,8 @@ it("prevents double submission including immediate successful responses", async 
   await userEvent.dblClick(
     screen.getByRole("button", { name: "Lancer l’optimisation" }),
   );
+  expect(submit).not.toHaveBeenCalled();
+  await userEvent.dblClick(screen.getByRole("button", { name: "Confirmer le lancement" }));
   expect(submit).toHaveBeenCalledTimes(1);
   expect(saved).toHaveBeenCalledTimes(1);
   expect(
@@ -54,9 +64,7 @@ it("repeats an uncertain request with exactly the same body and key", async () =
     .mockRejectedValueOnce(new Error("Réponse indisponible"))
     .mockResolvedValueOnce(job());
   panel(client);
-  await userEvent.click(
-    screen.getByRole("button", { name: "Lancer l’optimisation" }),
-  );
+  await launchConfirmed();
   expect(screen.getByLabelText("Temps limite (secondes)")).toBeDisabled();
   await userEvent.click(
     screen.getByRole("button", { name: "Réessayer la même demande" }),
@@ -75,8 +83,8 @@ it.each(["VIEWER", "APPROVER"] as const)("does not launch for %s", (role) => {
     />,
   );
   expect(
-    screen.getByRole("button", { name: "Lancer l’optimisation" }),
-  ).toBeDisabled();
+    screen.queryByRole("button", { name: "Lancer l’optimisation" }),
+  ).not.toBeInTheDocument();
   expect(submit).not.toHaveBeenCalled();
 });
 it("does not submit a draft or malformed settings", async () => {
@@ -91,8 +99,8 @@ it("does not submit a draft or malformed settings", async () => {
     />,
   );
   expect(
-    screen.getByRole("button", { name: "Lancer l’optimisation" }),
-  ).toBeDisabled();
+    screen.queryByRole("button", { name: "Lancer l’optimisation" }),
+  ).not.toBeInTheDocument();
   view.rerender(
     <ExecutionPanel
       client={client}
@@ -112,7 +120,7 @@ it("does not submit a draft or malformed settings", async () => {
   expect(await screen.findByRole("alert")).toHaveTextContent("contrat");
   expect(submit).not.toHaveBeenCalled();
 });
-it.each([401, 403, 404, 409, 422])(
+it.each([401, 403, 404, 409, 413, 422])(
   "handles HTTP %s on submission without automatic retries",
   async (status) => {
     const client = new ApiClient();
@@ -120,9 +128,7 @@ it.each([401, 403, 404, 409, 422])(
       .spyOn(client, "submitJob")
       .mockRejectedValue(new ApiError(status));
     panel(client);
-    await userEvent.click(
-      screen.getByRole("button", { name: "Lancer l’optimisation" }),
-    );
+    await launchConfirmed();
     expect(await screen.findByRole("alert")).toBeInTheDocument();
     expect(submit).toHaveBeenCalledTimes(1);
     expect(
@@ -141,9 +147,7 @@ it("ignores a submission completed after the panel was destroyed", async () => {
   );
   const saved = vi.fn();
   const view = panel(client, saved);
-  await userEvent.click(
-    screen.getByRole("button", { name: "Lancer l’optimisation" }),
-  );
+  await launchConfirmed();
   view.unmount();
   await act(async () => {
     complete(job());
@@ -158,9 +162,9 @@ it.each([
   (fixture, objective) => {
     render(
       <MemoryRouter>
-        <DecisionCockpit
+        <PresentationContext.Provider value={{ mode: "expert", setMode: vi.fn() }}><DecisionCockpit
           record={decode("RunArtifactResponse", structuredClone(fixture.run))}
-        />
+        /></PresentationContext.Provider>
       </MemoryRouter>,
     );
     expect(screen.getByTestId("recorded-objective")).toHaveTextContent(
@@ -329,7 +333,7 @@ it("lists only published models and links actual jobs", async () => {
   expect(
     screen.queryByRole("option", { name: /Draft model/ }),
   ).not.toBeInTheDocument();
-  expect(await screen.findByRole("link", { name: job().id })).toHaveAttribute(
+  expect(await screen.findByRole("link", { name: "Consulter ce calcul" })).toHaveAttribute(
     "href",
     `/organizations/${organization.id}/execution/${job().id}`,
   );
@@ -361,7 +365,7 @@ it("preserves absent bounds and gaps instead of inventing zeros", () => {
   record.document.solve.absolute_gap = null;
   render(
     <MemoryRouter>
-      <DecisionCockpit record={record} />
+      <PresentationContext.Provider value={{ mode: "expert", setMode: vi.fn() }}><DecisionCockpit record={record} /></PresentationContext.Provider>
     </MemoryRouter>,
   );
   expect(screen.getByTestId("recorded-objective")).toHaveTextContent("4100");
