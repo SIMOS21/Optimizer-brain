@@ -1,11 +1,13 @@
 import {
   act,
   fireEvent,
-  render,
+  render as rtlRender,
   screen,
   waitFor,
 } from "@testing-library/react";
 import { afterEach, expect, it, vi } from "vitest";
+import type { ReactElement } from "react";
+import { PresentationProvider } from "../src/shared/presentation/PresentationProvider";
 import { ApiClient, ApiError } from "../src/api/client";
 import type {
   ChangePolicy,
@@ -20,6 +22,9 @@ import factory from "./fixtures/factory.json";
 
 const org = factory.organization;
 const user = "explicit_delegate";
+function render(ui: ReactElement) {
+  return rtlRender(ui, { wrapper: PresentationProvider });
+}
 function policy(): ChangePolicy {
   return {
     id: "policy",
@@ -172,6 +177,25 @@ function scenario(): Scenario {
 }
 function client(record = policy()) {
   const api = new ApiClient();
+  vi.spyOn(api, "model").mockResolvedValue(
+    decode("ModelArtifactResponse", factory.model),
+  );
+  vi.spyOn(api, "changeTargets").mockResolvedValue({
+    organization_id: org.id,
+    source_model_version_id: factory.model.id,
+    source_content_hash: factory.model.content_hash,
+    items: [
+      {
+        target: record.document.rules[0]!.target,
+        unit: "unit",
+        value: "55",
+        owner_department: "logistics",
+        registered_owner_user_id: "owner",
+        affected_constraint_ids: ["logistics_delivery"],
+        affects_objective: false,
+      },
+    ],
+  });
   vi.spyOn(api, "policies").mockResolvedValue({
     items: [record],
     limit: 50,
@@ -191,7 +215,9 @@ function mount(
         client={api}
         organization={{ ...org, role }}
         userId={currentUser}
-        models={[]}
+        models={[
+          decode("ArtifactResponse", { ...factory.model, document: null }),
+        ]}
         onCreated={created}
       />,
     ),
@@ -201,6 +227,9 @@ function mount(
 async function fill() {
   await screen.findByRole("heading", {
     name: "Controlled synthetic policy · capacity / 1",
+  });
+  fireEvent.change(screen.getByLabelText("Référence de la politique"), {
+    target: { value: factory.model.id },
   });
   fireEvent.change(screen.getByLabelText("Politique publiée à utiliser"), {
     target: { value: "policy" },
@@ -280,6 +309,9 @@ it("never infers a delegation from ADMIN or the creator role", async () => {
   await screen.findByRole("heading", {
     name: "Controlled synthetic policy · capacity / 1",
   });
+  fireEvent.change(screen.getByLabelText("Référence de la politique"), {
+    target: { value: factory.model.id },
+  });
   fireEvent.change(screen.getByLabelText("Politique publiée à utiliser"), {
     target: { value: "policy" },
   });
@@ -297,6 +329,9 @@ it.each(["DRAFT", "REVOKED"])(
     mount(client(p));
     await screen.findByRole("heading", {
       name: "Controlled synthetic policy · capacity / 1",
+    });
+    fireEvent.change(screen.getByLabelText("Référence de la politique"), {
+      target: { value: factory.model.id },
     });
     expect(
       screen.queryByRole("option", { name: /Controlled synthetic policy/ }),
@@ -381,6 +416,11 @@ it("retries the captured commit after an ambiguous response and blocks double cl
   const retry = await screen.findByRole("button", {
     name: "Réessayer la même création contrôlée",
   });
+  expect(screen.getByLabelText("Référence de la politique")).toBeDisabled();
+  expect(screen.getByLabelText("Politique publiée à utiliser")).toBeDisabled();
+  expect(
+    screen.getByRole("button", { name: "Actualiser les politiques" }),
+  ).toBeDisabled();
   expect(
     screen.getByRole("button", { name: "Revenir aux hypothèses" }),
   ).toBeDisabled();
@@ -412,6 +452,86 @@ it("invalidates the preview after a definitive rejection and allows correction",
   expect(
     screen.getByLabelText("Valeur proposée · delivery (unit)"),
   ).toBeEnabled();
+});
+
+it("never grants OWNER_ACK to a named owner whose current role is VIEWER", async () => {
+  const p = policy();
+  p.state = "DRAFT";
+  p.usable = false;
+  p.approvals = [];
+  const api = client(p);
+  const write = vi.spyOn(api, "policyAction");
+  mount(api, "owner", "VIEWER");
+  await screen.findByRole("heading", {
+    name: "Controlled synthetic policy · capacity / 1",
+  });
+  expect(
+    screen.queryByRole("button", { name: "Donner mon accord de responsable" }),
+  ).not.toBeInTheDocument();
+  expect(write).not.toHaveBeenCalled();
+});
+
+it("keeps publication disabled until the stored owner acknowledgement exists", async () => {
+  const p = policy();
+  p.state = "DRAFT";
+  p.usable = false;
+  p.approvals = [];
+  mount(client(p), "approver", "APPROVER");
+  await screen.findByRole("heading", {
+    name: "Controlled synthetic policy · capacity / 1",
+  });
+  expect(
+    screen.getByRole("button", { name: "Publier la politique" }),
+  ).toBeDisabled();
+});
+
+it("loads membership data only when policy creation is explicitly opened", async () => {
+  const api = client();
+  const members = vi.spyOn(api, "memberships").mockResolvedValue([]);
+  vi.spyOn(api, "departments").mockResolvedValue([]);
+  mount(api);
+  await screen.findByRole("heading", {
+    name: "Controlled synthetic policy · capacity / 1",
+  });
+  fireEvent.change(screen.getByLabelText("Référence de la politique"), {
+    target: { value: factory.model.id },
+  });
+  await screen.findByRole("heading", {
+    name: factory.model.document.organization_model.model_name,
+  });
+  expect(members).not.toHaveBeenCalled();
+  fireEvent.click(
+    screen.getByText("Nouvelle politique de changement", { exact: true }),
+  );
+  await waitFor(() => expect(members).toHaveBeenCalledOnce());
+});
+
+it("distinguishes reference and inherited parent values without rounding decimal text", async () => {
+  const api = client();
+  const result = preview();
+  result.parent_scenario_id = "parent";
+  result.changes[0]!.previous_value = "54.00000000000000001";
+  vi.spyOn(api, "previewChanges").mockResolvedValue(result);
+  mount(api);
+  await fill();
+  await waitFor(() =>
+    expect(screen.getByText(/Valeur de référence :/)).toHaveTextContent(
+      "55 unit",
+    ),
+  );
+  fireEvent.change(
+    screen.getByLabelText("Parent publié facultatif — identifiant"),
+    { target: { value: "parent" } },
+  );
+  expect(
+    screen.getByText(/La valeur héritée du parent sera confirmée/),
+  ).toBeVisible();
+  fireEvent.click(
+    screen.getByRole("button", { name: "Prévisualiser les changements" }),
+  );
+  const rendered = await screen.findByTestId("change-preview");
+  expect(rendered).toHaveTextContent("54.00000000000000001");
+  expect(rendered).toHaveTextContent("45.00000000000000001");
 });
 it.each(["preview", "commit"])(
   "ignores a late %s after leaving the tenant",

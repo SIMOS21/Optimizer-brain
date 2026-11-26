@@ -5,6 +5,10 @@ import type { Artifact, Organization, ScenarioCreate } from "../../api/types";
 import { useLoad } from "../../shared/async";
 import { Empty, ErrorNotice, JsonView, Status } from "../../shared/ui";
 import { ControlledScenarios } from "./ControlledScenarios";
+import { PageHeader, Skeleton } from "../../shared/design-system";
+import { usePresentation } from "../../shared/presentation/context";
+import { ScenarioReference } from "./ScenarioReference";
+import "../../styles/scenario-history.css";
 
 function ScenarioDetail({
   client,
@@ -15,14 +19,28 @@ function ScenarioDetail({
   org: string;
   id: string;
 }) {
-  const loaded = useLoad(() => client.scenario(org, id), [client, org, id]);
-  if (loaded.loading) return <p role="status">Chargement du scénario…</p>;
-  if (!loaded.data) return <ErrorNotice message={loaded.error} />;
+  const { mode } = usePresentation();
+  const [revision, setRevision] = useState(0);
+  const loaded = useLoad(
+    () => client.scenario(org, id),
+    [client, org, id, revision],
+  );
+  if (loaded.loading) return <Skeleton label="Chargement du scénario…" />;
+  if (!loaded.data)
+    return (
+      <div>
+        <ErrorNotice message={loaded.error} />
+        <button onClick={() => setRevision((n) => n + 1)}>
+          Réessayer le scénario
+        </button>
+      </div>
+    );
   const record = loaded.data;
   const document = record.document;
   return (
     <section className="panel" data-testid="scenario-detail">
       <h2>{document.name}</h2>
+      <span className="eyebrow">ÉTAPE 7 · PUBLICATIONS ET OPTIMISATION</span>
       <Status value={record.model_state} />
       <p>
         {document.kind === "CONTROLLED_CHANGES"
@@ -40,8 +58,12 @@ function ScenarioDetail({
         <dd>{document.reason}</dd>
         <dt>Snapshot immuable</dt>
         <dd>{document.data_snapshot_id}</dd>
-        <dt>Empreinte du scénario</dt>
-        <dd>{record.content_hash}</dd>
+        {mode === "expert" && (
+          <>
+            <dt>Empreinte du scénario</dt>
+            <dd>{record.content_hash}</dd>
+          </>
+        )}
         <dt>Référence publiée</dt>
         <dd>
           <Link
@@ -50,8 +72,12 @@ function ScenarioDetail({
             {record.source_model_version_id}
           </Link>
         </dd>
-        <dt>Empreinte de référence</dt>
-        <dd>{document.source_content_hash}</dd>
+        {mode === "expert" && (
+          <>
+            <dt>Empreinte de référence</dt>
+            <dd>{document.source_content_hash}</dd>
+          </>
+        )}
         <dt>Modèle du scénario</dt>
         <dd>
           <Link
@@ -61,15 +87,25 @@ function ScenarioDetail({
             {record.model_version_id}
           </Link>
         </dd>
-        <dt>Empreinte du modèle dérivé</dt>
-        <dd>{document.model_content_hash}</dd>
+        {mode === "expert" && (
+          <>
+            <dt>Empreinte du modèle dérivé</dt>
+            <dd>{document.model_content_hash}</dd>
+          </>
+        )}
       </dl>
+      <ScenarioReference
+        client={client}
+        org={org}
+        id={record.source_model_version_id}
+        expectedHash={document.source_content_hash}
+      />
       {document.kind === "CONTROLLED_CHANGES" && (
         <>
           <p>
-            Politique : {document.policy_version_id} ·{" "}
-            {document.policy_content_hash}. Parent :{" "}
-            {document.parent_scenario_id || "référence"}.
+            Politique : {document.policy_version_id}
+            {mode === "expert" ? ` · ${document.policy_content_hash}` : ""}.
+            Parent : {document.parent_scenario_id || "référence"}.
           </p>
           <Link
             data-testid="scenario-graph-link"
@@ -77,10 +113,47 @@ function ScenarioDetail({
           >
             Consulter et publier le nouveau graphe
           </Link>
-          <JsonView
-            title="Changements approuvés et provenance"
-            value={document.changes}
-          />
+          <ol className="scenario-publication-steps">
+            <li>
+              Inspecter le nouveau graphe et confirmer sa publication selon vos
+              droits.
+            </li>
+            <li>
+              Inspecter le modèle dérivé et confirmer sa publication distincte.
+            </li>
+            <li>
+              Ouvrir Optimization Center et confirmer un lancement séparé.
+            </li>
+          </ol>
+          {mode === "expert" ? (
+            <JsonView
+              title="Changements approuvés et provenance"
+              value={document.changes}
+            />
+          ) : (
+            <section
+              className="scenario-preview-grid"
+              aria-label="Hypothèses enregistrées"
+            >
+              {document.changes.map((c) => (
+                <article key={c.rule_id} className="scenario-target">
+                  <h3>{c.target.resource_id || c.target.parameter_id}</h3>
+                  <p>
+                    Référence : {c.original_value} {c.unit}
+                  </p>
+                  <p>
+                    Valeur précédente : {c.previous_value} {c.unit}
+                  </p>
+                  <p>
+                    Valeur proposée enregistrée : {c.proposed_value} {c.unit}
+                  </p>
+                  <p>
+                    Source : {c.source} · auteur : {c.changed_by}
+                  </p>
+                </article>
+              ))}
+            </section>
+          )}
           <p>Publier explicitement le nouveau graphe avant le modèle.</p>
         </>
       )}
@@ -96,7 +169,9 @@ function ScenarioDetail({
         La comparaison et les gains ne sont pas encore disponibles dans cette
         première tranche.
       </p>
-      <JsonView title="Provenance canonique du scénario" value={record} />
+      {mode === "expert" && (
+        <JsonView title="Provenance canonique du scénario" value={record} />
+      )}
     </section>
   );
 }
@@ -112,6 +187,7 @@ function CreateScenario({
   models: Artifact[];
   onCreated: (id: string) => void;
 }) {
+  const { mode } = usePresentation();
   const [sourceId, setSource] = useState("");
   const [key, setKey] = useState("");
   const [version, setVersion] = useState("");
@@ -203,11 +279,20 @@ function CreateScenario({
           <option value="">Choisir une référence</option>
           {published.map((m) => (
             <option key={m.id} value={m.id}>
-              {m.key} · {m.version} · {m.id}
+              {m.key} · {m.version}
+              {mode === "expert" ? ` · ${m.id}` : ""}
             </option>
           ))}
         </select>
       </label>
+      {sourceId && (
+        <ScenarioReference
+          client={client}
+          org={organization.id}
+          id={sourceId}
+          expectedHash={published.find((m) => m.id === sourceId)?.content_hash}
+        />
+      )}
       <label>
         Clé du scénario
         <input
@@ -279,6 +364,7 @@ export function ScenarioLab({
   refresh: () => void;
   userId?: string;
 }) {
+  const { mode } = usePresentation();
   const { id } = useParams();
   const navigate = useNavigate();
   const [offset, setOffset] = useState(0);
@@ -288,15 +374,29 @@ export function ScenarioLab({
     [client, organization.id, offset, revision, id],
   );
   return (
-    <>
-      <div className="page-heading">
-        <span className="eyebrow">SCENARIO LAB · HYPOTHÈSES CONTRÔLÉES</span>
-        <h1>Scénarios isolés et traçables</h1>
+    <div className="scenario-lab-v2">
+      <PageHeader
+        eyebrow="SCENARIO LAB · HYPOTHÈSES CONTRÔLÉES"
+        title="Scénarios isolés et traçables"
+      >
         <p>
           La référence publiée reste immuable. Chaque création conserve une
           version distincte.
         </p>
-      </div>
+      </PageHeader>
+      <ol className="scenario-step-map" aria-label="Assistant de scénario">
+        <li>1 · Référence publiée</li>
+        <li>2 · Politique de changement</li>
+        <li>3 · Accords et délégations</li>
+        <li>4 · Hypothèses autorisées</li>
+        <li>5 · Preview serveur</li>
+        <li>6 · Confirmation et brouillons</li>
+        <li>7 · Publications puis calcul distinct</li>
+      </ol>
+      <p className="notice">
+        Comparaisons mathématiques et gains entre scénarios indisponibles :
+        Phase 5B-3 hors périmètre.
+      </p>
       {id ? (
         <>
           <Link to={`/organizations/${organization.id}/scenarios`}>
@@ -311,18 +411,21 @@ export function ScenarioLab({
         </>
       ) : (
         canBuild(organization.role) && (
-          <CreateScenario
-            key={organization.id}
-            client={client}
-            organization={organization}
-            models={models}
-            onCreated={(identity) => {
-              navigate(
-                `/organizations/${organization.id}/scenarios/${identity}`,
-              );
-              refresh();
-            }}
-          />
+          <details className="panel scenario-clone">
+            <summary>Créer un scénario identique (5B-1)</summary>
+            <CreateScenario
+              key={organization.id}
+              client={client}
+              organization={organization}
+              models={models}
+              onCreated={(identity) => {
+                navigate(
+                  `/organizations/${organization.id}/scenarios/${identity}`,
+                );
+                refresh();
+              }}
+            />
+          </details>
         )
       )}
       {!id && (
@@ -344,11 +447,37 @@ export function ScenarioLab({
           Actualiser les scénarios
         </button>
         {loaded.loading ? (
-          <p role="status">Chargement des versions…</p>
+          <Skeleton label="Chargement des versions…" />
         ) : loaded.data ? (
           <>
             {!loaded.data.items.length ? (
               <Empty>Aucun scénario enregistré.</Empty>
+            ) : mode === "business" ? (
+              <div className="scenario-history-list">
+                {loaded.data.items.map((record) => (
+                  <article key={record.id}>
+                    <h3>{record.document.name}</h3>
+                    <Status value={record.model_state} />
+                    <p>
+                      {record.key} · version {record.version} ·{" "}
+                      {new Date(record.created_at * 1000).toLocaleString(
+                        "fr-FR",
+                      )}
+                    </p>
+                    <p>
+                      {record.document.kind === "IDENTICAL_CLONE"
+                        ? "Copie identique"
+                        : "Hypothèses contrôlées"}{" "}
+                      · snapshot {record.document.data_snapshot_id}
+                    </p>
+                    <Link
+                      to={`/organizations/${organization.id}/scenarios/${record.id}`}
+                    >
+                      Consulter le scénario
+                    </Link>
+                  </article>
+                ))}
+              </div>
             ) : (
               <div className="table-scroll">
                 <table>
@@ -402,6 +531,6 @@ export function ScenarioLab({
           <ErrorNotice message={loaded.error} />
         )}
       </section>
-    </>
+    </div>
   );
 }

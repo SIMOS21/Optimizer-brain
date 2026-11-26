@@ -78,7 +78,7 @@ for (const [sector, fixture, parameter, low, high, proposed] of [
       .selectOption(fixture.model.id);
     const editor = page.getByTestId("policy-editor");
     await editor.getByLabel("Cible autorisée").selectOption({
-      label: `RESOURCE_CAPACITY · shared_parameters.${parameter}.value · unit`,
+      label: `RESOURCE_CAPACITY · ${fixture.graph.document.graph.resources.find((r) => r.capacity.parameter === parameter)!.id} · unit`,
     });
     const suffix = `${sector}_${Date.now()}`;
     for (const [label, value] of [

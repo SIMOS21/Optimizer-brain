@@ -48,7 +48,14 @@ export function assessTrust(record: RunArtifact): TrustAssessment {
   const { solve, report } = record.document;
   const validation = object(solve.validation_report);
 
-  // Exact same verification chain as DecisionCockpit
+  // OrganizationReport stores the native solver status. Older artifacts can
+  // carry the public status instead. Accept only the explicit feasible mapping
+  // used by the orchestrator; neither form can establish optimality.
+  const reportStatusMatches =
+    report.status === solve.public_status ||
+    (record.status === "FEASIBLE_NOT_PROVEN_OPTIMAL" &&
+      ["FEASIBLE", "TIME_LIMIT"].includes(String(solve.status)) &&
+      report.status === solve.status);
   const verified =
     validation?.valid === true &&
     object(validation.plan)?.feasible === true &&
@@ -58,7 +65,7 @@ export function assessTrust(record: RunArtifact): TrustAssessment {
     (record.status !== "OPTIMAL" || solve.status === "OPTIMAL") &&
     ["OPTIMAL", "FEASIBLE_NOT_PROVEN_OPTIMAL"].includes(record.status || "") &&
     record.status === solve.public_status &&
-    report.status === solve.public_status;
+    reportStatusMatches;
 
   if (record.status === "INFEASIBLE") {
     return {

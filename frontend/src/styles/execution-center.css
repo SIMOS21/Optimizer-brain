@@ -174,6 +174,17 @@
   overflow-wrap: anywhere;
 }
 @media (max-width: 500px) {
+  .decision-cockpit .metrics {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .decision-cockpit .metrics > div {
+    min-width: 0;
+    width: 100%;
+    overflow-wrap: anywhere;
+  }
+  .decision-cockpit .metrics span {
+    font-size: 12px;
+  }
   .execution-steps {
     display: grid;
     grid-template-columns: 1fr 1fr;

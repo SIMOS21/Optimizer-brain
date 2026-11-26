@@ -16,6 +16,7 @@ import { GraphEditor } from "../src/features/graph/GraphEditor";
 import { ModelInspector } from "../src/features/models/ModelInspector";
 import { History } from "../src/features/history/History";
 import { ArtifactImport } from "../src/features/organizations/ArtifactImport";
+import { PresentationProvider } from "../src/shared/presentation/PresentationProvider";
 
 describe.each([
   ["factory", factory],
@@ -121,11 +122,13 @@ it("rejects imported executable or malformed content before any API write", asyn
 });
 it("does not invent run indicators for an empty history", () => {
   render(
-    <History
-      client={new ApiClient()}
-      organization={decode("OrganizationResponse", factory.organization)}
-      records={[]}
-    />,
+    <PresentationProvider>
+      <History
+        client={new ApiClient()}
+        organization={decode("OrganizationResponse", factory.organization)}
+        records={[]}
+      />
+    </PresentationProvider>,
   );
   expect(screen.getByText(/Aucun run enregistré/)).toBeInTheDocument();
   expect(screen.queryByTestId("recorded-objective")).not.toBeInTheDocument();
