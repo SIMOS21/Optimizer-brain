@@ -14,7 +14,8 @@
 | UX V2 — UX-F1 | Shell responsive, navigation et catalogue paginé/recherchable, présentation métier/expert en mémoire, primitives accessibles et E2E PostgreSQL isolés ; voir validation-ux-f1.md. |
 | UX V2 — UX-F2 | Dashboard métier connecté aux runs vérifiés, qualification mathématique stricte, distinction dernier run / dernier plan vérifié, chargement paresseux par route dans Workspace, skeletons et retry locaux ; voir validation-ux-f2.md. |
 | UX V2 — UX-F3 | Carte interactive métier/expert depuis les snapshots autorisés, inspecteur, filtres, focus, reset par version/tenant, responsive et mesures 7/50/200 nœuds ; livré sur branche de revue, voir validation-ux-f3.md et ADR 0012. |
-| UX V2 — UX-F4 | Optimization Center & Decision Cockpit : parcours guidé en 5 étapes, confirmation explicite avec paramètres figés, qualification mathématique indépendante, mode métier par défaut et expert unifié, E2E PostgreSQL isolés ; livré sur branche de revue, voir validation-ux-f4.md. UX-F5 non commencé. |
+| UX V2 — UX-F4 | Optimization Center & Decision Cockpit : parcours guidé en 5 étapes, confirmation explicite avec paramètres figés, qualification mathématique indépendante, mode métier par défaut et expert unifié, E2E PostgreSQL isolés ; intégré dans main via PR #10, voir validation-ux-f4.md. |
+| UX V2 — UX-F5 | Scenario Lab guidé en sept étapes, références sécurisées, politiques/accords/délégations explicites, SET textuel exact, preview serveur et répétition figée ; historique paginé avec qualification indépendante et jobs distincts, correction du KPI mobile ; livré sur branche de revue, voir validation-ux-f5.md et ADR 0013. Comparaisons et gains 5B-3 non implémentés. |
 | 5C et 6 à 8 | Non implémentées |
 
 La phase 2 livre IR → matrices → résultat brut → vérification indépendante →
