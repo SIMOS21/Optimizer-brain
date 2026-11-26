@@ -14,6 +14,9 @@ export function History({
   records: Artifact[];
 }) {
   const [selected, select] = useState("");
+  const sorted = [...records].sort(
+    (a, b) => b.created_at - a.created_at || b.id.localeCompare(a.id),
+  );
   return (
     <>
       <div className="page-heading">
@@ -40,7 +43,7 @@ export function History({
                 onChange={(event) => select(event.target.value)}
               >
                 <option value="">Choisir un run</option>
-                {records.map((record) => (
+                {sorted.map((record) => (
                   <option key={record.id} value={record.id}>
                     {record.status} · {record.id}
                   </option>

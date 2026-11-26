@@ -1,4 +1,4 @@
-import { selectOrganization } from "./support/navigation";
+import { selectOrganization, navigateOrganization } from "./support/navigation";
 import { expect, test, type Page } from "@playwright/test";
 import { readFile } from "node:fs/promises";
 import { factory, university } from "./support/fixtures";
@@ -30,6 +30,7 @@ async function openGraph(
   fixture: typeof factory | typeof university,
 ) {
   await selectOrganization(page, fixture.organization.id);
+  await navigateOrganization(page, "Mon organisation");
   await page
     .locator(
       `a[href="/organizations/${fixture.organization.id}/graphs/${fixture.graph.id}"]`,
@@ -183,7 +184,10 @@ test("changement de tenant, purge et rechargement sans session persistante", asy
     .click();
   await selectOrganization(page, university.organization.id);
   await expect(
-    page.getByRole("heading", { name: "Une organisation. Un modèle commun." }),
+    page.getByRole("heading", {
+      name: university.organization.name,
+      exact: true,
+    }),
   ).toBeVisible();
   await expect(
     page.getByText(factory.graph.document.graph.resources[0]!.name, {
@@ -254,6 +258,9 @@ for (const status of [401, 403, 404, 409, 422, 413]) {
     );
     await selectOrganization(page, factory.organization.id);
     await page
+      .getByRole("link", { name: "Mon organisation", exact: true })
+      .click();
+    await page
       .locator(
         `a[href="/organizations/${factory.organization.id}/graphs/${factory.graph.id}"]`,
       )
@@ -274,6 +281,7 @@ test("layout mobile sans débordement horizontal du workspace", async ({
   await page.setViewportSize({ width: 390, height: 844 });
   await login(page);
   await openGraph(page, university);
+  await expect(page.getByRole("main")).toBeFocused();
   expect(
     await page.evaluate(
       () => document.documentElement.scrollWidth <= window.innerWidth,
@@ -296,6 +304,9 @@ test("organisation vide → départements → import graphe → modèle, sans ru
     .getByLabel("Nom de l’organisation")
     .fill("Organisation synthétique importée");
   await page.getByRole("button", { name: "Créer l’espace" }).click();
+  await page
+    .getByRole("link", { name: "Mon organisation", exact: true })
+    .click();
   await expect(
     page.getByRole("heading", { name: "Départements enregistrés" }),
   ).toBeVisible();

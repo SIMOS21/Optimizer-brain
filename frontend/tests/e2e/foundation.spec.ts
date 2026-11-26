@@ -67,12 +67,16 @@ test("les quatre rôles conservent leurs capacités en métier et expert", async
           `a[href="/organizations/${factory.organization.id}/graphs/${draftId}"]`,
         )
         .click();
-    } else
+    } else {
+      await page
+        .getByRole("link", { name: "Mon organisation", exact: true })
+        .click();
       await page
         .locator(
           `a[href="/organizations/${factory.organization.id}/graphs/${factory.graph.id}"]`,
         )
         .click();
+    }
     const mode = page.getByRole("switch", { name: "Mode expert" });
     await expect(mode).toHaveAttribute("aria-checked", "false");
     for (const expert of [false, true]) {
@@ -166,8 +170,16 @@ test("changement de tenant : identité effacée immédiatement et réponse tardi
 }) => {
   await login(page);
   await selectOrganization(page, factory.organization.id);
-  const oldGraph = `#main-content a[href="/organizations/${factory.organization.id}/graphs/${factory.graph.id}"]`;
-  await expect(page.locator(oldGraph)).toBeVisible();
+  const resultLink = page.getByRole("link", {
+    name: "Comprendre ce résultat",
+    exact: true,
+  });
+  await expect(resultLink).toBeVisible();
+  const recordedHref = await resultLink.getAttribute("href");
+  expect(recordedHref).toMatch(
+    new RegExp(`^/organizations/${factory.organization.id}/history/`),
+  );
+  const oldDashboardLink = `#main-content a[href="${recordedHref}"]`;
   let release!: () => void;
   const gate = new Promise<void>((resolve) => {
     release = resolve;
@@ -185,13 +197,13 @@ test("changement de tenant : identité effacée immédiatement et réponse tardi
     await expect(page.getByTestId("active-organization")).toHaveText(
       "Chargement de l’organisation…",
     );
-    await expect(page.locator(oldGraph)).toHaveCount(0);
+    await expect(page.locator(oldDashboardLink)).toHaveCount(0);
     await page.goBack();
     await expect(page.getByTestId("active-organization")).toHaveText(
       factory.organization.name,
     );
     release();
-    await expect(page.locator(oldGraph)).toBeVisible();
+    await expect(page.locator(oldDashboardLink).first()).toBeVisible();
     await expect(page.getByTestId("active-organization")).not.toContainText(
       university.organization.name,
     );
@@ -207,7 +219,7 @@ test("390 px : menu modal, clavier, retour du focus et absence de débordement",
   await login(page);
   await selectOrganization(page, factory.organization.id);
   await expect(
-    page.getByRole("heading", { name: "Une organisation. Un modèle commun." }),
+    page.getByRole("heading", { name: factory.organization.name, exact: true }),
   ).toBeVisible();
   const trigger = page.getByRole("button", {
     name: "Ouvrir le menu",
