@@ -1386,6 +1386,86 @@
         }
       }
     },
+    "/api/v1/organizations/{organization_id}/scenario-comparisons": {
+      "get": {
+        "summary": "Scenario Comparison",
+        "operationId": "scenario_comparison_api_v1_organizations__organization_id__scenario_comparisons_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "organization_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Organization Id"
+            }
+          },
+          {
+            "name": "baseline_run_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 100
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Baseline Run Id"
+            }
+          },
+          {
+            "name": "candidate_run_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 100
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Candidate Run Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ComparisonReport"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/organizations/{organization_id}/scenarios": {
       "post": {
         "summary": "Scenario Create",
@@ -3011,6 +3091,497 @@
         ],
         "title": "ChangeTargetsResponse"
       },
+      "ComparedRun": {
+        "properties": {
+          "run_id": {
+            "type": "string",
+            "title": "Run Id"
+          },
+          "organization_id": {
+            "type": "string",
+            "title": "Organization Id"
+          },
+          "content_hash": {
+            "type": "string",
+            "title": "Content Hash"
+          },
+          "created_at": {
+            "type": "integer",
+            "title": "Created At"
+          },
+          "created_by": {
+            "type": "string",
+            "title": "Created By"
+          },
+          "started_at": {
+            "type": "string",
+            "title": "Started At"
+          },
+          "model_version_id": {
+            "type": "string",
+            "title": "Model Version Id"
+          },
+          "model_id": {
+            "type": "string",
+            "title": "Model Id"
+          },
+          "model_name": {
+            "type": "string",
+            "title": "Model Name"
+          },
+          "model_version": {
+            "type": "string",
+            "title": "Model Version"
+          },
+          "model_content_hash": {
+            "type": "string",
+            "title": "Model Content Hash"
+          },
+          "model_hash": {
+            "type": "string",
+            "title": "Model Hash"
+          },
+          "manifest_hash": {
+            "type": "string",
+            "title": "Manifest Hash"
+          },
+          "graph_snapshot_id": {
+            "type": "string",
+            "title": "Graph Snapshot Id"
+          },
+          "graph_content_hash": {
+            "type": "string",
+            "title": "Graph Content Hash"
+          },
+          "data_snapshot_id": {
+            "type": "string",
+            "title": "Data Snapshot Id"
+          },
+          "reference_model_version_id": {
+            "type": "string",
+            "title": "Reference Model Version Id"
+          },
+          "reference_content_hash": {
+            "type": "string",
+            "title": "Reference Content Hash"
+          },
+          "scenario_id": {
+            "type": "string",
+            "title": "Scenario Id"
+          },
+          "scenario_version_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Scenario Version Id"
+          },
+          "scenario_content_hash": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Scenario Content Hash"
+          },
+          "scenario_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Scenario Name"
+          },
+          "assumptions": {
+            "items": {
+              "additionalProperties": {
+                "$ref": "#/components/schemas/JsonValue"
+              },
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Assumptions"
+          },
+          "public_status": {
+            "type": "string",
+            "title": "Public Status"
+          },
+          "native_status": {
+            "type": "string",
+            "title": "Native Status"
+          },
+          "verified_plan": {
+            "type": "boolean",
+            "title": "Verified Plan"
+          },
+          "verification_issues": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Verification Issues"
+          },
+          "objective_id": {
+            "type": "string",
+            "title": "Objective Id"
+          },
+          "objective_sense": {
+            "type": "string",
+            "enum": [
+              "MAX",
+              "MIN"
+            ],
+            "title": "Objective Sense"
+          },
+          "objective_unit": {
+            "type": "string",
+            "title": "Objective Unit"
+          },
+          "objective_value": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Objective Value"
+          },
+          "metric_fingerprint": {
+            "type": "string",
+            "title": "Metric Fingerprint"
+          },
+          "verification": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/JsonValue"
+            },
+            "type": "object",
+            "title": "Verification"
+          },
+          "native_evidence": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/JsonValue"
+            },
+            "type": "object",
+            "title": "Native Evidence"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "run_id",
+          "organization_id",
+          "content_hash",
+          "created_at",
+          "created_by",
+          "started_at",
+          "model_version_id",
+          "model_id",
+          "model_name",
+          "model_version",
+          "model_content_hash",
+          "model_hash",
+          "manifest_hash",
+          "graph_snapshot_id",
+          "graph_content_hash",
+          "data_snapshot_id",
+          "reference_model_version_id",
+          "reference_content_hash",
+          "scenario_id",
+          "scenario_version_id",
+          "scenario_content_hash",
+          "scenario_name",
+          "assumptions",
+          "public_status",
+          "native_status",
+          "verified_plan",
+          "verification_issues",
+          "objective_id",
+          "objective_sense",
+          "objective_unit",
+          "objective_value",
+          "metric_fingerprint",
+          "verification",
+          "native_evidence"
+        ],
+        "title": "ComparedRun"
+      },
+      "ComparisonReason": {
+        "properties": {
+          "code": {
+            "type": "string",
+            "title": "Code"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "side": {
+            "type": "string",
+            "enum": [
+              "BASELINE",
+              "CANDIDATE",
+              "PAIR"
+            ],
+            "title": "Side",
+            "default": "PAIR"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "code",
+          "message"
+        ],
+        "title": "ComparisonReason"
+      },
+      "ComparisonReport": {
+        "properties": {
+          "schema_version": {
+            "type": "string",
+            "const": "5B.3",
+            "title": "Schema Version",
+            "default": "5B.3"
+          },
+          "algorithm_version": {
+            "type": "string",
+            "const": "verified-comparison-1",
+            "title": "Algorithm Version",
+            "default": "verified-comparison-1"
+          },
+          "organization_id": {
+            "type": "string",
+            "title": "Organization Id"
+          },
+          "baseline_run_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Baseline Run Id"
+          },
+          "candidate_run_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Candidate Run Id"
+          },
+          "baseline": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ComparedRun"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "candidate": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ComparedRun"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "comparability": {
+            "type": "string",
+            "enum": [
+              "COMPARABLE",
+              "QUALIFIED",
+              "NOT_COMPARABLE",
+              "INCOMPLETE"
+            ],
+            "title": "Comparability"
+          },
+          "claim": {
+            "type": "string",
+            "enum": [
+              "VERIFIED_OBJECTIVE_IMPROVEMENT",
+              "OBSERVED_DIFFERENCE",
+              "NONE"
+            ],
+            "title": "Claim"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "same_model_and_snapshot": {
+            "type": "boolean",
+            "title": "Same Model And Snapshot"
+          },
+          "reasons": {
+            "items": {
+              "$ref": "#/components/schemas/ComparisonReason"
+            },
+            "type": "array",
+            "title": "Reasons"
+          },
+          "observed_objective_delta": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Observed Objective Delta"
+          },
+          "oriented_objective_delta": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Oriented Objective Delta"
+          },
+          "objective_unit": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Objective Unit"
+          },
+          "objective_improvement": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Objective Improvement"
+          },
+          "objective_improvement_percent": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Objective Improvement Percent"
+          },
+          "improvement_tolerance": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Improvement Tolerance"
+          },
+          "economic_gain": {
+            "type": "null",
+            "title": "Economic Gain"
+          },
+          "economic_gain_status": {
+            "type": "string",
+            "const": "NOT_DEMONSTRATED",
+            "title": "Economic Gain Status",
+            "default": "NOT_DEMONSTRATED"
+          },
+          "decisions": {
+            "items": {
+              "$ref": "#/components/schemas/DecisionDifference"
+            },
+            "type": "array",
+            "title": "Decisions"
+          },
+          "resources": {
+            "items": {
+              "$ref": "#/components/schemas/ResourceDifference"
+            },
+            "type": "array",
+            "title": "Resources"
+          },
+          "constraints": {
+            "items": {
+              "$ref": "#/components/schemas/ConstraintDifference"
+            },
+            "type": "array",
+            "title": "Constraints"
+          },
+          "limitations": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Limitations",
+            "default": [
+              "Une différence entre scénarios n’est pas un gain économique démontré.",
+              "Les vérifications portent sur les IR originales et les tolérances enregistrées.",
+              "Les bornes et gaps natifs gardent leur portée binary64 ; aucun certificat n’est ajouté.",
+              "Les coûts présents dans la formule de l’objectif sont inclus ; aucun coût omis n’est estimé.",
+              "La saturation d’une contrainte ne prouve ni prix d’ombre ni bénéfice économique."
+            ]
+          },
+          "report_hash": {
+            "type": "string",
+            "title": "Report Hash"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "organization_id",
+          "baseline_run_id",
+          "candidate_run_id",
+          "baseline",
+          "candidate",
+          "comparability",
+          "claim",
+          "message",
+          "same_model_and_snapshot",
+          "reasons",
+          "observed_objective_delta",
+          "oriented_objective_delta",
+          "objective_unit",
+          "objective_improvement",
+          "objective_improvement_percent",
+          "improvement_tolerance",
+          "decisions",
+          "resources",
+          "constraints",
+          "report_hash"
+        ],
+        "title": "ComparisonReport"
+      },
       "CompositionDocument": {
         "properties": {
           "organization_model": {
@@ -3354,6 +3925,71 @@
         ],
         "title": "ConstraintActivity"
       },
+      "ConstraintDifference": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "department": {
+            "type": "string",
+            "title": "Department"
+          },
+          "unit": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Unit"
+          },
+          "baseline": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ConstraintMeasure"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "candidate": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ConstraintMeasure"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "slack_delta": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Slack Delta"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "department",
+          "unit",
+          "baseline",
+          "candidate",
+          "slack_delta"
+        ],
+        "title": "ConstraintDifference"
+      },
       "ConstraintLink": {
         "properties": {
           "constraint_id": {
@@ -3430,6 +4066,65 @@
           "version"
         ],
         "title": "ConstraintLink"
+      },
+      "ConstraintMeasure": {
+        "properties": {
+          "unit": {
+            "type": "string",
+            "title": "Unit"
+          },
+          "lhs": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lhs"
+          },
+          "rhs": {
+            "type": "string",
+            "title": "Rhs"
+          },
+          "slack": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Slack"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "SATURATED",
+              "SATISFIED",
+              "VIOLATED",
+              "UNAVAILABLE"
+            ],
+            "title": "State"
+          },
+          "tolerance": {
+            "type": "string",
+            "title": "Tolerance"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "unit",
+          "lhs",
+          "rhs",
+          "slack",
+          "state",
+          "tolerance"
+        ],
+        "title": "ConstraintMeasure"
       },
       "ConstraintTraceDocument": {
         "properties": {
@@ -3733,6 +4428,97 @@
           "changes"
         ],
         "title": "ControlledScenarioDocument"
+      },
+      "DecisionDifference": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "department": {
+            "type": "string",
+            "title": "Department"
+          },
+          "unit": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Unit"
+          },
+          "baseline_unit": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Baseline Unit"
+          },
+          "candidate_unit": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Candidate Unit"
+          },
+          "baseline_value": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Baseline Value"
+          },
+          "candidate_value": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Candidate Value"
+          },
+          "delta": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Delta"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "department",
+          "unit",
+          "baseline_unit",
+          "candidate_unit",
+          "baseline_value",
+          "candidate_value",
+          "delta"
+        ],
+        "title": "DecisionDifference"
       },
       "Department": {
         "properties": {
@@ -6302,6 +7088,150 @@
           "source"
         ],
         "title": "RequestedChange"
+      },
+      "ResourceDifference": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "department": {
+            "type": "string",
+            "title": "Department"
+          },
+          "unit": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Unit"
+          },
+          "baseline": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ResourceMeasure"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "candidate": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ResourceMeasure"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "capacity_delta": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Capacity Delta"
+          },
+          "consumption_delta": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Consumption Delta"
+          },
+          "remaining_delta": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Remaining Delta"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "department",
+          "unit",
+          "baseline",
+          "candidate",
+          "capacity_delta",
+          "consumption_delta",
+          "remaining_delta"
+        ],
+        "title": "ResourceDifference"
+      },
+      "ResourceMeasure": {
+        "properties": {
+          "unit": {
+            "type": "string",
+            "title": "Unit"
+          },
+          "capacity": {
+            "type": "string",
+            "title": "Capacity"
+          },
+          "consumption": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Consumption"
+          },
+          "remaining": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Remaining"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "SATURATED",
+              "SATISFIED",
+              "VIOLATED",
+              "UNAVAILABLE",
+              "UNMODELED"
+            ],
+            "title": "State"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "unit",
+          "capacity",
+          "consumption",
+          "remaining",
+          "state"
+        ],
+        "title": "ResourceMeasure"
       },
       "ResourceNode": {
         "properties": {
