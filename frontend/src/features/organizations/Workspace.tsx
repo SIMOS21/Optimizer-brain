@@ -21,6 +21,8 @@ import { ArtifactImport } from "./ArtifactImport";
 import { StoredRun } from "../execution/DecisionCockpit";
 import { ConstraintDiagnostics } from "../diagnostics/ConstraintDiagnostics";
 import { Dashboard } from "../dashboard/Dashboard";
+import { OrganizationMap } from "./OrganizationMap";
+import { usePresentation } from "../../shared/presentation/context";
 
 const OptimizationCenter = lazy(() =>
   import("../execution/OptimizationCenter").then((module) => ({
@@ -201,6 +203,7 @@ function GraphPage({
   id: string;
   refresh: () => void;
 }) {
+  const { mode } = usePresentation();
   const navigate = useNavigate();
   const [revision, setRevision] = useState(0);
   const [editing, setEditing] = useState(false);
@@ -208,8 +211,16 @@ function GraphPage({
     () => client.graph(organization.id, id),
     [client, organization.id, id, revision],
   );
-  if (loaded.loading) return <p role="status">Chargement du snapshot…</p>;
-  if (!loaded.data) return <ErrorNotice message={loaded.error} />;
+  if (loaded.loading) return <Skeleton label="Chargement du snapshot…" />;
+  if (!loaded.data)
+    return (
+      <div className="v2-retry-panel">
+        <ErrorNotice message={loaded.error} />
+        <button onClick={() => setRevision((n) => n + 1)}>
+          Réessayer le snapshot
+        </button>
+      </div>
+    );
   const record = loaded.data;
   function saved(next: GraphArtifact) {
     setEditing(false);
@@ -225,8 +236,14 @@ function GraphPage({
           <Status value={record.state} />
         </div>
         <p>
-          {record.key} · version {record.version} · snapshot{" "}
-          {record.document.graph.organization.data_snapshot_id}
+          Carte enregistrée · version {record.version}
+          {mode === "expert" && (
+            <>
+              {" "}
+              · {record.key} · snapshot{" "}
+              {record.document.graph.organization.data_snapshot_id}
+            </>
+          )}
         </p>
         <div className="actions">
           {canBuild(organization.role) && !editing && (
@@ -234,23 +251,32 @@ function GraphPage({
               Créer un nouveau brouillon
             </button>
           )}
-          <button onClick={refresh}>Recharger les versions</button>
           <button
             onClick={() => {
-              const url = URL.createObjectURL(
-                new Blob([canonical(exportGraph(record.document))], {
-                  type: "application/json",
-                }),
-              );
-              const anchor = document.createElement("a");
-              anchor.href = url;
-              anchor.download = "organization-graph.json";
-              anchor.click();
-              URL.revokeObjectURL(url);
+              setRevision((n) => n + 1);
+              refresh();
             }}
           >
-            Exporter le snapshot JSON
+            Recharger les versions
           </button>
+          {mode === "expert" && (
+            <button
+              onClick={() => {
+                const url = URL.createObjectURL(
+                  new Blob([canonical(exportGraph(record.document))], {
+                    type: "application/json",
+                  }),
+                );
+                const anchor = document.createElement("a");
+                anchor.href = url;
+                anchor.download = "organization-graph.json";
+                anchor.click();
+                URL.revokeObjectURL(url);
+              }}
+            >
+              Exporter le snapshot JSON
+            </button>
+          )}
         </div>
       </div>
       {editing ? (
@@ -280,18 +306,21 @@ function GraphPage({
             <GraphCanvas
               key={`${record.id}-${record.content_hash}`}
               document={record.document}
+              mode={mode}
             />
           </Suspense>
-          <section className="panel compact">
-            <JsonView
-              title="Snapshot canonique et provenance"
-              value={record.document}
-            />
-            <p className="quiet">
-              Empreinte du contenu : {record.content_hash}. Placement local
-              uniquement ; aucune position n’est persistée.
-            </p>
-          </section>
+          {mode === "expert" && (
+            <section className="panel compact">
+              <JsonView
+                title="Snapshot canonique et provenance"
+                value={record.document}
+              />
+              <p className="quiet">
+                Empreinte du contenu : {record.content_hash}. Placement local
+                uniquement ; aucune position n’est persistée.
+              </p>
+            </section>
+          )}
         </>
       )}
     </>
@@ -542,15 +571,17 @@ function GraphsRoute({
       ) : graphsLoad.error ? (
         <div className="v2-retry-panel">
           <ErrorNotice message={graphsLoad.error} />
-          <button
-            type="button"
-            onClick={() => setGraphsRevision((r) => r + 1)}
-          >
+          <button type="button" onClick={() => setGraphsRevision((r) => r + 1)}>
             Réessayer
           </button>
         </div>
       ) : (
         <>
+          <OrganizationMap
+            client={client}
+            organization={organization}
+            records={graphsLoad.data ?? []}
+          />
           <ArtifactList
             title="Versions de graphe"
             records={graphsLoad.data ?? []}
@@ -741,7 +772,11 @@ function HistoryRoute({
       </div>
     );
   return (
-    <History client={client} organization={organization} records={loaded.data} />
+    <History
+      client={client}
+      organization={organization}
+      records={loaded.data}
+    />
   );
 }
 

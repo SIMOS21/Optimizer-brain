@@ -51,6 +51,7 @@ for (const [name, fixture, objective] of examples) {
   }) => {
     await login(page);
     await openGraph(page, fixture);
+    await page.getByRole("switch", { name: "Mode expert" }).click();
     const mutations: string[] = [];
     page.on("request", (request) => {
       if (request.method() !== "GET")
@@ -101,6 +102,7 @@ for (const [name, fixture, objective] of examples) {
       path: `${screenshotDirectory}/studio-${name}.png`,
       fullPage: true,
     });
+    await page.getByRole("switch", { name: "Mode expert" }).click();
     const version = `ui_${Date.now()}_${name}`;
     await page
       .getByRole("button", { name: "Créer un nouveau brouillon" })
@@ -180,7 +182,9 @@ test("changement de tenant, purge et rechargement sans session persistante", asy
   await login(page);
   await openGraph(page, factory);
   await page
-    .getByText(factory.graph.document.graph.resources[0]!.name, { exact: true })
+    .locator(
+      `.react-flow__node[data-id="${factory.graph.document.graph.resources[0]!.id}"]`,
+    )
     .click();
   await selectOrganization(page, university.organization.id);
   await expect(

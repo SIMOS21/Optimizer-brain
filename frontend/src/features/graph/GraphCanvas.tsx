@@ -1,269 +1,438 @@
-import { useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import {
   Background,
   Controls,
-  Handle,
   MarkerType,
   MiniMap,
-  Position,
   ReactFlow,
-  type NodeProps,
+  type Edge,
+  type OnEdgesChange,
+  type OnNodesChange,
+  type ReactFlowInstance,
 } from "@xyflow/react";
 import type { GraphDocument } from "../../api/types";
-import { JsonView } from "../../shared/ui";
+import { canonical } from "../../api/validation";
+import { EmptyState } from "../../shared/design-system";
+import type { PresentationMode } from "../../shared/presentation/context";
+import { GraphInspector } from "./GraphInspector";
+import { OrganizationNode } from "./GraphNode";
+import { GraphModeContext } from "./graph-view-context";
+import {
+  relatedElements,
+  relationLabels,
+  visibleNodeIds,
+  type GraphSelection,
+} from "./map-view";
 import { project, type StudioNode } from "./projection";
+import "../../styles/organization-map.css";
 
-function OrganizationNode({ data }: NodeProps<StudioNode>) {
+// Never construct renderer registries/options in the component render path.
+const nodeTypes = { studio: OrganizationNode };
+const edgeOptions = { markerEnd: { type: MarkerType.ArrowClosed } };
+const fitOptions = { padding: 0.2, maxZoom: 1 };
+const miniMapStyle = { width: 110, height: 75 };
+const miniMapColor = (node: StudioNode) =>
+  node.data.kind === "resource" ? "#b9ded3" : "#b8c8de";
+
+export function GraphCanvas({
+  document,
+  mode = "business",
+}: {
+  document: GraphDocument;
+  mode?: PresentationMode;
+}) {
+  // One projection per immutable document. Canonical content is a UI session
+  // key, not a mathematical hash/certificate. Changes reset all local state.
+  const initial = useMemo(
+    () => ({ ...project(document), identity: canonical(document) }),
+    [document],
+  );
   return (
-    <div className={`studio-node ${data.kind}`}>
-      <Handle type="target" position={Position.Left} isConnectable={false} />
-      <div className="node-kicker">
-        <span>{data.kind === "department" ? "DÉPARTEMENT" : "RESSOURCE"}</span>
-        <span className="node-symbol">
-          {data.kind === "department" ? "D" : "R"}
-        </span>
-      </div>
-      <strong>{data.label}</strong>
-      <small>{data.capacity || `Responsable · ${data.owner}`}</small>
-      <span className="node-version">v{data.version}</span>
-      <Handle type="source" position={Position.Right} isConnectable={false} />
-    </div>
+    <GraphSession
+      key={initial.identity}
+      document={document}
+      initial={initial}
+      mode={mode}
+    />
   );
 }
-const nodeTypes = { studio: OrganizationNode };
-type Selection = { kind: "node" | "edge"; id: string } | null;
 
-export function GraphCanvas({ document }: { document: GraphDocument }) {
-  const [nodes, setNodes] = useState(() => project(document).nodes);
-  const [selection, setSelection] = useState<Selection>(null);
-  function select(next: Selection) {
+function GraphSession({
+  document,
+  initial,
+  mode,
+}: {
+  document: GraphDocument;
+  initial: ReturnType<typeof project>;
+  mode: PresentationMode;
+}) {
+  const [nodes, setNodes] = useState(initial.nodes);
+  const [edges, setEdges] = useState(initial.edges);
+  const [selection, setSelection] = useState<GraphSelection>(null);
+  const [search, setSearch] = useState("");
+  const [department, setDepartment] = useState("");
+  const [flow, setFlow] = useState<ReactFlowInstance<StudioNode> | null>(null);
+  const canvasRef = useRef<HTMLDivElement>(null);
+  const headingRef = useRef<HTMLHeadingElement>(null);
+  const lastFocus = useRef<HTMLElement | null>(null);
+  const graph = document.graph;
+
+  const rememberFocus = useCallback(() => {
+    const active = window.document.activeElement;
+    const element = active?.closest(
+      ".react-flow__node, .react-flow__edge, .map-element-list button",
+    );
+    if (element instanceof HTMLElement) lastFocus.current = element;
+  }, []);
+  const updateSelection = useCallback((next: GraphSelection) => {
     setSelection((current) =>
       current?.kind === next?.kind && current?.id === next?.id ? current : next,
     );
-  }
-  const [search, setSearch] = useState("");
-  const [department, setDepartment] = useState("");
-  const [edges, setEdges] = useState(() => project(document).edges);
-  const graph = document.graph;
-  const filtered = nodes.map((node) => ({
-    ...node,
-    hidden:
-      !`${node.data.label} ${node.id} ${node.data.owner}`
-        .toLowerCase()
-        .includes(search.toLowerCase()) ||
-      (!!department &&
-        node.id !== department &&
-        !graph.resources.some(
-          (resource) =>
-            resource.id === node.id &&
-            [resource.owner_department, ...resource.shared_with].includes(
-              department,
-            ),
-        )),
-  }));
-  const visible = new Set(
-    filtered.filter((node) => !node.hidden).map((node) => node.id),
+  }, []);
+  const choose = useCallback(
+    (next: GraphSelection) => {
+      if (next) rememberFocus();
+      updateSelection(next);
+      setNodes((current) =>
+        current.map((node) => {
+          const selected = next?.kind === "node" && next.id === node.id;
+          return !!node.selected === selected ? node : { ...node, selected };
+        }),
+      );
+      setEdges((current) =>
+        current.map((edge) => {
+          const selected = next?.kind === "edge" && next.id === edge.id;
+          return !!edge.selected === selected ? edge : { ...edge, selected };
+        }),
+      );
+    },
+    [rememberFocus, updateSelection],
   );
-  const selectedNode =
-    selection?.kind === "node"
-      ? [...graph.departments, ...graph.resources].find(
-          (node) => node.id === selection.id,
-        )
-      : undefined;
-  const selectedEdge =
-    selection?.kind === "edge"
-      ? graph.edges.find((edge) => edge.id === selection.id)
-      : undefined;
+  const onNodesChange = useCallback<OnNodesChange<StudioNode>>(
+    (changes) => setNodes((current) => changes.applyTo(current)),
+    [],
+  );
+  const onEdgesChange = useCallback<OnEdgesChange>(
+    (changes) => setEdges((current) => changes.applyTo(current)),
+    [],
+  );
+  const onSelectionChange = useCallback(
+    ({
+      nodes: chosen,
+      edges: chosenEdges,
+    }: {
+      nodes: StudioNode[];
+      edges: Edge[];
+    }) => {
+      const next: GraphSelection = chosen[0]
+        ? { kind: "node", id: chosen[0].id }
+        : chosenEdges[0]
+          ? { kind: "edge", id: chosenEdges[0].id }
+          : null;
+      if (next) rememberFocus();
+      updateSelection(next);
+    },
+    [rememberFocus, updateSelection],
+  );
+
+  const visible = useMemo(
+    () => visibleNodeIds(document, nodes, search, department),
+    [document, nodes, search, department],
+  );
+  const related = useMemo(
+    () => relatedElements(document, selection),
+    [document, selection],
+  );
+  const names = useMemo(
+    () =>
+      new Map(
+        [...graph.departments, ...graph.resources].map((node) => [
+          node.id,
+          node.name,
+        ]),
+      ),
+    [graph],
+  );
+  const displayedNodes = useMemo(
+    () =>
+      nodes.map((node) => ({
+        ...node,
+        hidden: !visible.has(node.id),
+        className: selection
+          ? related.nodes.has(node.id)
+            ? "map-related"
+            : "map-muted"
+          : "",
+        ariaLabel:
+          mode === "expert"
+            ? node.ariaLabel
+            : `${node.data.kind === "department" ? "Département" : "Ressource"} ${node.data.label}`,
+      })),
+    [nodes, visible, selection, related, mode],
+  );
+  const displayedEdges = useMemo(
+    () =>
+      edges
+        .filter((edge) => visible.has(edge.source) && visible.has(edge.target))
+        .map((edge) => {
+          const relation =
+            edge.data?.relation === "DEPENDS_ON"
+              ? "DEPENDS_ON"
+              : "USES_RESOURCE";
+          return {
+            ...edge,
+            label: mode === "expert" ? relation : relationLabels[relation],
+            ariaLabel:
+              mode === "expert"
+                ? edge.ariaLabel
+                : `${relationLabels[relation]} : ${names.get(edge.source) || edge.source} vers ${names.get(edge.target) || edge.target}`,
+            className: selection
+              ? related.edges.has(edge.id)
+                ? "map-related"
+                : "map-muted"
+              : "",
+            style: selection
+              ? {
+                  ...edge.style,
+                  strokeWidth: related.edges.has(edge.id) ? 3.2 : 1.5,
+                  opacity: related.edges.has(edge.id) ? 1 : 0.25,
+                }
+              : edge.style,
+          };
+        }),
+    [edges, visible, selection, related, mode, names],
+  );
+  const visibleNodes = displayedNodes.filter((node) => !node.hidden);
+  const selectedLabel = selection
+    ? selection.kind === "node"
+      ? names.get(selection.id)
+      : "Relation informative"
+    : undefined;
+  function clearFilters() {
+    setSearch("");
+    setDepartment("");
+    choose(null);
+  }
+  function closeInspector() {
+    choose(null);
+    if (lastFocus.current?.isConnected)
+      lastFocus.current.focus({ preventScroll: true });
+    else canvasRef.current?.focus({ preventScroll: true });
+  }
+  function inspect() {
+    headingRef.current?.focus();
+    headingRef.current?.scrollIntoView?.({
+      block: "nearest",
+      behavior: "instant",
+    });
+  }
+  function reveal(next: NonNullable<GraphSelection>) {
+    if (next.kind === "node" && !visible.has(next.id)) {
+      setSearch("");
+      setDepartment("");
+    }
+    choose(next);
+    const node =
+      next.kind === "node"
+        ? nodes.find((item) => item.id === next.id)
+        : undefined;
+    if (node)
+      void flow?.fitView({
+        nodes: [node],
+        padding: 0.5,
+        minZoom: 0.7,
+        maxZoom: 1,
+        duration: 0,
+      });
+  }
   return (
-    <div className="graph-studio">
-      <div className="graph-toolbar">
-        <label>
-          Rechercher
-          <input
-            value={search}
-            onChange={(event) => setSearch(event.target.value)}
-            placeholder="Nom, identifiant, propriétaire…"
-          />
-        </label>
-        <label>
-          Périmètre
-          <select
-            value={department}
-            onChange={(event) => setDepartment(event.target.value)}
-          >
-            <option value="">Tous les départements</option>
-            {graph.departments.map((node) => (
-              <option key={node.id} value={node.id}>
-                {node.name}
-              </option>
-            ))}
-          </select>
-        </label>
-        <span className="quiet">
-          {visible.size}/{nodes.length} nœuds · {graph.edges.length} relations
-          enregistrées
-        </span>
-      </div>
-      <div className="canvas-and-inspector">
-        <div
-          className="canvas"
-          aria-label="Graphe organisationnel interactif"
-          data-testid="graph-canvas"
-        >
-          <ReactFlow<StudioNode>
-            defaultEdgeOptions={{ markerEnd: { type: MarkerType.ArrowClosed } }}
-            nodes={filtered}
-            edges={edges.filter(
-              (edge) => visible.has(edge.source) && visible.has(edge.target),
-            )}
-            nodeTypes={nodeTypes}
-            onNodesChange={(changes) =>
-              setNodes((current) => changes.applyTo(current))
-            }
-            onEdgesChange={(changes) =>
-              setEdges((current) => changes.applyTo(current))
-            }
-            onNodeClick={(_, node) => select({ kind: "node", id: node.id })}
-            onEdgeClick={(_, edge) => select({ kind: "edge", id: edge.id })}
-            onSelectionChange={({ nodes: chosen, edges: chosenEdges }) =>
-              select(
-                chosen[0]
-                  ? { kind: "node", id: chosen[0].id }
-                  : chosenEdges[0]
-                    ? { kind: "edge", id: chosenEdges[0].id }
-                    : null,
-              )
-            }
-            fitView
-            fitViewOptions={{ padding: 0.2, maxZoom: 1 }}
-            nodesConnectable={false}
-            edgesReconnectable={false}
-            deleteKeyCode={null}
-            nodesFocusable
-            edgesFocusable
-            ariaLabelConfig={{
-              "controls.zoomIn.ariaLabel": "Agrandir",
-              "controls.zoomOut.ariaLabel": "Réduire",
-              "controls.fitView.ariaLabel": "Cadrer le graphe",
-              "node.a11yDescription.default":
-                "Entrée pour sélectionner ; flèches pour déplacer localement ; Échap pour désélectionner.",
-              "edge.a11yDescription.default":
-                "Entrée pour sélectionner cette relation informative.",
-            }}
-          >
-            <Background gap={22} size={1} />
-            <Controls showInteractive={false} />
-            <MiniMap
-              style={{ width: 110, height: 75 }}
-              pannable
-              zoomable
-              nodeColor={(node) =>
-                node.data.kind === "resource" ? "#b9ded3" : "#b8c8de"
-              }
-            />
-          </ReactFlow>
+    <GraphModeContext.Provider value={mode}>
+      <section
+        className="graph-studio organization-map"
+        aria-label="Carte organisationnelle"
+        onKeyDown={(event) => {
+          if (event.key === "Escape" && selection) {
+            event.stopPropagation();
+            closeInspector();
+          }
+        }}
+      >
+        <div className="map-introduction">
+          <strong>Départements, ressources et liens déclarés</strong>
+          <p>
+            Explorez ce snapshot. Les relations décrivent l’organisation ; les
+            équations appartiennent au modèle compilé.
+          </p>
         </div>
-        <aside className="inspector">
-          <span className="eyebrow">INSPECTEUR</span>
-          {selectedNode ? (
-            <>
-              <h3>{selectedNode.name}</h3>
-              <dl>
-                <dt>Identifiant stable</dt>
-                <dd>{selectedNode.id}</dd>
-                <dt>Provenance</dt>
-                <dd>{selectedNode.source}</dd>
-                <dt>Version déclarée</dt>
-                <dd>{selectedNode.version}</dd>
-                {"capacity" in selectedNode ? (
-                  <>
-                    <dt>Propriétaire</dt>
-                    <dd>{selectedNode.owner_department}</dd>
-                    <dt>Partagée avec</dt>
-                    <dd>
-                      {selectedNode.shared_with.join(", ") ||
-                        "Aucun autre département"}
-                    </dd>
-                    <dt>Capacité référencée</dt>
-                    <dd>{selectedNode.capacity.parameter}</dd>
-                    <dt>Valeur du paramètre</dt>
-                    <dd>
-                      {
-                        document.shared_parameters[
-                          selectedNode.capacity.parameter
-                        ]?.value
-                      }{" "}
-                      {
-                        document.shared_parameters[
-                          selectedNode.capacity.parameter
-                        ]?.unit
-                      }
-                    </dd>
-                    <dt>Unité de ressource</dt>
-                    <dd>{selectedNode.unit}</dd>
-                    <dt>Version de capacité</dt>
-                    <dd>{selectedNode.capacity_version}</dd>
-                    <dt>Contrainte déclarée</dt>
-                    <dd>
-                      {selectedNode.constraint_id} — à consulter dans le modèle
-                      compilé
-                    </dd>
-                  </>
-                ) : (
-                  <>
-                    <dt>Responsable descriptif</dt>
-                    <dd>{selectedNode.owner_id}</dd>
-                  </>
-                )}
-              </dl>
-              <JsonView
-                title={`Provenance · graph.${"capacity" in selectedNode ? "resources" : "departments"}[${selectedNode.id}]`}
-                value={selectedNode}
-              />
-            </>
-          ) : selectedEdge ? (
-            <>
-              <h3>Relation informative</h3>
-              <dl>
-                <dt>Identifiant</dt>
-                <dd>{selectedEdge.id}</dd>
-                <dt>Type</dt>
-                <dd>{selectedEdge.type}</dd>
-                <dt>Source → cible</dt>
-                <dd>
-                  {selectedEdge.source_id} → {selectedEdge.target_id}
-                </dd>
-              </dl>
-              <p>
-                Aucune équation ni consommation n’est ajoutée par cette arête.
-              </p>
-            </>
-          ) : (
-            <>
-              <h3>Explorez l’organisation</h3>
-              <p>
-                Sélectionnez un département, une ressource ou une relation pour
-                consulter ses propriétés.
-              </p>
-              <p className="quiet">
-                Navigation clavier : Tab, Entrée, Échap. Les déplacements
-                restent locaux.
-              </p>
-            </>
+        <div className="graph-toolbar">
+          <label>
+            Rechercher
+            <input
+              aria-label="Rechercher dans la carte"
+              value={search}
+              onChange={(event) => {
+                setSearch(event.target.value);
+                choose(null);
+              }}
+              placeholder="Nom, ressource, responsable…"
+            />
+          </label>
+          <label>
+            Périmètre
+            <select
+              aria-label="Périmètre"
+              value={department}
+              onChange={(event) => {
+                setDepartment(event.target.value);
+                choose(null);
+              }}
+            >
+              <option value="">Tous les départements</option>
+              {graph.departments.map((node) => (
+                <option key={node.id} value={node.id}>
+                  {node.name}
+                </option>
+              ))}
+            </select>
+          </label>
+          <button
+            type="button"
+            onClick={clearFilters}
+            disabled={!search && !department}
+          >
+            Effacer les filtres
+          </button>
+        </div>
+        <div className="map-status" role="status">
+          <span>
+            {visible.size}/{nodes.length} éléments · {displayedEdges.length}/
+            {graph.edges.length} relations affichées
+          </span>
+          <span>
+            {selectedLabel
+              ? `Sélection : ${selectedLabel}`
+              : "Sélectionnez un élément pour afficher sa fiche."}
+          </span>
+          {selection && (
+            <button type="button" onClick={inspect}>
+              Consulter la fiche
+            </button>
           )}
-        </aside>
-      </div>
-      <div className="graph-legend">
-        <span>
-          <i className="line dashed" /> DEPENDS_ON · dépendance informative
-        </span>
-        <span>
-          <i className="line" /> USES_RESOURCE · relation déclarée
-        </span>
-        <span>
-          Seuls les fragments et ResourceUse définissent les équations.
-        </span>
-      </div>
-    </div>
+        </div>
+        <div className="canvas-and-inspector">
+          <div
+            className="canvas"
+            aria-label="Graphe organisationnel interactif"
+            data-testid="graph-canvas"
+            ref={canvasRef}
+            tabIndex={-1}
+          >
+            {visible.size ? (
+              <ReactFlow<StudioNode>
+                defaultEdgeOptions={edgeOptions}
+                nodes={displayedNodes}
+                edges={displayedEdges}
+                nodeTypes={nodeTypes}
+                onNodesChange={onNodesChange}
+                onEdgesChange={onEdgesChange}
+                onNodeClick={(_, node) => choose({ kind: "node", id: node.id })}
+                onEdgeClick={(_, edge) => choose({ kind: "edge", id: edge.id })}
+                onSelectionChange={onSelectionChange}
+                onPaneClick={() => choose(null)}
+                onInit={setFlow}
+                fitView
+                fitViewOptions={fitOptions}
+                minZoom={0.02}
+                maxZoom={2}
+                nodesConnectable={false}
+                edgesReconnectable={false}
+                deleteKeyCode={null}
+                nodesFocusable
+                edgesFocusable
+                ariaLabelConfig={{
+                  "controls.zoomIn.ariaLabel": "Agrandir",
+                  "controls.zoomOut.ariaLabel": "Réduire",
+                  "controls.fitView.ariaLabel": "Ajuster la vue",
+                  "node.a11yDescription.default":
+                    "Entrée pour sélectionner ; flèches pour déplacer localement ; Échap pour fermer la fiche.",
+                  "edge.a11yDescription.default":
+                    "Entrée pour sélectionner cette relation informative.",
+                }}
+              >
+                <Background gap={22} size={1} />
+                <Controls showInteractive={false} />
+                <MiniMap
+                  style={miniMapStyle}
+                  pannable
+                  zoomable
+                  nodeColor={miniMapColor}
+                />
+              </ReactFlow>
+            ) : (
+              <EmptyState
+                title="Aucun élément dans ce périmètre"
+                action={
+                  <button type="button" onClick={clearFilters}>
+                    Afficher toute la carte
+                  </button>
+                }
+              >
+                Changez la recherche ou le département. Aucun élément du
+                snapshot n’a été supprimé.
+              </EmptyState>
+            )}
+          </div>
+          <GraphInspector
+            document={document}
+            selection={selection}
+            mode={mode}
+            onSelect={reveal}
+            onClose={closeInspector}
+            headingRef={headingRef}
+          />
+        </div>
+        <details className="map-element-list">
+          <summary>Parcourir les éléments ({visible.size})</summary>
+          <ul>
+            {visibleNodes.map((node) => (
+              <li key={node.id}>
+                <button
+                  type="button"
+                  aria-pressed={
+                    selection?.kind === "node" && selection.id === node.id
+                  }
+                  onClick={() => reveal({ kind: "node", id: node.id })}
+                >
+                  <span>
+                    {node.data.kind === "department"
+                      ? "Département"
+                      : "Ressource"}
+                  </span>
+                  <strong>{node.data.label}</strong>
+                  {node.data.capacity && (
+                    <small>Capacité déclarée : {node.data.capacity}</small>
+                  )}
+                </button>
+              </li>
+            ))}
+          </ul>
+        </details>
+        <div className="graph-legend">
+          <span>
+            <i className="line dashed" />
+            {mode === "expert" ? "DEPENDS_ON · " : ""}Dépendance déclarée
+          </span>
+          <span>
+            <i className="line" />
+            {mode === "expert" ? "USES_RESOURCE · " : ""}Utilisation déclarée de
+            ressource
+          </span>
+          <span>
+            Seules les relations enregistrées sont dessinées. Aucun calcul de
+            consommation.
+          </span>
+        </div>
+      </section>
+    </GraphModeContext.Provider>
   );
 }

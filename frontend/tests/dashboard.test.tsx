@@ -262,8 +262,10 @@ it("distinguishes latest unverified/infeasible run from earlier verified plan", 
     ),
   );
   expect(screen.getByText("Dernier run disponible")).toBeVisible();
-  expect(screen.getByTestId("dashboard-verified-plan")).toHaveTextContent(
-    "4100",
+  await waitFor(() =>
+    expect(screen.getByTestId("dashboard-verified-plan")).toHaveTextContent(
+      "4100",
+    ),
   );
   expect(screen.queryByTestId("dashboard-objective")).not.toBeInTheDocument();
 });
