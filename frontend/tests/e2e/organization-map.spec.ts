@@ -29,6 +29,9 @@ async function openMap(
     fixture.graph.document.graph.departments.length +
       fixture.graph.document.graph.resources.length,
   );
+  // React Flow attaches node wrappers before measuring them. focus() does not
+  // wait for visibility, so counting wrappers alone can send Enter to main.
+  await expect(page.locator(".react-flow__node").first()).toBeVisible();
 }
 const screenshots =
   process.env.STUDIO_SCREENSHOT_DIR || "test-results/screenshots";
@@ -178,10 +181,23 @@ for (const width of [1440, 1280, 768, 390]) {
   }) => {
     await page.setViewportSize({ width, height: 1040 });
     await page.emulateMedia({ reducedMotion: "reduce" });
+    if (width === 768)
+      await page.addInitScript(() => {
+        const NativeResizeObserver = window.ResizeObserver;
+        window.ResizeObserver = class extends NativeResizeObserver {
+          constructor(callback: ResizeObserverCallback) {
+            super((entries, observer) => {
+              window.setTimeout(() => callback(entries, observer), 150);
+            });
+          }
+        };
+      });
     await login(page);
     await openMap(page, factory);
     const node = page.locator(".react-flow__node").first();
+    await expect(node).toBeVisible();
     await node.focus();
+    await expect(node).toBeFocused();
     await page.keyboard.press("Enter");
     await page
       .getByRole("button", { name: "Consulter la fiche", exact: true })
@@ -200,6 +216,7 @@ for (const width of [1440, 1280, 768, 390]) {
       .getByRole("button", { name: "Ajuster la vue", exact: true })
       .click();
     await node.focus();
+    await expect(node).toBeFocused();
     await page.keyboard.press("Enter");
     await page
       .getByRole("button", { name: "Consulter la fiche", exact: true })

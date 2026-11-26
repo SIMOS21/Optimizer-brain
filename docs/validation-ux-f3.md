@@ -92,6 +92,13 @@ Un autre test a reproduit une relation sélectionnée dont une extrémité resta
 masquée par la recherche. La navigation depuis la fiche efface désormais les
 filtres concernés et ajuste la vue sur les deux extrémités enregistrées ; le
 parcours usine réel contrôle ce cas. Aucun objet du snapshot n’est changé.
+La première CI PR sur `12cc976` a passé 49/50 parcours : le test tablette envoyait
+Entrée après le seul comptage des wrappers React Flow, sans garantir leur
+visibilité ou le focus. Ces wrappers sont cachés avant mesure par React Flow.
+La CI de push sur ce même SHA passait 50/50. Le test attend désormais la visibilité
+et confirme le focus réel avant Entrée. Il contrôle aussi un ResizeObserver
+volontairement retardé de 150 ms à 768 px, sans sleep du test, augmentation de
+timeout ou retry masquant l’échec.
 
 Commandes :
 
