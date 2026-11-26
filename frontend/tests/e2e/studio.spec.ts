@@ -154,9 +154,7 @@ for (const [name, fixture, objective] of examples) {
     await page.getByRole("link", { name: "Décisions & historique" }).click();
     await page.getByLabel("Résultat historique").selectOption(fixture.run.id);
     await expect(page.getByTestId("recorded-objective")).toHaveText(objective);
-    await expect(
-      page.getByText(/Vérification indépendante réussie/),
-    ).toBeVisible();
+    await expect(page.getByTestId("independent-verification")).toBeVisible();
     expect(
       mutations.some(
         (url) =>

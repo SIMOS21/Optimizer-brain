@@ -281,6 +281,10 @@ La Phase 5C, le LLM et les optimisations avancées restent hors périmètre.
 La [fondation UX-F1](docs/validation-ux-f1.md) ajoute navigation responsive,
 catalogue d'organisations et modes de présentation métier/expert. Les pages et
 leurs permissions restent disponibles aux URL existantes. Le
+rapport [UX-F5](docs/validation-ux-f5.md) décrit l’assistant Scenario Lab,
+l’historique qualifié, les captures et les mesures avant/après. Les publications
+et le lancement du calcul restent des confirmations distinctes ; aucun gain
+entre scénarios n’est calculé par le navigateur. Le
 [guide E2E isolé](docs/ux-f1-e2e-isolation.md) décrit le lancement des tests sur une
 base PostgreSQL dédiée, sans purge de la démonstration :
 

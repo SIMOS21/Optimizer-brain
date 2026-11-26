@@ -1,12 +1,14 @@
 import {
   act,
   fireEvent,
-  render,
+  render as rtlRender,
   screen,
   waitFor,
 } from "@testing-library/react";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { afterEach, expect, it, vi } from "vitest";
+import type { ReactElement } from "react";
+import { PresentationProvider } from "../src/shared/presentation/PresentationProvider";
 import { ApiClient, ApiError } from "../src/api/client";
 import type { Organization, Scenario, ScenarioCreate } from "../src/api/types";
 import { decode } from "../src/api/validation";
@@ -14,6 +16,9 @@ import { ScenarioLab } from "../src/features/scenarios/ScenarioLab";
 import factory from "./fixtures/factory.json";
 
 const org = factory.organization;
+function render(ui: ReactElement) {
+  return rtlRender(ui, { wrapper: PresentationProvider });
+}
 function scenario(): Scenario {
   return {
     id: "clone",
@@ -60,6 +65,9 @@ function request(): ScenarioCreate {
 }
 function client() {
   const result = new ApiClient();
+  vi.spyOn(result, "model").mockResolvedValue(
+    decode("ModelArtifactResponse", factory.model),
+  );
   vi.spyOn(result, "policies").mockResolvedValue({
     items: [],
     limit: 50,
@@ -105,6 +113,9 @@ function mount(
   );
 }
 function fill() {
+  fireEvent.click(
+    screen.getByText("Créer un scénario identique (5B-1)", { exact: true }),
+  );
   fireEvent.change(screen.getByLabelText("Modèle publié de référence"), {
     target: { value: factory.model.id },
   });

@@ -12,6 +12,10 @@ import type {
 } from "../../api/types";
 import { useLoad } from "../../shared/async";
 import { ErrorNotice, JsonView, Status } from "../../shared/ui";
+import { Skeleton } from "../../shared/design-system";
+import { usePresentation } from "../../shared/presentation/context";
+import { ScenarioReference } from "./ScenarioReference";
+import "../../styles/scenario-history.css";
 
 function useAlive() {
   const alive = useRef(true);
@@ -38,6 +42,7 @@ function PolicyEditor({
   model: Artifact;
   onCreated: () => void;
 }) {
+  const { mode } = usePresentation();
   const data = useLoad(
     async () => ({
       targets: await client.changeTargets(organization.id, model.id),
@@ -125,7 +130,7 @@ function PolicyEditor({
     }
   }
   if (data.loading)
-    return <p role="status">Chargement des cibles autorisables…</p>;
+    return <Skeleton label="Chargement des cibles autorisables…" />;
   if (!data.data) return <ErrorNotice message={data.error} />;
   return (
     <form
@@ -136,6 +141,7 @@ function PolicyEditor({
         void submit();
       }}
     >
+      <span className="eyebrow">ÉTAPE 2 · DÉFINIR LE PÉRIMÈTRE AUTORISÉ</span>
       <h3>Définir une politique de changement</h3>
       <p>
         Cette interface définit une règle par politique. Le responsable nommé
@@ -159,7 +165,9 @@ function PolicyEditor({
             <option value="">Choisir un paramètre ou une capacité</option>
             {data.data.targets.items.map((t, i) => (
               <option key={i} value={String(i)}>
-                {t.target.kind} · {t.target.path} · {t.unit}
+                {t.target.kind} ·{" "}
+                {t.target.resource_id || t.target.parameter_id} · {t.unit}
+                {mode === "expert" ? ` · ${t.target.path}` : ""}
               </option>
             ))}
           </select>
@@ -319,13 +327,16 @@ function ChangeForm({
   userId,
   policy,
   onCreated,
+  onLocked,
 }: {
   client: ApiClient;
   organization: Organization;
   userId: string;
   policy: ChangePolicy;
   onCreated: (id: string) => void;
+  onLocked: (locked: boolean) => void;
 }) {
+  const { mode } = usePresentation();
   const [key, setKey] = useState("");
   const [version, setVersion] = useState("");
   const [name, setName] = useState("");
@@ -338,10 +349,26 @@ function ChangeForm({
   const [done, setDone] = useState(false);
   const [error, setError] = useState<string>();
   const [preview, setPreview] = useState<ChangePreview>();
+  const [targetRevision, setTargetRevision] = useState(0);
+  const targets = useLoad(async () => {
+    const result = await client.changeTargets(
+      organization.id,
+      policy.document.source_model_version_id,
+    );
+    if (result.source_content_hash !== policy.document.source_content_hash)
+      throw new Error(
+        "Catalogue incompatible avec la référence de la politique.",
+      );
+    return result.items;
+  }, [client, organization.id, policy.id, policy.content_hash, targetRevision]);
   const alive = useAlive();
   const sending = useRef(false);
   const captured = useRef<ControlledCommit | null>(null);
   const locked = busy || !!preview || uncertain || done;
+  useEffect(() => {
+    onLocked(locked);
+  }, [locked, onLocked]);
+  useEffect(() => () => onLocked(false), [onLocked]);
   const rules = policy.document.rules.filter((r) =>
     r.allowed_user_ids.includes(userId),
   );
@@ -428,11 +455,31 @@ function ChangeForm({
     );
   return (
     <section className="panel" data-testid="controlled-form">
+      <span className="eyebrow" id="scenario-hypotheses">
+        ÉTAPE 4 · HYPOTHÈSES AUTORISÉES
+      </span>
       <h3>Créer un scénario sous politique</h3>
       <p>
         Référence : {policy.document.source_model_version_id} · politique{" "}
-        {policy.key} / {policy.version} · {policy.content_hash}
+        {policy.key} / {policy.version}
+        {mode === "expert" ? ` · ${policy.content_hash}` : ""}
       </p>
+      <p>
+        Seules les règles explicitement déléguées à votre identité sont
+        proposées. Le serveur revérifie les droits et les autorités à chaque
+        action.
+      </p>
+      {targets.loading && (
+        <Skeleton label="Lecture des valeurs de référence du catalogue…" />
+      )}
+      {targets.error && (
+        <div>
+          <ErrorNotice message={targets.error} />
+          <button type="button" onClick={() => setTargetRevision((n) => n + 1)}>
+            Réessayer le catalogue
+          </button>
+        </div>
+      )}
       <ErrorNotice message={error} />
       <form
         onSubmit={(e) => {
@@ -496,22 +543,37 @@ function ChangeForm({
             />
           </label>
           {rules.map((r) => (
-            <label key={r.id}>
-              Valeur proposée · {r.id} ({r.unit})
-              <input
-                aria-label={`Valeur proposée · ${r.id} (${r.unit})`}
-                inputMode="decimal"
-                value={values[r.id] || ""}
-                onChange={(e) =>
-                  setValues({ ...values, [r.id]: e.target.value })
-                }
-              />
-              <span>
+            <div className="scenario-target" key={r.id}>
+              <label>
+                Valeur proposée · {r.id} ({r.unit})
+                <input
+                  aria-label={`Valeur proposée · ${r.id} (${r.unit})`}
+                  inputMode="decimal"
+                  value={values[r.id] || ""}
+                  onChange={(e) =>
+                    setValues({ ...values, [r.id]: e.target.value })
+                  }
+                />
+              </label>
+              <p>
+                Valeur de référence :{" "}
+                <strong>
+                  {targets.data?.find(
+                    (t) => t.target.path === r.target.path && t.unit === r.unit,
+                  )?.value ?? "Non fournie"}{" "}
+                  {r.unit}
+                </strong>
+                .{" "}
+                {parent.trim()
+                  ? "La valeur héritée du parent sera confirmée par la prévisualisation serveur."
+                  : "Sans parent, les valeurs héritées proviennent de la référence."}
+              </p>
+              <p>
                 SET · {r.domain} · [{r.minimum} ; {r.maximum}] {r.unit} ·{" "}
-                {r.target.path} · responsable {r.owner_department} /{" "}
-                {r.owner_user_id}
-              </span>
-            </label>
+                {mode === "expert" ? `${r.target.path} · ` : ""}responsable{" "}
+                {r.owner_department} / {r.owner_user_id}
+              </p>
+            </div>
           ))}
           <p>
             Une valeur vide conserve la valeur héritée. Aucun chemin de
@@ -527,35 +589,67 @@ function ChangeForm({
       </form>
       {preview && (
         <section data-testid="change-preview">
+          <span className="eyebrow">ÉTAPE 5 · PRÉVISUALISATION SERVEUR</span>
           <h4>Prévisualisation validée par le serveur</h4>
-          <div className="table-scroll">
-            <table>
-              <thead>
-                <tr>
-                  <th>Règle / unité</th>
-                  <th>Référence</th>
-                  <th>Valeur précédente</th>
-                  <th>Proposition</th>
-                  <th>Source / auteur</th>
-                </tr>
-              </thead>
-              <tbody>
-                {preview.changes.map((c) => (
-                  <tr key={c.rule_id}>
-                    <td>
-                      {c.rule_id} / {c.unit}
-                    </td>
-                    <td>{c.original_value}</td>
-                    <td>{c.previous_value}</td>
-                    <td>{c.proposed_value}</td>
-                    <td>
-                      {c.source} / {c.changed_by}
-                    </td>
+          {mode === "business" ? (
+            <div className="scenario-preview-grid">
+              {preview.changes.map((c) => (
+                <article className="scenario-target" key={c.rule_id}>
+                  <h4>
+                    {c.target.resource_id || c.target.parameter_id} ·{" "}
+                    {c.rule_id}
+                  </h4>
+                  <dl>
+                    <dt>Valeur de référence</dt>
+                    <dd>
+                      {c.original_value} {c.unit}
+                    </dd>
+                    <dt>Valeur précédente héritée</dt>
+                    <dd>
+                      {c.previous_value} {c.unit}
+                    </dd>
+                    <dt>Valeur proposée</dt>
+                    <dd>
+                      {c.proposed_value} {c.unit}
+                    </dd>
+                    <dt>Provenance</dt>
+                    <dd>
+                      {c.source} · auteur {c.changed_by}
+                    </dd>
+                  </dl>
+                </article>
+              ))}
+            </div>
+          ) : (
+            <div className="table-scroll">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Règle / unité</th>
+                    <th>Référence</th>
+                    <th>Valeur précédente</th>
+                    <th>Proposition</th>
+                    <th>Source / auteur</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody>
+                  {preview.changes.map((c) => (
+                    <tr key={c.rule_id}>
+                      <td>
+                        {c.rule_id} / {c.unit}
+                      </td>
+                      <td>{c.original_value}</td>
+                      <td>{c.previous_value}</td>
+                      <td>{c.proposed_value}</td>
+                      <td>
+                        {c.source} / {c.changed_by}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
           <p>
             Contraintes concernées :{" "}
             {preview.affected_constraint_ids.join(", ") || "aucune"}. Objectif
@@ -566,7 +660,12 @@ function ChangeForm({
             Nouveau snapshot et nouveaux artefacts DRAFT. Publier le graphe,
             puis le modèle avant d’utiliser le worker existant.
           </p>
-          <p>Empreinte de prévisualisation : {preview.preview_hash}</p>
+          {mode === "expert" && (
+            <p>Empreinte de prévisualisation : {preview.preview_hash}</p>
+          )}
+          <span className="eyebrow">
+            ÉTAPE 6 · CONFIRMER LA CRÉATION DES BROUILLONS
+          </span>
           {uncertain && (
             <p className="notice">
               Réception incertaine : réessayez exactement la même création.
@@ -607,12 +706,16 @@ export function ControlledScenarios({
   models: Artifact[];
   onCreated: (id: string) => void;
 }) {
+  const { mode } = usePresentation();
   const [source, setSource] = useState("");
   const [policyId, setPolicy] = useState("");
   const [revision, setRevision] = useState(0);
   const [offset, setOffset] = useState(0);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string>();
+  const [formLocked, setFormLocked] = useState(false);
+  const [capturedPolicy, setCapturedPolicy] = useState<ChangePolicy>();
+  const [editorVisited, setEditorVisited] = useState(false);
   const alive = useAlive();
   const sending = useRef(false);
   const loaded = useLoad(
@@ -620,15 +723,22 @@ export function ControlledScenarios({
     [client, organization.id, offset, revision],
   );
   const policies = loaded.data?.items ?? [];
-  const selected = policies.find(
-    (p) => p.id === policyId && p.usable && p.state === "PUBLISHED",
+  const selected = formLocked
+    ? capturedPolicy
+    : policies.find(
+        (p) => p.id === policyId && p.usable && p.state === "PUBLISHED",
+      );
+  const model = models.find(
+    (m) =>
+      m.id === source &&
+      m.state === "PUBLISHED" &&
+      m.organization_id === organization.id,
   );
-  const model = models.find((m) => m.id === source && m.state === "PUBLISHED");
   async function action(
     policy: ChangePolicy,
     kind: "owner-approval" | "publish",
   ) {
-    if (sending.current) return;
+    if (sending.current || formLocked) return;
     sending.current = true;
     setBusy(true);
     setError(undefined);
@@ -643,29 +753,129 @@ export function ControlledScenarios({
     }
   }
   return (
-    <section data-testid="controlled-studio">
+    <section data-testid="controlled-studio" className="scenario-assistant">
       <h2>Hypothèses contrôlées</h2>
       <p>
         Les politiques explicites autorisent des changements de valeurs. La
         référence et les versions antérieures restent immuables.
       </p>
+      <section className="panel" id="scenario-reference">
+        <span className="eyebrow">ÉTAPE 1 · RÉFÉRENCE PUBLIÉE</span>
+        <label>
+          Référence de la politique
+          <select
+            aria-label="Référence de la politique"
+            disabled={formLocked}
+            value={source}
+            onChange={(e) => {
+              setSource(e.target.value);
+              setPolicy("");
+            }}
+          >
+            <option value="">Choisir un modèle publié</option>
+            {models
+              .filter(
+                (m) =>
+                  m.state === "PUBLISHED" &&
+                  m.organization_id === organization.id,
+              )
+              .map((m) => (
+                <option key={m.id} value={m.id}>
+                  {m.key} · {m.version}
+                  {mode === "expert" ? ` · ${m.id}` : ""}
+                </option>
+              ))}
+          </select>
+        </label>
+        {model && (
+          <ScenarioReference
+            client={client}
+            org={organization.id}
+            id={model.id}
+            expectedHash={model.content_hash}
+          />
+        )}
+      </section>
       {canBuild(organization.role) && (
-        <details>
-          <summary>Nouvelle politique de changement</summary>
+        <section
+          className="panel scenario-choice"
+          aria-label="Politique et délégation"
+        >
+          <span className="eyebrow">
+            ÉTAPES 2 ET 3 · POLITIQUE ET AUTORITÉS
+          </span>
           <label>
-            Référence de la politique
-            <select value={source} onChange={(e) => setSource(e.target.value)}>
-              <option value="">Choisir un modèle publié</option>
-              {models
-                .filter((m) => m.state === "PUBLISHED")
-                .map((m) => (
-                  <option key={m.id} value={m.id}>
-                    {m.key} · {m.version} · {m.id}
+            Politique publiée à utiliser
+            <select
+              aria-label="Politique publiée à utiliser"
+              disabled={formLocked || !source}
+              value={policyId}
+              onChange={(e) => {
+                setPolicy(e.target.value);
+                setCapturedPolicy(
+                  policies.find((p) => p.id === e.target.value),
+                );
+              }}
+            >
+              <option value="">
+                Choisir une politique publiée et utilisable
+              </option>
+              {policies
+                .filter(
+                  (p) =>
+                    p.state === "PUBLISHED" &&
+                    p.usable &&
+                    p.document.source_model_version_id === source,
+                )
+                .map((p) => (
+                  <option key={p.id} value={p.id}>
+                    {p.document.name} · {p.key} / {p.version}
                   </option>
                 ))}
             </select>
           </label>
-          {model && (
+          {selected && (
+            <>
+              <p>
+                Publieur enregistré : {selected.published_by || "Non fourni"}.
+                Accord(s) OWNER_ACK :{" "}
+                {selected.approvals.map((a) => a.user_id).join(", ") ||
+                  "Aucun accord enregistré"}
+                .
+              </p>
+              <p>
+                Vos règles explicitement déléguées :{" "}
+                {selected.document.rules
+                  .filter((r) => r.allowed_user_ids.includes(userId))
+                  .map((r) => r.id)
+                  .join(", ") || "Aucune"}
+                . Être créateur ou ADMIN ne remplace pas une délégation.
+              </p>
+              <ChangeForm
+                key={selected.id}
+                client={client}
+                organization={organization}
+                userId={userId}
+                policy={selected}
+                onCreated={onCreated}
+                onLocked={setFormLocked}
+              />
+            </>
+          )}
+        </section>
+      )}
+      {canBuild(organization.role) && (
+        <details
+          className="panel scenario-policy-editor"
+          onToggle={(event) => {
+            if (event.currentTarget.open) setEditorVisited(true);
+          }}
+        >
+          <summary>Nouvelle politique de changement</summary>
+          {!model && (
+            <p>Choisissez d’abord une référence publiée à l’étape 1.</p>
+          )}
+          {model && editorVisited && (
             <PolicyEditor
               key={model.id}
               client={client}
@@ -676,23 +886,27 @@ export function ControlledScenarios({
           )}
         </details>
       )}
-      <h3>Politiques et accords</h3>
-      <button disabled={busy} onClick={() => setRevision((r) => r + 1)}>
+      <h3 id="scenario-policies">Étapes 2 et 3 · Politiques et accords</h3>
+      <button
+        disabled={busy || formLocked}
+        onClick={() => setRevision((r) => r + 1)}
+      >
         Actualiser les politiques
       </button>
       <ErrorNotice message={error || loaded.error} />
       {loaded.loading ? (
-        <p role="status">Chargement des politiques…</p>
+        <Skeleton label="Chargement des politiques…" />
       ) : (
         policies.map((p) => (
-          <article className="panel" key={p.id}>
+          <article className="panel scenario-policy-card" key={p.id}>
             <h4>
               {p.document.name} · {p.key} / {p.version}
             </h4>
             <Status value={p.state} />
             <p>
               Auteur {p.created_by} · publication{" "}
-              {p.published_by || "en attente"} · empreinte {p.content_hash}
+              {p.published_by || "en attente"}
+              {mode === "expert" ? ` · empreinte ${p.content_hash}` : ""}
             </p>
             <p>
               Accords enregistrés :{" "}
@@ -700,12 +914,32 @@ export function ControlledScenarios({
               Disponibilité :{" "}
               {p.usable ? "utilisable" : p.unavailability_reasons.join(", ")}.
             </p>
+            <ul
+              className="scenario-ack-list"
+              aria-label="Accords OWNER_ACK enregistrés"
+            >
+              {p.approvals.map((a) => (
+                <li key={a.user_id}>
+                  OWNER_ACK · {a.user_id} ·{" "}
+                  {new Date(a.created_at * 1000).toLocaleString("fr-FR")}
+                </li>
+              ))}
+            </ul>
+            <p>
+              « Utilisable » décrit les autorités de la politique. Cela
+              n’accorde aucun droit universel : vos délégations et votre rôle
+              restent obligatoires.
+            </p>
             <ul>
               {p.document.rules.map((rule) => (
                 <li key={rule.id}>
-                  {rule.id} : SET {rule.target.path} · {rule.domain} · [
-                  {rule.minimum} ; {rule.maximum}] {rule.unit} · responsable{" "}
-                  {rule.owner_department} / {rule.owner_user_id} · délégataires{" "}
+                  {rule.id} : SET{" "}
+                  {mode === "expert"
+                    ? rule.target.path
+                    : rule.target.resource_id || rule.target.parameter_id}{" "}
+                  · {rule.domain} · [{rule.minimum} ; {rule.maximum}]{" "}
+                  {rule.unit} · responsable {rule.owner_department} /{" "}
+                  {rule.owner_user_id} · délégataires{" "}
                   {rule.allowed_user_ids.join(", ")} · accord du responsable et
                   publication obligatoires.
                 </li>
@@ -713,10 +947,12 @@ export function ControlledScenarios({
             </ul>
             {p.state === "DRAFT" && (
               <div className="actions">
-                {p.document.rules.some((r) => r.owner_user_id === userId) &&
+                {(canBuild(organization.role) ||
+                  canPublish(organization.role)) &&
+                  p.document.rules.some((r) => r.owner_user_id === userId) &&
                   !p.approvals.some((a) => a.user_id === userId) && (
                     <button
-                      disabled={busy}
+                      disabled={busy || formLocked}
                       onClick={() => void action(p, "owner-approval")}
                     >
                       Donner mon accord de responsable
@@ -724,7 +960,13 @@ export function ControlledScenarios({
                   )}
                 {canPublish(organization.role) && (
                   <button
-                    disabled={busy}
+                    disabled={
+                      busy ||
+                      formLocked ||
+                      !p.document.rules.every((r) =>
+                        p.approvals.some((a) => a.user_id === r.owner_user_id),
+                      )
+                    }
                     onClick={() => void action(p, "publish")}
                   >
                     Publier la politique
@@ -732,56 +974,29 @@ export function ControlledScenarios({
                 )}
               </div>
             )}
-            <JsonView title="Règles et provenance de la politique" value={p} />
+            {mode === "expert" && (
+              <JsonView
+                title="Règles et provenance de la politique"
+                value={p}
+              />
+            )}
           </article>
         ))
       )}
       <div className="actions">
         <button
-          disabled={!offset}
+          disabled={!offset || formLocked}
           onClick={() => setOffset(Math.max(0, offset - 50))}
         >
           Politiques précédentes
         </button>
         <button
-          disabled={policies.length < 50}
+          disabled={policies.length < 50 || formLocked}
           onClick={() => setOffset(offset + 50)}
         >
           Politiques suivantes
         </button>
       </div>
-      {canBuild(organization.role) && (
-        <>
-          <label>
-            Politique publiée à utiliser
-            <select
-              value={policyId}
-              onChange={(e) => setPolicy(e.target.value)}
-            >
-              <option value="">
-                Choisir une politique publiée et utilisable
-              </option>
-              {policies
-                .filter((p) => p.state === "PUBLISHED" && p.usable)
-                .map((p) => (
-                  <option key={p.id} value={p.id}>
-                    {p.document.name} · {p.key} / {p.version}
-                  </option>
-                ))}
-            </select>
-          </label>
-          {selected && (
-            <ChangeForm
-              key={selected.id}
-              client={client}
-              organization={organization}
-              userId={userId}
-              policy={selected}
-              onCreated={onCreated}
-            />
-          )}
-        </>
-      )}
     </section>
   );
 }

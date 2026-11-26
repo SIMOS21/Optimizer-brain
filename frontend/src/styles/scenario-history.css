@@ -1,0 +1,208 @@
+.scenario-lab-v2,
+.scenario-assistant,
+.history-v2 {
+  min-width: 0;
+}
+.scenario-step-map {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  padding: 0;
+  margin: 24px 0;
+  list-style: none;
+}
+.scenario-step-map li {
+  background: var(--surface-card);
+  border: 1px solid var(--border-muted);
+  border-radius: 8px;
+  padding: 14px;
+  color: var(--brand-navy);
+  font-size: 13px;
+  font-weight: 650;
+}
+.scenario-step-map li:last-child {
+  grid-column: span 2;
+}
+.scenario-lab-v2 select,
+.scenario-assistant select,
+.history-v2 select {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+}
+.scenario-assistant fieldset {
+  min-width: 0;
+  border: 1px solid var(--border-muted);
+  border-radius: 8px;
+  padding: 18px;
+  margin: 20px 0;
+}
+.scenario-assistant label,
+.scenario-assistant p,
+.scenario-lab-v2 dd,
+.scenario-assistant li {
+  overflow-wrap: anywhere;
+}
+.scenario-assistant input:not([type="checkbox"]),
+.scenario-assistant textarea {
+  max-width: 100%;
+  width: 100%;
+  min-width: 0;
+}
+.scenario-assistant label > input[type="checkbox"] {
+  width: auto;
+}
+.scenario-reference,
+.scenario-target {
+  border: 1px solid var(--border-muted);
+  border-left: 3px solid var(--brand-teal);
+  border-radius: 10px;
+  padding: 18px;
+  margin: 18px 0;
+  background: var(--surface-soft);
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+.scenario-reference h3,
+.scenario-target h3,
+.scenario-target h4 {
+  margin-top: 0;
+  font-size: 17px;
+}
+.scenario-reference p,
+.scenario-target p {
+  font-size: 14px;
+}
+.scenario-reference small {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+.scenario-preview-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
+  gap: 16px;
+}
+.scenario-preview-grid dt {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-top: 14px;
+}
+.scenario-preview-grid dd {
+  margin: 4px 0 12px;
+  font-size: 16px;
+  font-weight: 650;
+}
+.scenario-lab-v2 summary,
+.scenario-assistant summary,
+.history-v2 summary {
+  font-size: 15px;
+  font-weight: 650;
+  cursor: pointer;
+  color: var(--brand-teal-strong);
+  padding-block: 8px;
+}
+.scenario-clone > form {
+  border: 0;
+  padding-inline: 0;
+}
+.scenario-ack-list {
+  padding-left: 20px;
+  color: var(--brand-teal-strong);
+  font-size: 14px;
+}
+.scenario-policy-card > ul {
+  line-height: 1.7;
+}
+.scenario-publication-steps {
+  padding-left: 24px;
+  line-height: 1.8;
+}
+.scenario-history-list,
+.history-results {
+  display: grid;
+  gap: 16px;
+  margin: 24px 0;
+}
+.scenario-history-list article,
+.history-card {
+  background: var(--surface-card);
+  padding: 20px;
+  border: 1px solid var(--border-muted);
+  border-radius: 10px;
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+.history-card header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.history-card h2 {
+  font-size: 18px;
+  margin: 0;
+}
+.history-card p {
+  font-size: 14px;
+}
+.history-card small {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+.history-objective {
+  color: var(--brand-teal-strong);
+  font-size: 18px;
+}
+.history-filters {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+.history-filters label,
+.history-filters input {
+  min-width: 0;
+  width: 100%;
+}
+.history-filters p {
+  grid-column: 1 / -1;
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin: 0;
+}
+.history-v2 .actions {
+  align-items: center;
+}
+.scenario-lab-v2 :focus-visible,
+.history-v2 :focus-visible {
+  outline: 3px solid var(--focus-ring);
+  outline-offset: 3px;
+}
+@media (max-width: 800px) {
+  .scenario-step-map {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 500px) {
+  .history-filters {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .scenario-step-map li {
+    font-size: 12px;
+    padding: 10px;
+  }
+  .scenario-assistant fieldset,
+  .scenario-reference,
+  .scenario-target,
+  .history-card {
+    padding: 14px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .scenario-lab-v2 *,
+  .history-v2 * {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}

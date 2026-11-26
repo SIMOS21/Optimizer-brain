@@ -67,6 +67,9 @@ for (const [sector, fixture, objective] of [
     await selectOrganization(page, fixture.organization.id);
     await page.getByRole("link", { name: "Scénarios", exact: true }).click();
     await page
+      .getByText("Créer un scénario identique (5B-1)", { exact: true })
+      .click();
+    await page
       .getByLabel("Modèle publié de référence")
       .selectOption(fixture.model.id);
     await page
@@ -113,7 +116,10 @@ for (const [sector, fixture, objective] of [
     await page
       .getByRole("button", { name: "Lancer l’optimisation", exact: true })
       .click();
-    await page.getByRole("dialog", { name: "Confirmer le lancement", exact: true }).getByRole("button", { name: "Confirmer le lancement", exact: true }).click();
+    await page
+      .getByRole("dialog", { name: "Confirmer le lancement", exact: true })
+      .getByRole("button", { name: "Confirmer le lancement", exact: true })
+      .click();
     const worker = startWorker();
     try {
       await expect(page.getByTestId("job-state")).toHaveText("SUCCEEDED", {
