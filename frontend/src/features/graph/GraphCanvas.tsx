@@ -227,20 +227,28 @@ function GraphSession({
     });
   }
   function reveal(next: NonNullable<GraphSelection>) {
-    if (next.kind === "node" && !visible.has(next.id)) {
+    const edge =
+      next.kind === "edge"
+        ? graph.edges.find((item) => item.id === next.id)
+        : undefined;
+    const ids =
+      next.kind === "node"
+        ? [next.id]
+        : edge
+          ? [edge.source_id, edge.target_id]
+          : [];
+    if (ids.some((id) => !visible.has(id))) {
       setSearch("");
       setDepartment("");
     }
     choose(next);
-    const node =
-      next.kind === "node"
-        ? nodes.find((item) => item.id === next.id)
-        : undefined;
-    if (node)
+    const targets = nodes.filter((item) => ids.includes(item.id));
+    if (targets.length)
       void flow?.fitView({
-        nodes: [node],
+        nodes: targets,
+        includeHiddenNodes: true,
         padding: 0.5,
-        minZoom: 0.7,
+        minZoom: 0.02,
         maxZoom: 1,
         duration: 0,
       });

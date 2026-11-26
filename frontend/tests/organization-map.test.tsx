@@ -168,6 +168,36 @@ it("provides an explicit no-results state and restores all stored elements", () 
   expect(container.querySelectorAll(".react-flow__node")).toHaveLength(7);
 });
 
+it("reveals both endpoints when inspecting a relation outside the search perimeter", async () => {
+  const doc = decode("GraphArtifactResponse", factory.graph).document;
+  const edge = doc.graph.edges.find((item) => item.type === "DEPENDS_ON")!;
+  const target = doc.graph.departments.find(
+    (node) => node.id === edge.target_id,
+  )!;
+  const source = doc.graph.departments.find(
+    (node) => node.id === edge.source_id,
+  )!;
+  const { container } = render(<GraphCanvas document={doc} />);
+  fireEvent.change(screen.getByLabelText("Rechercher dans la carte"), {
+    target: { value: target.name },
+  });
+  fireEvent.click(
+    container.querySelector(`.react-flow__node[data-id="${target.id}"]`)!,
+  );
+  fireEvent.click(
+    within(container.querySelector(".inspector") as HTMLElement).getByRole(
+      "button",
+      { name: new RegExp(`${source.name} → ${target.name}`) },
+    ),
+  );
+  expect(screen.getByLabelText("Rechercher dans la carte")).toHaveValue("");
+  await waitFor(() =>
+    expect(
+      container.querySelector(`.react-flow__edge[data-id="${edge.id}"]`),
+    ).toBeInTheDocument(),
+  );
+});
+
 it("has separate dependency/use semantics, French search and an honest visual department perimeter", () => {
   const doc = decode("GraphArtifactResponse", factory.graph).document;
   const graph = doc.graph;

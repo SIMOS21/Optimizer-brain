@@ -40,7 +40,10 @@ async function captureMap(page: Page, name: string) {
   const bounds = await page.locator(".organization-map-shell").boundingBox();
   if (!bounds) throw new Error("Map bounds unavailable");
   try {
-    await page.setViewportSize({ width: viewport.width, height: Math.max(viewport.height, Math.ceil(bounds.y + bounds.height)) });
+    await page.setViewportSize({
+      width: viewport.width,
+      height: Math.max(viewport.height, Math.ceil(bounds.y + bounds.height)),
+    });
     await page.evaluate(() => window.scrollTo(0, 0));
     await page.screenshot({ path: `${screenshots}/${name}.png` });
   } finally {
@@ -143,6 +146,27 @@ for (const [sector, fixture] of [
     await expect(page.locator(".react-flow__edge")).toHaveCount(
       graph.edges.length,
     );
+    const dependency = graph.edges.find((edge) => edge.type === "DEPENDS_ON");
+    if (dependency) {
+      const source = graph.departments.find(
+        (node) => node.id === dependency.source_id,
+      )!;
+      const target = graph.departments.find(
+        (node) => node.id === dependency.target_id,
+      )!;
+      await page.getByLabel("Rechercher dans la carte").fill(target.name);
+      await page.locator(`.react-flow__node[data-id="${target.id}"]`).focus();
+      await page.keyboard.press("Enter");
+      await inspector
+        .getByRole("button", {
+          name: new RegExp(`${source.name} → ${target.name}`),
+        })
+        .click();
+      await expect(page.getByLabel("Rechercher dans la carte")).toHaveValue("");
+      await expect(
+        page.locator(`.react-flow__edge[data-id="${dependency.id}"]`),
+      ).toBeVisible();
+    }
     expect(mutations).toEqual([]);
     await captureMap(page, `ux-f3-${sector}-1440`);
   });

@@ -64,18 +64,19 @@ Windows, Python 3.14.3, Node 24.13.0, PostgreSQL 17, Chromium Playwright.
 | Contrôle | Résultat local |
 |---|---|
 | TypeScript / build Vite / ESLint | Réussis |
-| Vitest complet | **208 réussites, 15 fichiers** |
+| Vitest complet | **209 réussites, 15 fichiers** |
 | pytest complet, PostgreSQL réel | **478 réussites, 8 variantes SQLite ignorées**, 209 s |
 | Ruff check et format du périmètre CI | Réussis, 67 fichiers formatés contrôlés |
 | mypy sans arguments, périmètre configuré du projet | Réussi, 46 fichiers source |
 | Playwright complet, API/PostgreSQL/worker réels | **50 réussites**, dont les **42 parcours préexistants**, 2,6 min |
-| Huit parcours carte rejoués après espacement final | **8 réussites** |
+| Huit parcours carte rejoués après les corrections finales | **8 réussites** |
 | Mesures après sur snapshots identiques | 9 échantillons, tailles 7/50/200, empreintes concordantes |
 
-Quatorze nouveaux tests Vitest : dix tests de projection/interactions et quatre
+Quinze nouveaux tests Vitest : onze tests de projection/interactions et quatre
 de chargement. Ils couvrent les deux secteurs, les relations exactes, l’absence
 d’arêtes dérivées, les namespaces nœud/arête, les décimaux exacts, les filtres,
-le mode expert sans reprojection, le reset de snapshot, le clavier, les états
+le mode expert sans reprojection, le reset de snapshot, le dévoilement d’une
+relation filtrée avec ses deux extrémités, le clavier, les états
 vides, la sélection publié/brouillon, les réponses tardives et le retry.
 Le test du dernier plan vérifié attend désormais la fin de son chargement
 asynchrone ; son assertion de valeur est conservée. Aucun code dashboard changé.
@@ -87,6 +88,10 @@ existants des quatre rôles ADMIN/BUILDER/APPROVER/VIEWER sont conservés.
 Les assertions techniques historiques activent explicitement le mode expert.
 Un contour absent sur le titre après transfert programmatique du focus a été
 reproduit puis corrigé ; les cartes enrichies ont aussi reçu plus d’espace vertical.
+Un autre test a reproduit une relation sélectionnée dont une extrémité restait
+masquée par la recherche. La navigation depuis la fiche efface désormais les
+filtres concernés et ajuste la vue sur les deux extrémités enregistrées ; le
+parcours usine réel contrôle ce cas. Aucun objet du snapshot n’est changé.
 
 Commandes :
 
@@ -124,6 +129,8 @@ et doivent être rapprochés du SHA de la PR, pas d’une exécution antérieure
 Trois contextes neufs par taille, React développement avec Profiler, largeur 1440,
 hauteur 1040, mouvement réduit. Projection Node : 30 appels après 10 échauffements.
 Même machine, mêmes documents persistés, mêmes empreintes avant/après.
+La série après correspond au rendu `6ec3d28`, avant le correctif de navigation
+depuis une fiche filtrée ; ce chemin n’est pas exercé par le benchmark clavier.
 
 Médianes en millisecondes, avant → après :
 
