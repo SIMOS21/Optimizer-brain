@@ -49,6 +49,7 @@ from .schemas import (
     GraphArtifactResponse,
     ModelArtifactResponse,
     RunArtifactResponse,
+    ComparisonSelection,
     AuditResponse,
     DepartmentCreate,
     DepartmentResponse,
@@ -582,10 +583,11 @@ def scenario_comparison(
     organization_id: str,
     session: DB,
     actor: Actor,
-    baseline_run_id: Annotated[str | None, Query(min_length=1, max_length=100)] = None,
-    candidate_run_id: Annotated[str | None, Query(min_length=1, max_length=100)] = None,
+    selection: Annotated[ComparisonSelection, Query()],
 ) -> object:
-    return compare_artifacts(session, actor, organization_id, baseline_run_id, candidate_run_id)
+    return compare_artifacts(
+        session, actor, organization_id, selection.baseline_run_id, selection.candidate_run_id
+    )
 
 
 @router.post(

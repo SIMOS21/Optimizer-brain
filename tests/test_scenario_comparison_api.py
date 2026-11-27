@@ -145,6 +145,17 @@ def test_missing_inputs_and_scenario_without_a_run(platform):
     assert "posséder un run" in response.json()["detail"]
 
 
+def test_comparison_query_rejects_unknown_and_invalid_fields(platform):
+    p = platform
+    for params in (
+        {"economic_gain": "100"},
+        {"baseline_run_id": ""},
+        {"candidate_run_id": "x" * 101},
+    ):
+        response = p.request("GET", p.base + "/scenario-comparisons", params=params)
+        assert response.status_code == 422
+
+
 def test_authentication_cross_tenant_rls_and_revoked_reader(platform):
     p = platform
     baseline = stored(p, p.model())

@@ -38,6 +38,8 @@ autorité de création, de publication ou d’exécution n’est accordée par u
 L’API GET `/api/v1/organizations/{org}/scenario-comparisons` reçoit deux paramètres
 `baseline_run_id` et `candidate_run_id`. L’absence d’un paramètre donne un rapport
 INCOMPLETE ; un scénario dépourvu de run ne peut pas être utilisé comme run.
+Le modèle Pydantic de sélection interdit les paramètres inconnus et les identifiants
+vides ou dépassant 100 caractères ; ces demandes sont rejetées en 422.
 Les contrôles historiques échouent en 409, jamais en résultat favorable inventé.
 Le contrat existant de réponse sans cache est conservé.
 
@@ -112,6 +114,22 @@ scénarios — gain non démontré. » Contraintes saturées et tolérances sont
 mesures de plan, sans prix d’ombre, causalité ou bénéfice supposé.
 
 ## Limites
+
+L’interface est une route chargée à la demande :
+`/organizations/{org}/history/compare`, accessible depuis History et Scenario Lab.
+Elle garde sélection explicite, états vides/erreurs, répétition de lecture et
+liens vers les modèles, scénarios et résultats complets. Le mode expert expose
+les empreintes, tolérances, bornes et gaps conservés. Le client contrôle tenant,
+identités et cohérence des indicateurs de vérification avant affichage. `useLoad`
+et le remontage par tenant effacent les données précédentes et ignorent les
+réponses tardives. Aucun résultat, pourcentage, marge ou choix de baseline n’est
+calculé ou déduit dans React ; le serveur reste l’autorité mathématique.
+
+Les tableaux présentent les données exactes ; aucun graphe approximatif n’est
+introduit pour des fractions rationnelles. À 390/768 px, les plans sont empilés
+et les tableaux peuvent défiler horizontalement dans une région accessible au
+clavier. Le mode expert ne donne aucun droit supplémentaire et ne déclenche
+aucune lecture additionnelle de comparaison.
 
 Cette règle conservatrice peut refuser des modèles mathématiquement équivalents
 qui n’ont pas de filiation reconnue. Une future extension de comparabilité devra

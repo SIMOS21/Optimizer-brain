@@ -1,0 +1,374 @@
+{
+  "schema_version": "5B.3",
+  "algorithm_version": "verified-comparison-1",
+  "organization_id": "c87775c3-505b-42d9-a914-1a99717e1a72",
+  "baseline_run_id": "033d7710-c62d-42db-bd86-58a7e03e37e4",
+  "candidate_run_id": "dc034593-52ce-46da-8795-31bb82bf387e",
+  "baseline": {
+    "run_id": "033d7710-c62d-42db-bd86-58a7e03e37e4",
+    "organization_id": "c87775c3-505b-42d9-a914-1a99717e1a72",
+    "content_hash": "ed8f4aabbb7856ec079218c75243a031b0381bcb5d027e7893c29f93addb79f2",
+    "created_at": 1795457909,
+    "created_by": "9b19c170-ad90-49cd-af13-444618e490c8",
+    "started_at": "2026-11-23T18:18:29.028419+00:00",
+    "model_version_id": "37aade4c-c984-49b7-931d-e83ca2f71be7",
+    "model_id": "course_selection",
+    "model_name": "Sélection synthétique de cours",
+    "model_version": "1",
+    "model_content_hash": "436743547365ae8c39aa1c80dd263ab536c0559c561f3b909b140fc19e7847f8",
+    "model_hash": "309b55d1d67a09260b66e45632e84e78bbfd3cf356031530360364b8181bbbf9",
+    "manifest_hash": "8f3976fe2726893e454490fa5feccb72e544c51da96dce435ebbb6d00b431822",
+    "graph_snapshot_id": "bfc8d95d-3f5d-4148-b720-17e2eeaabf56",
+    "graph_content_hash": "9f585dff7290f063dadbb105b87bbeaae1fe7ca7aeeff38e2efaa91c222377d3",
+    "data_snapshot_id": "synthetic_university_v1",
+    "reference_model_version_id": "37aade4c-c984-49b7-931d-e83ca2f71be7",
+    "reference_content_hash": "436743547365ae8c39aa1c80dd263ab536c0559c561f3b909b140fc19e7847f8",
+    "scenario_id": "base",
+    "scenario_version_id": null,
+    "scenario_content_hash": null,
+    "scenario_name": null,
+    "assumptions": [],
+    "public_status": "OPTIMAL",
+    "native_status": "OPTIMAL",
+    "verified_plan": true,
+    "verification_issues": [],
+    "objective_id": "synthetic_coverage",
+    "objective_sense": "MAX",
+    "objective_unit": "unit",
+    "objective_value": "17",
+    "metric_fingerprint": "192c352358c123d41389aa0ba5b1dd826499073304478f06db7f53b0ab5f3261",
+    "verification": {
+      "valid": true,
+      "plan_feasible": true,
+      "objective_value": "17",
+      "primal_residual_max": "0",
+      "integrality_residual_max": "0",
+      "arithmetic": "exact_rationals_of_binary64_values",
+      "settings": {
+        "bound_tolerance": "1E-7",
+        "constraint_tolerance": "1E-7",
+        "integrality_tolerance": "1E-7",
+        "objective_absolute_tolerance": "0.000001",
+        "objective_relative_tolerance": "1E-9"
+      }
+    },
+    "native_evidence": {
+      "solver_name": "highs",
+      "solver_version": "1.8.0",
+      "interface_name": "scipy.optimize.milp",
+      "interface_version": "1.17.0",
+      "solver_status_raw": 0,
+      "termination_reason": "optimal",
+      "solver_options": {
+        "disp": false,
+        "mip_rel_gap": 0.0,
+        "presolve": true,
+        "time_limit": 20.0
+      },
+      "backend_defaults": {
+        "dual_feasibility_tolerance": 1e-07,
+        "infinite_bound": 1e+20,
+        "infinite_cost": 1e+20,
+        "large_matrix_value": 1000000000000000.0,
+        "mip_abs_gap": 1e-06,
+        "mip_feasibility_tolerance": 1e-06,
+        "primal_feasibility_tolerance": 1e-07,
+        "small_matrix_value": 1e-09
+      },
+      "best_bound": 17.0,
+      "absolute_gap": "0",
+      "relative_gap": 0.0,
+      "gap_scope": "binary64_backend_model",
+      "certificate_scope": "solver_tolerances",
+      "optimality_label": "optimal à tolérance près (modèle binary64, sans certificat rationnel strict)",
+      "conversion_report": {
+        "converted_count": 21,
+        "max_absolute_error": "0",
+        "max_relative_error": "0",
+        "policy": "binary64; abs(value)<=1e12; nonzero coefficients>1e-9; relative conversion error<=1e-12",
+        "rounded_count": 0
+      },
+      "warnings": []
+    }
+  },
+  "candidate": {
+    "run_id": "dc034593-52ce-46da-8795-31bb82bf387e",
+    "organization_id": "c87775c3-505b-42d9-a914-1a99717e1a72",
+    "content_hash": "9816a6089d47cf1aa4da1ce03f50fe5b50b15843186ff498195713fabffb369b",
+    "created_at": 1795456070,
+    "created_by": "9b19c170-ad90-49cd-af13-444618e490c8",
+    "started_at": "2026-11-23T17:47:50.487836+00:00",
+    "model_version_id": "3a75c868-e9ab-4487-bcb9-e67fccc86d09",
+    "model_id": "course_selection",
+    "model_name": "Sélection synthétique de cours",
+    "model_version": "scenario_f558c881b64c47219c1c98ce2c28682e",
+    "model_content_hash": "3a2c70b0635f174c56bcbab71450c72648637c7bc51420c5853e976d6b56bfe7",
+    "model_hash": "72c54769452ae3f980ef9267e72184349378d5699524e5a6b0182fff5d62877f",
+    "manifest_hash": "b8cfd88ed2944eb0f6c42b55965bdd549cf97e8d805314d7beb986ac6b1c0007",
+    "graph_snapshot_id": "cad5e96c-c6fd-4353-ac70-4768a5d49899",
+    "graph_content_hash": "5f82b27b101a53080e3ea3436d0124012b4a0336addd2132ae53264a65336b97",
+    "data_snapshot_id": "data_scenario_f558c881b64c47219c1c98ce2c28682e",
+    "reference_model_version_id": "37aade4c-c984-49b7-931d-e83ca2f71be7",
+    "reference_content_hash": "436743547365ae8c39aa1c80dd263ab536c0559c561f3b909b140fc19e7847f8",
+    "scenario_id": "scenario_f558c881b64c47219c1c98ce2c28682e",
+    "scenario_version_id": "f558c881-b64c-4721-9c1c-98ce2c28682e",
+    "scenario_content_hash": "f8f03728ea6976cddffd91ae000975f9fab7d6a303bef25942d6cded423480ff",
+    "scenario_name": "Controlled university",
+    "assumptions": [
+      {
+        "changed_by": "9b19c170-ad90-49cd-af13-444618e490c8",
+        "domain": "INTEGER",
+        "original_value": "2",
+        "owner_department": "facilities",
+        "owner_user_id": "9b19c170-ad90-49cd-af13-444618e490c8",
+        "previous_value": "2",
+        "proposed_value": "1",
+        "rule_id": "authorized_value",
+        "source": "synthetic_e2e",
+        "target": {
+          "fragment_id": null,
+          "kind": "RESOURCE_CAPACITY",
+          "parameter_id": "room_slots",
+          "path": "shared_parameters.room_slots.value",
+          "resource_id": "rooms"
+        },
+        "unit": "unit"
+      }
+    ],
+    "public_status": "OPTIMAL",
+    "native_status": "OPTIMAL",
+    "verified_plan": true,
+    "verification_issues": [],
+    "objective_id": "synthetic_coverage",
+    "objective_sense": "MAX",
+    "objective_unit": "unit",
+    "objective_value": "10",
+    "metric_fingerprint": "192c352358c123d41389aa0ba5b1dd826499073304478f06db7f53b0ab5f3261",
+    "verification": {
+      "valid": true,
+      "plan_feasible": true,
+      "objective_value": "10",
+      "primal_residual_max": "0",
+      "integrality_residual_max": "0",
+      "arithmetic": "exact_rationals_of_binary64_values",
+      "settings": {
+        "bound_tolerance": "1E-7",
+        "constraint_tolerance": "1E-7",
+        "integrality_tolerance": "1E-7",
+        "objective_absolute_tolerance": "0.000001",
+        "objective_relative_tolerance": "1E-9"
+      }
+    },
+    "native_evidence": {
+      "solver_name": "highs",
+      "solver_version": "1.8.0",
+      "interface_name": "scipy.optimize.milp",
+      "interface_version": "1.17.0",
+      "solver_status_raw": 0,
+      "termination_reason": "optimal",
+      "solver_options": {
+        "disp": false,
+        "mip_rel_gap": 0.0,
+        "presolve": true,
+        "time_limit": 20.0
+      },
+      "backend_defaults": {
+        "dual_feasibility_tolerance": 1e-07,
+        "infinite_bound": 1e+20,
+        "infinite_cost": 1e+20,
+        "large_matrix_value": 1000000000000000.0,
+        "mip_abs_gap": 1e-06,
+        "mip_feasibility_tolerance": 1e-06,
+        "primal_feasibility_tolerance": 1e-07,
+        "small_matrix_value": 1e-09
+      },
+      "best_bound": 10.0,
+      "absolute_gap": "0",
+      "relative_gap": 0.0,
+      "gap_scope": "binary64_backend_model",
+      "certificate_scope": "solver_tolerances",
+      "optimality_label": "optimal à tolérance près (modèle binary64, sans certificat rationnel strict)",
+      "conversion_report": {
+        "converted_count": 21,
+        "max_absolute_error": "0",
+        "max_relative_error": "0",
+        "policy": "binary64; abs(value)<=1e12; nonzero coefficients>1e-9; relative conversion error<=1e-12",
+        "rounded_count": 0
+      },
+      "warnings": []
+    }
+  },
+  "comparability": "QUALIFIED",
+  "claim": "OBSERVED_DIFFERENCE",
+  "message": "Écart observé entre scénarios — gain non démontré.",
+  "same_model_and_snapshot": false,
+  "reasons": [
+    {
+      "code": "MODEL_OR_SNAPSHOT_CHANGED",
+      "message": "Modèle ou snapshot différent : écart d’hypothèses seulement, gain non démontré.",
+      "side": "PAIR"
+    }
+  ],
+  "observed_objective_delta": "-7",
+  "oriented_objective_delta": "-7",
+  "objective_unit": "unit",
+  "objective_improvement": null,
+  "objective_improvement_percent": null,
+  "improvement_tolerance": "1017/500000000",
+  "economic_gain": null,
+  "economic_gain_status": "NOT_DEMONSTRATED",
+  "decisions": [
+    {
+      "id": "course_languages",
+      "department": "languages",
+      "unit": "1",
+      "baseline_unit": "1",
+      "candidate_unit": "1",
+      "baseline_value": "0",
+      "candidate_value": "0",
+      "delta": "0"
+    },
+    {
+      "id": "course_mathematics",
+      "department": "mathematics",
+      "unit": "1",
+      "baseline_unit": "1",
+      "candidate_unit": "1",
+      "baseline_value": "1",
+      "candidate_value": "1",
+      "delta": "0"
+    },
+    {
+      "id": "course_science",
+      "department": "science",
+      "unit": "1",
+      "baseline_unit": "1",
+      "candidate_unit": "1",
+      "baseline_value": "1",
+      "candidate_value": "0",
+      "delta": "-1"
+    }
+  ],
+  "resources": [
+    {
+      "id": "budget",
+      "department": "finance",
+      "unit": "EUR",
+      "baseline": {
+        "unit": "EUR",
+        "capacity": "9",
+        "consumption": "9",
+        "remaining": "0",
+        "state": "SATURATED"
+      },
+      "candidate": {
+        "unit": "EUR",
+        "capacity": "9",
+        "consumption": "6",
+        "remaining": "3",
+        "state": "SATISFIED"
+      },
+      "capacity_delta": "0",
+      "consumption_delta": "-3",
+      "remaining_delta": "3"
+    },
+    {
+      "id": "rooms",
+      "department": "facilities",
+      "unit": "unit",
+      "baseline": {
+        "unit": "unit",
+        "capacity": "2",
+        "consumption": "2",
+        "remaining": "0",
+        "state": "SATURATED"
+      },
+      "candidate": {
+        "unit": "unit",
+        "capacity": "1",
+        "consumption": "1",
+        "remaining": "0",
+        "state": "SATURATED"
+      },
+      "capacity_delta": "-1",
+      "consumption_delta": "-1",
+      "remaining_delta": "0"
+    }
+  ],
+  "constraints": [
+    {
+      "id": "at_least_one_course",
+      "department": "facilities",
+      "unit": "1",
+      "baseline": {
+        "unit": "1",
+        "lhs": "2",
+        "rhs": "1",
+        "slack": "1",
+        "state": "SATISFIED",
+        "tolerance": "1/10000000"
+      },
+      "candidate": {
+        "unit": "1",
+        "lhs": "1",
+        "rhs": "1",
+        "slack": "0",
+        "state": "SATURATED",
+        "tolerance": "1/10000000"
+      },
+      "slack_delta": "-1"
+    },
+    {
+      "id": "budget_capacity",
+      "department": "finance",
+      "unit": "EUR",
+      "baseline": {
+        "unit": "EUR",
+        "lhs": "9",
+        "rhs": "9",
+        "slack": "0",
+        "state": "SATURATED",
+        "tolerance": "1/10000000"
+      },
+      "candidate": {
+        "unit": "EUR",
+        "lhs": "6",
+        "rhs": "9",
+        "slack": "3",
+        "state": "SATISFIED",
+        "tolerance": "1/10000000"
+      },
+      "slack_delta": "3"
+    },
+    {
+      "id": "rooms_capacity",
+      "department": "facilities",
+      "unit": "unit",
+      "baseline": {
+        "unit": "unit",
+        "lhs": "2",
+        "rhs": "2",
+        "slack": "0",
+        "state": "SATURATED",
+        "tolerance": "1/10000000"
+      },
+      "candidate": {
+        "unit": "unit",
+        "lhs": "1",
+        "rhs": "1",
+        "slack": "0",
+        "state": "SATURATED",
+        "tolerance": "1/10000000"
+      },
+      "slack_delta": "0"
+    }
+  ],
+  "limitations": [
+    "Une différence entre scénarios n’est pas un gain économique démontré.",
+    "Les vérifications portent sur les IR originales et les tolérances enregistrées.",
+    "Les bornes et gaps natifs gardent leur portée binary64 ; aucun certificat n’est ajouté.",
+    "Les coûts présents dans la formule de l’objectif sont inclus ; aucun coût omis n’est estimé.",
+    "La saturation d’une contrainte ne prouve ni prix d’ombre ni bénéfice économique."
+  ],
+  "report_hash": "44b341928d67572ec89d6201b666bed532176e305bed58581e1820aaa317c9f3"
+}

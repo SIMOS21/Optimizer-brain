@@ -1,0 +1,267 @@
+{
+  "browser": "159.0.8154.6",
+  "node": "v24.13.0",
+  "protocol": "Production preview; 3 fresh contexts per sector/width; button-to-render latency includes automation/local HTTP; no INP or solver timing; read-only stored inputs pinned by hash; new feature has no pre-existing comparison baseline",
+  "pairs": {
+    "factory": {
+      "baseline": "25bb5d59-e9b6-4daa-8582-0504ef8092a6",
+      "candidate": "427e1c1e-9ec6-4c1d-89cd-319c1418368c",
+      "reportHash": "2c0cb8c89c50dba9b6df2b6de279786e141f58a2bf2918916d0ab2d3156df5e8",
+      "baselineValue": "4100",
+      "candidateValue": "3500",
+      "baselineHash": "2b1a918b0121a9a05dc25d633034c23565cca3302093f029a6d81e8cd8928888",
+      "candidateHash": "f16d3684dbc60646f11bcbb8be6e8c9ee577be154afdda8bbbd801e084f10ec1"
+    },
+    "university": {
+      "baseline": "033d7710-c62d-42db-bd86-58a7e03e37e4",
+      "candidate": "dc034593-52ce-46da-8795-31bb82bf387e",
+      "reportHash": "44b341928d67572ec89d6201b666bed532176e305bed58581e1820aaa317c9f3",
+      "baselineValue": "17",
+      "candidateValue": "10",
+      "baselineHash": "ed8f4aabbb7856ec079218c75243a031b0381bcb5d027e7893c29f93addb79f2",
+      "candidateHash": "9816a6089d47cf1aa4da1ce03f50fe5b50b15843186ff498195713fabffb369b"
+    }
+  },
+  "samples": [
+    {
+      "sector": "factory",
+      "width": 1440,
+      "repeat": 0,
+      "displayMs": 144.0840000000003,
+      "httpMs": 83.264,
+      "comparisonReads": 1,
+      "domainMutations": 0,
+      "overflow": false
+    },
+    {
+      "sector": "factory",
+      "width": 1440,
+      "repeat": 1,
+      "displayMs": 145.6779000000006,
+      "httpMs": 79.08099999999999,
+      "comparisonReads": 1,
+      "domainMutations": 0,
+      "overflow": false
+    },
+    {
+      "sector": "factory",
+      "width": 1440,
+      "repeat": 2,
+      "displayMs": 144.41089999999986,
+      "httpMs": 84.585,
+      "comparisonReads": 1,
+      "domainMutations": 0,
+      "overflow": false
+    },
+    {
+      "sector": "factory",
+      "width": 1280,
+      "repeat": 0,
+      "displayMs": 173.97109999999975,
+      "httpMs": 89.67200000000001,
+      "comparisonReads": 1,
+      "domainMutations": 0,
+      "overflow": false
+    },
+    {
+      "sector": "factory",
+      "width": 1280,
+      "repeat": 1,
+      "displayMs": 179.77119999999923,
+      "httpMs": 101.41,
+      "comparisonReads": 1,
+      "domainMutations": 0,
+      "overflow": false
+    },
+    {
+      "sector": "factory",
+      "width": 1280,
+      "repeat": 2,
+      "displayMs": 196.08569999999963,
+      "httpMs": 115.843,
+      "comparisonReads": 1,
+      "domainMutations": 0,
+      "overflow": false
+    },
+    {
+      "sector": "factory",
+      "width": 768,
+      "repeat": 0,
+      "displayMs": 165.3102999999992,
+      "httpMs": 88.521,
+      "comparisonReads": 1,
+      "domainMutations": 0,
+      "overflow": false
+    },
+    {
+      "sector": "factory",
+      "width": 768,
+      "repeat": 1,
+      "displayMs": 164.59630000000107,
+      "httpMs": 101.728,
+      "comparisonReads": 1,
+      "domainMutations": 0,
+      "overflow": false
+    },
+    {
+      "sector": "factory",
+      "width": 768,
+      "repeat": 2,
+      "displayMs": 138.46899999999914,
+      "httpMs": 78.91000000000001,
+      "comparisonReads": 1,
+      "domainMutations": 0,
+      "overflow": false
+    },
+    {
+      "sector": "factory",
+      "width": 390,
+      "repeat": 0,
+      "displayMs": 140.28610000000117,
+      "httpMs": 78.018,
+      "comparisonReads": 1,
+      "domainMutations": 0,
+      "overflow": false
+    },
+    {
+      "sector": "factory",
+      "width": 390,
+      "repeat": 1,
+      "displayMs": 154.64860000000044,
+      "httpMs": 75.62299999999999,
+      "comparisonReads": 1,
+      "domainMutations": 0,
+      "overflow": false
+    },
+    {
+      "sector": "factory",
+      "width": 390,
+      "repeat": 2,
+      "displayMs": 141.9213000000018,
+      "httpMs": 77.383,
+      "comparisonReads": 1,
+      "domainMutations": 0,
+      "overflow": false
+    },
+    {
+      "sector": "university",
+      "width": 1440,
+      "repeat": 0,
+      "displayMs": 161.4928,
+      "httpMs": 94.267,
+      "comparisonReads": 1,
+      "domainMutations": 0,
+      "overflow": false
+    },
+    {
+      "sector": "university",
+      "width": 1440,
+      "repeat": 1,
+      "displayMs": 138.85899999999674,
+      "httpMs": 83.631,
+      "comparisonReads": 1,
+      "domainMutations": 0,
+      "overflow": false
+    },
+    {
+      "sector": "university",
+      "width": 1440,
+      "repeat": 2,
+      "displayMs": 165.66319999999905,
+      "httpMs": 95.78699999999999,
+      "comparisonReads": 1,
+      "domainMutations": 0,
+      "overflow": false
+    },
+    {
+      "sector": "university",
+      "width": 1280,
+      "repeat": 0,
+      "displayMs": 137.0650999999998,
+      "httpMs": 77.56400000000001,
+      "comparisonReads": 1,
+      "domainMutations": 0,
+      "overflow": false
+    },
+    {
+      "sector": "university",
+      "width": 1280,
+      "repeat": 1,
+      "displayMs": 146.8798999999999,
+      "httpMs": 81.73599999999999,
+      "comparisonReads": 1,
+      "domainMutations": 0,
+      "overflow": false
+    },
+    {
+      "sector": "university",
+      "width": 1280,
+      "repeat": 2,
+      "displayMs": 153.7380000000012,
+      "httpMs": 89.914,
+      "comparisonReads": 1,
+      "domainMutations": 0,
+      "overflow": false
+    },
+    {
+      "sector": "university",
+      "width": 768,
+      "repeat": 0,
+      "displayMs": 133.838800000005,
+      "httpMs": 76.119,
+      "comparisonReads": 1,
+      "domainMutations": 0,
+      "overflow": false
+    },
+    {
+      "sector": "university",
+      "width": 768,
+      "repeat": 1,
+      "displayMs": 144.3871999999974,
+      "httpMs": 84.50500000000001,
+      "comparisonReads": 1,
+      "domainMutations": 0,
+      "overflow": false
+    },
+    {
+      "sector": "university",
+      "width": 768,
+      "repeat": 2,
+      "displayMs": 137.17959999999584,
+      "httpMs": 75.501,
+      "comparisonReads": 1,
+      "domainMutations": 0,
+      "overflow": false
+    },
+    {
+      "sector": "university",
+      "width": 390,
+      "repeat": 0,
+      "displayMs": 143.11130000000412,
+      "httpMs": 78.932,
+      "comparisonReads": 1,
+      "domainMutations": 0,
+      "overflow": false
+    },
+    {
+      "sector": "university",
+      "width": 390,
+      "repeat": 1,
+      "displayMs": 213.76019999999698,
+      "httpMs": 128.512,
+      "comparisonReads": 1,
+      "domainMutations": 0,
+      "overflow": false
+    },
+    {
+      "sector": "university",
+      "width": 390,
+      "repeat": 2,
+      "displayMs": 143.63729999999487,
+      "httpMs": 77.42999999999999,
+      "comparisonReads": 1,
+      "domainMutations": 0,
+      "overflow": false
+    }
+  ]
+}

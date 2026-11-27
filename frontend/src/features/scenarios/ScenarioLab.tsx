@@ -166,8 +166,7 @@ function ScenarioDetail({
         Ouvrir Optimization Center
       </Link>
       <p>
-        La comparaison et les gains ne sont pas encore disponibles dans cette
-        première tranche.
+        La comparaison porte uniquement sur des runs enregistrés. Aucun gain économique n’est déduit de la création du scénario.
       </p>
       {mode === "expert" && (
         <JsonView title="Provenance canonique du scénario" value={record} />
@@ -394,8 +393,8 @@ export function ScenarioLab({
         <li>7 · Publications puis calcul distinct</li>
       </ol>
       <p className="notice">
-        Comparaisons mathématiques et gains entre scénarios indisponibles :
-        Phase 5B-3 hors périmètre.
+        <Link to={`/organizations/${organization.id}/history/compare`}>Comparer des résultats vérifiés</Link>
+        {" "}après leur exécution. Les écarts d’hypothèses ne démontrent pas de gain économique.
       </p>
       {id ? (
         <>

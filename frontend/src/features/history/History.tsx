@@ -74,8 +74,8 @@ export function History({
         </p>
       </PageHeader>
       <p className="notice">
-        Les comparaisons mathématiques et les gains entre scénarios ne sont pas
-        disponibles (Phase 5B-3 hors périmètre).
+        <Link to={`/organizations/${organization.id}/history/compare`}>Comparer deux résultats enregistrés</Link>
+        {" "}avec leurs preuves. Un écart entre scénarios ne démontre pas un gain économique.
       </p>
       {!authorized.length ? (
         <Empty>

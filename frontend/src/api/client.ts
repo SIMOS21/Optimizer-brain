@@ -15,6 +15,7 @@ import type {
   PolicyCreate,
   ControlledProposal,
   ControlledCommit,
+  ScenarioComparison,
 } from "./types";
 import { decode, parsePrecise } from "./validation";
 
@@ -39,6 +40,8 @@ export class ApiError extends Error {
   }
 }
 const changeMessages: Record<string, string> = {
+  COMPARISON_INTEGRITY_CONFLICT:
+    "L’intégrité ou la reconstruction des résultats historiques n’a pas pu être établie. Aucun écart n’est présenté.",
   UNIT_CHANGE_FORBIDDEN: "Le changement d’unité est interdit.",
   CHANGE_NOT_DELEGATED:
     "Cette règle ne vous délègue pas le droit de modifier la valeur.",
@@ -220,6 +223,108 @@ export class ApiClient {
   }
   run(org: string, id: string): Promise<RunArtifact> {
     return this.scoped(org, id, "optimization-runs", "RunArtifactResponse");
+  }
+  async compareRuns(
+    org: string,
+    baseline: string | null,
+    candidate: string | null,
+  ): Promise<ScenarioComparison> {
+    const query = new URLSearchParams();
+    if (baseline !== null) query.set("baseline_run_id", baseline);
+    if (candidate !== null) query.set("candidate_run_id", candidate);
+    let result: ScenarioComparison;
+    try {
+      result = await this.request(
+        `/organizations/${encodeURIComponent(org)}/scenario-comparisons?${query}`,
+        "ComparisonReport",
+      );
+    } catch (error) {
+      if (error instanceof ApiError && error.status === 409)
+        throw new ApiError(409, "COMPARISON_INTEGRITY_CONFLICT");
+      throw error;
+    }
+    if (
+      result.organization_id !== org ||
+      result.baseline_run_id !== baseline ||
+      result.candidate_run_id !== candidate ||
+      [result.baseline, result.candidate].some(
+        (run, i) =>
+          run !== null &&
+          (run.organization_id !== org ||
+            run.run_id !== (i === 0 ? baseline : candidate)),
+      )
+    )
+      throw new Error(
+        "Comparaison incompatible avec les résultats ou l’organisation sélectionnés.",
+      );
+    const sides = [result.baseline, result.candidate];
+    const bothVerified = sides.every((run) => run?.verified_plan === true);
+    const crossValues = [
+      result.observed_objective_delta,
+      result.oriented_objective_delta,
+      result.objective_improvement,
+      result.objective_improvement_percent,
+      ...result.decisions.map((row) => row.delta),
+      ...result.resources.flatMap((row) => [
+        row.capacity_delta,
+        row.consumption_delta,
+        row.remaining_delta,
+      ]),
+      ...result.constraints.map((row) => row.slack_delta),
+    ];
+    if (
+      ((!bothVerified ||
+        !["COMPARABLE", "QUALIFIED"].includes(result.comparability)) &&
+        crossValues.some((v) => v !== null)) ||
+      (result.objective_improvement !== null &&
+        (!result.same_model_and_snapshot ||
+          result.comparability !== "COMPARABLE" ||
+          result.claim !== "VERIFIED_OBJECTIVE_IMPROVEMENT")) ||
+      (result.objective_improvement_percent !== null &&
+        result.objective_improvement === null) ||
+      sides.some(
+        (run, side) =>
+          run !== null &&
+          ((run.verified_plan &&
+            (run.verification.valid !== true ||
+              run.verification.plan_feasible !== true ||
+              run.objective_value === null ||
+              !["OPTIMAL", "FEASIBLE_NOT_PROVEN_OPTIMAL"].includes(
+                run.public_status,
+              ) ||
+              !["OPTIMAL", "FEASIBLE", "TIME_LIMIT"].includes(
+                run.native_status,
+              ) ||
+              (run.public_status === "OPTIMAL" &&
+                run.native_status !== "OPTIMAL"))) ||
+            (!run.verified_plan &&
+              (run.objective_value !== null ||
+                result.decisions.some(
+                  (d) =>
+                    (side === 0 ? d.baseline_value : d.candidate_value) !==
+                    null,
+                ) ||
+                result.constraints.some((r) => {
+                  const measurement = side === 0 ? r.baseline : r.candidate;
+                  return (
+                    measurement != null &&
+                    (measurement.lhs !== null || measurement.slack !== null)
+                  );
+                }) ||
+                result.resources.some((r) => {
+                  const measurement = side === 0 ? r.baseline : r.candidate;
+                  return (
+                    measurement != null &&
+                    (measurement.consumption !== null ||
+                      measurement.remaining !== null)
+                  );
+                })))),
+      )
+    )
+      throw new Error(
+        "Qualification de comparaison incohérente : aucun résultat exploitable n’est affiché.",
+      );
+    return result;
   }
   async diagnostics(
     org: string,

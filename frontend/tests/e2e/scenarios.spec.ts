@@ -141,7 +141,19 @@ for (const [sector, fixture, objective] of [
         "PUBLISHED",
       );
       await expect(page.getByTestId("scenario-detail")).toContainText(
-        "comparaison et les gains ne sont pas encore disponibles",
+        "Aucun gain économique n’est déduit de la création du scénario",
+      );
+      await expect(
+        page.getByRole("link", {
+          name: "Comparer des résultats vérifiés",
+          exact: true,
+        }),
+      ).toHaveAttribute(
+        "href",
+        `/organizations/${fixture.organization.id}/history/compare`,
+      );
+      await expect(page.getByTestId("comparison-observed-delta")).toHaveCount(
+        0,
       );
       await page.screenshot({
         path: `${process.env.STUDIO_SCREENSHOT_DIR || "test-results/screenshots"}/scenario-${sector}.png`,

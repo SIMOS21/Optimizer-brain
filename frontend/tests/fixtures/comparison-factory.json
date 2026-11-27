@@ -1,0 +1,386 @@
+{
+  "schema_version": "5B.3",
+  "algorithm_version": "verified-comparison-1",
+  "organization_id": "58af5e0d-3cbc-437a-9fe0-1f1df574aee0",
+  "baseline_run_id": "25bb5d59-e9b6-4daa-8582-0504ef8092a6",
+  "candidate_run_id": "427e1c1e-9ec6-4c1d-89cd-319c1418368c",
+  "baseline": {
+    "run_id": "25bb5d59-e9b6-4daa-8582-0504ef8092a6",
+    "organization_id": "58af5e0d-3cbc-437a-9fe0-1f1df574aee0",
+    "content_hash": "2b1a918b0121a9a05dc25d633034c23565cca3302093f029a6d81e8cd8928888",
+    "created_at": 1795456125,
+    "created_by": "e9beafee-e90b-4a81-8d7d-46cf17f7a4e6",
+    "started_at": "2026-11-23T17:48:45.454092+00:00",
+    "model_version_id": "ca60f5d9-8a9c-4191-bb33-68e90bd1bb57",
+    "model_id": "demo_cross_department",
+    "model_name": "Allocation synthétique à deux variables",
+    "model_version": "1.0.0",
+    "model_content_hash": "b58ae33296d979578ccf3d8c2fa4ffcabb94268510d155e89777d7e45c131191",
+    "model_hash": "6067a4939fd2c2b42ade6387c12e72cf4df95c5581ab0375babdc134b0108ba0",
+    "manifest_hash": "e62c93a3cfba022a659f8278df82888c4216544ab010af859a40719f46f9eb4f",
+    "graph_snapshot_id": "d276ad61-b3d8-4e2d-95bc-32b2e48fad0a",
+    "graph_content_hash": "5e8648deb2294457a5149e7ee4e70871961681439e41164066544176d2d3bb09",
+    "data_snapshot_id": "synthetic_demo_v1",
+    "reference_model_version_id": "ca60f5d9-8a9c-4191-bb33-68e90bd1bb57",
+    "reference_content_hash": "b58ae33296d979578ccf3d8c2fa4ffcabb94268510d155e89777d7e45c131191",
+    "scenario_id": "base",
+    "scenario_version_id": null,
+    "scenario_content_hash": null,
+    "scenario_name": null,
+    "assumptions": [],
+    "public_status": "OPTIMAL",
+    "native_status": "OPTIMAL",
+    "verified_plan": true,
+    "verification_issues": [],
+    "objective_id": "maximize_contribution",
+    "objective_sense": "MAX",
+    "objective_unit": "EUR",
+    "objective_value": "4100",
+    "metric_fingerprint": "1d019816369d8dc18f0d6959b395155d9ea0a8c91993e73e0c0cf67e3e3d4ade",
+    "verification": {
+      "valid": true,
+      "plan_feasible": true,
+      "objective_value": "4100",
+      "primal_residual_max": "0",
+      "integrality_residual_max": "0",
+      "arithmetic": "exact_rationals_of_binary64_values",
+      "settings": {
+        "bound_tolerance": "1E-7",
+        "constraint_tolerance": "1E-7",
+        "integrality_tolerance": "1E-7",
+        "objective_absolute_tolerance": "0.000001",
+        "objective_relative_tolerance": "1E-9"
+      }
+    },
+    "native_evidence": {
+      "solver_name": "highs",
+      "solver_version": "1.8.0",
+      "interface_name": "scipy.optimize.milp",
+      "interface_version": "1.17.0",
+      "solver_status_raw": 0,
+      "termination_reason": "optimal",
+      "solver_options": {
+        "disp": false,
+        "mip_rel_gap": 0.0,
+        "presolve": true,
+        "time_limit": 20.0
+      },
+      "backend_defaults": {
+        "dual_feasibility_tolerance": 1e-07,
+        "infinite_bound": 1e+20,
+        "infinite_cost": 1e+20,
+        "large_matrix_value": 1000000000000000.0,
+        "mip_abs_gap": 1e-06,
+        "mip_feasibility_tolerance": 1e-06,
+        "primal_feasibility_tolerance": 1e-07,
+        "small_matrix_value": 1e-09
+      },
+      "best_bound": 4100.0,
+      "absolute_gap": "0",
+      "relative_gap": 0.0,
+      "gap_scope": "binary64_backend_model",
+      "certificate_scope": "solver_tolerances",
+      "optimality_label": "optimal à tolérance près (modèle binary64, sans certificat rationnel strict)",
+      "conversion_report": {
+        "converted_count": 15,
+        "max_absolute_error": "0",
+        "max_relative_error": "0",
+        "policy": "binary64; abs(value)<=1e12; nonzero coefficients>1e-9; relative conversion error<=1e-12",
+        "rounded_count": 0
+      },
+      "warnings": []
+    }
+  },
+  "candidate": {
+    "run_id": "427e1c1e-9ec6-4c1d-89cd-319c1418368c",
+    "organization_id": "58af5e0d-3cbc-437a-9fe0-1f1df574aee0",
+    "content_hash": "f16d3684dbc60646f11bcbb8be6e8c9ee577be154afdda8bbbd801e084f10ec1",
+    "created_at": 1795456060,
+    "created_by": "9b19c170-ad90-49cd-af13-444618e490c8",
+    "started_at": "2026-11-23T17:47:40.409402+00:00",
+    "model_version_id": "483cd739-a485-4e19-a3ac-8f50f5ed8fe4",
+    "model_id": "demo_cross_department",
+    "model_name": "Allocation synthétique à deux variables",
+    "model_version": "scenario_f2e7a4569a7d4ef7b128a71f3411109b",
+    "model_content_hash": "cd1d4c07a9067bb31839d96ac14a6b5b586f7c9302c428f2219dd167b22dbd4a",
+    "model_hash": "643221f685b7160b579215dc0e923afcc8918f27eb0b36a6abf377b62b61d905",
+    "manifest_hash": "6c656f3c4161af2806e4b47618b95f64cd8d36d925ba98b3e89c7241e0078760",
+    "graph_snapshot_id": "84a4f5c0-c775-484f-8dd9-1fe71c4aded7",
+    "graph_content_hash": "6fb4d98a5118ffcc6e6245d2b9dfcaeed23352dff3cbadefcf12ca5d16ee5fc9",
+    "data_snapshot_id": "data_scenario_f2e7a4569a7d4ef7b128a71f3411109b",
+    "reference_model_version_id": "ca60f5d9-8a9c-4191-bb33-68e90bd1bb57",
+    "reference_content_hash": "b58ae33296d979578ccf3d8c2fa4ffcabb94268510d155e89777d7e45c131191",
+    "scenario_id": "scenario_f2e7a4569a7d4ef7b128a71f3411109b",
+    "scenario_version_id": "f2e7a456-9a7d-4ef7-b128-a71f3411109b",
+    "scenario_content_hash": "2caee3708033242b406537b9ad9a29b2f58db3d77164feb6c81ac6f048ff2838",
+    "scenario_name": "Controlled factory",
+    "assumptions": [
+      {
+        "changed_by": "9b19c170-ad90-49cd-af13-444618e490c8",
+        "domain": "INTEGER",
+        "original_value": "55",
+        "owner_department": "logistics",
+        "owner_user_id": "9b19c170-ad90-49cd-af13-444618e490c8",
+        "previous_value": "55",
+        "proposed_value": "45",
+        "rule_id": "authorized_value",
+        "source": "synthetic_e2e",
+        "target": {
+          "fragment_id": null,
+          "kind": "RESOURCE_CAPACITY",
+          "parameter_id": "delivery_capacity_units",
+          "path": "shared_parameters.delivery_capacity_units.value",
+          "resource_id": "logistics_resource"
+        },
+        "unit": "unit"
+      }
+    ],
+    "public_status": "OPTIMAL",
+    "native_status": "OPTIMAL",
+    "verified_plan": true,
+    "verification_issues": [],
+    "objective_id": "maximize_contribution",
+    "objective_sense": "MAX",
+    "objective_unit": "EUR",
+    "objective_value": "3500",
+    "metric_fingerprint": "1d019816369d8dc18f0d6959b395155d9ea0a8c91993e73e0c0cf67e3e3d4ade",
+    "verification": {
+      "valid": true,
+      "plan_feasible": true,
+      "objective_value": "3500",
+      "primal_residual_max": "0",
+      "integrality_residual_max": "0",
+      "arithmetic": "exact_rationals_of_binary64_values",
+      "settings": {
+        "bound_tolerance": "1E-7",
+        "constraint_tolerance": "1E-7",
+        "integrality_tolerance": "1E-7",
+        "objective_absolute_tolerance": "0.000001",
+        "objective_relative_tolerance": "1E-9"
+      }
+    },
+    "native_evidence": {
+      "solver_name": "highs",
+      "solver_version": "1.8.0",
+      "interface_name": "scipy.optimize.milp",
+      "interface_version": "1.17.0",
+      "solver_status_raw": 0,
+      "termination_reason": "optimal",
+      "solver_options": {
+        "disp": false,
+        "mip_rel_gap": 0.0,
+        "presolve": true,
+        "time_limit": 20.0
+      },
+      "backend_defaults": {
+        "dual_feasibility_tolerance": 1e-07,
+        "infinite_bound": 1e+20,
+        "infinite_cost": 1e+20,
+        "large_matrix_value": 1000000000000000.0,
+        "mip_abs_gap": 1e-06,
+        "mip_feasibility_tolerance": 1e-06,
+        "primal_feasibility_tolerance": 1e-07,
+        "small_matrix_value": 1e-09
+      },
+      "best_bound": 3500.0,
+      "absolute_gap": "0",
+      "relative_gap": 0.0,
+      "gap_scope": "binary64_backend_model",
+      "certificate_scope": "solver_tolerances",
+      "optimality_label": "optimal à tolérance près (modèle binary64, sans certificat rationnel strict)",
+      "conversion_report": {
+        "converted_count": 15,
+        "max_absolute_error": "0",
+        "max_relative_error": "0",
+        "policy": "binary64; abs(value)<=1e12; nonzero coefficients>1e-9; relative conversion error<=1e-12",
+        "rounded_count": 0
+      },
+      "warnings": []
+    }
+  },
+  "comparability": "QUALIFIED",
+  "claim": "OBSERVED_DIFFERENCE",
+  "message": "Écart observé entre scénarios — gain non démontré.",
+  "same_model_and_snapshot": false,
+  "reasons": [
+    {
+      "code": "MODEL_OR_SNAPSHOT_CHANGED",
+      "message": "Modèle ou snapshot différent : écart d’hypothèses seulement, gain non démontré.",
+      "side": "PAIR"
+    }
+  ],
+  "observed_objective_delta": "-600",
+  "oriented_objective_delta": "-600",
+  "objective_unit": "EUR",
+  "objective_improvement": null,
+  "objective_improvement_percent": null,
+  "improvement_tolerance": "51/5000000",
+  "economic_gain": null,
+  "economic_gain_status": "NOT_DEMONSTRATED",
+  "decisions": [
+    {
+      "id": "qty_A",
+      "department": "sales",
+      "unit": "unit",
+      "baseline_unit": "unit",
+      "candidate_unit": "unit",
+      "baseline_value": "40",
+      "candidate_value": "40",
+      "delta": "0"
+    },
+    {
+      "id": "qty_B",
+      "department": "sales",
+      "unit": "unit",
+      "baseline_unit": "unit",
+      "candidate_unit": "unit",
+      "baseline_value": "15",
+      "candidate_value": "5",
+      "delta": "-10"
+    }
+  ],
+  "resources": [
+    {
+      "id": "finance_resource",
+      "department": "finance",
+      "unit": "EUR",
+      "baseline": {
+        "unit": "EUR",
+        "capacity": "8000",
+        "consumption": "7000",
+        "remaining": "1000",
+        "state": "SATISFIED"
+      },
+      "candidate": {
+        "unit": "EUR",
+        "capacity": "8000",
+        "consumption": "5000",
+        "remaining": "3000",
+        "state": "SATISFIED"
+      },
+      "capacity_delta": "0",
+      "consumption_delta": "-2000",
+      "remaining_delta": "2000"
+    },
+    {
+      "id": "logistics_resource",
+      "department": "logistics",
+      "unit": "unit",
+      "baseline": {
+        "unit": "unit",
+        "capacity": "55",
+        "consumption": "55",
+        "remaining": "0",
+        "state": "SATURATED"
+      },
+      "candidate": {
+        "unit": "unit",
+        "capacity": "45",
+        "consumption": "45",
+        "remaining": "0",
+        "state": "SATURATED"
+      },
+      "capacity_delta": "-10",
+      "consumption_delta": "-10",
+      "remaining_delta": "0"
+    },
+    {
+      "id": "production_resource",
+      "department": "production",
+      "unit": "hour",
+      "baseline": {
+        "unit": "hour",
+        "capacity": "100",
+        "consumption": "95",
+        "remaining": "5",
+        "state": "SATISFIED"
+      },
+      "candidate": {
+        "unit": "hour",
+        "capacity": "100",
+        "consumption": "85",
+        "remaining": "15",
+        "state": "SATISFIED"
+      },
+      "capacity_delta": "0",
+      "consumption_delta": "-10",
+      "remaining_delta": "10"
+    }
+  ],
+  "constraints": [
+    {
+      "id": "finance_budget",
+      "department": "finance",
+      "unit": "EUR",
+      "baseline": {
+        "unit": "EUR",
+        "lhs": "7000",
+        "rhs": "8000",
+        "slack": "1000",
+        "state": "SATISFIED",
+        "tolerance": "1/10000000"
+      },
+      "candidate": {
+        "unit": "EUR",
+        "lhs": "5000",
+        "rhs": "8000",
+        "slack": "3000",
+        "state": "SATISFIED",
+        "tolerance": "1/10000000"
+      },
+      "slack_delta": "2000"
+    },
+    {
+      "id": "logistics_delivery",
+      "department": "logistics",
+      "unit": "unit",
+      "baseline": {
+        "unit": "unit",
+        "lhs": "55",
+        "rhs": "55",
+        "slack": "0",
+        "state": "SATURATED",
+        "tolerance": "1/10000000"
+      },
+      "candidate": {
+        "unit": "unit",
+        "lhs": "45",
+        "rhs": "45",
+        "slack": "0",
+        "state": "SATURATED",
+        "tolerance": "1/10000000"
+      },
+      "slack_delta": "0"
+    },
+    {
+      "id": "production_machine",
+      "department": "production",
+      "unit": "hour",
+      "baseline": {
+        "unit": "hour",
+        "lhs": "95",
+        "rhs": "100",
+        "slack": "5",
+        "state": "SATISFIED",
+        "tolerance": "1/10000000"
+      },
+      "candidate": {
+        "unit": "hour",
+        "lhs": "85",
+        "rhs": "100",
+        "slack": "15",
+        "state": "SATISFIED",
+        "tolerance": "1/10000000"
+      },
+      "slack_delta": "10"
+    }
+  ],
+  "limitations": [
+    "Une différence entre scénarios n’est pas un gain économique démontré.",
+    "Les vérifications portent sur les IR originales et les tolérances enregistrées.",
+    "Les bornes et gaps natifs gardent leur portée binary64 ; aucun certificat n’est ajouté.",
+    "Les coûts présents dans la formule de l’objectif sont inclus ; aucun coût omis n’est estimé.",
+    "La saturation d’une contrainte ne prouve ni prix d’ombre ni bénéfice économique."
+  ],
+  "report_hash": "2c0cb8c89c50dba9b6df2b6de279786e141f58a2bf2918916d0ab2d3156df5e8"
+}

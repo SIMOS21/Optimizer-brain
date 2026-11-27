@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
+import { MemoryRouter } from "react-router-dom";
 import {
   fireEvent,
   render,
@@ -122,13 +123,15 @@ it("rejects imported executable or malformed content before any API write", asyn
 });
 it("does not invent run indicators for an empty history", () => {
   render(
-    <PresentationProvider>
-      <History
-        client={new ApiClient()}
-        organization={decode("OrganizationResponse", factory.organization)}
-        records={[]}
-      />
-    </PresentationProvider>,
+    <MemoryRouter>
+      <PresentationProvider>
+        <History
+          client={new ApiClient()}
+          organization={decode("OrganizationResponse", factory.organization)}
+          records={[]}
+        />
+      </PresentationProvider>
+    </MemoryRouter>,
   );
   expect(screen.getByText(/Aucun run enregistré/)).toBeInTheDocument();
   expect(screen.queryByTestId("recorded-objective")).not.toBeInTheDocument();

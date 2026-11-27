@@ -36,6 +36,12 @@ const ScenarioLab = lazy(() =>
   })),
 );
 
+const ScenarioComparison = lazy(() =>
+  import("../scenarios/ScenarioComparison").then((module) => ({
+    default: module.ScenarioComparison,
+  })),
+);
+
 const GraphCanvas = lazy(() =>
   import("../graph/GraphCanvas").then((module) => ({
     default: module.GraphCanvas,
@@ -752,9 +758,11 @@ function ExecutionRoute({
 function HistoryRoute({
   client,
   organization,
+  comparison = false,
 }: {
   client: ApiClient;
   organization: Organization;
+  comparison?: boolean;
 }) {
   const [revision, setRevision] = useState(0);
   const loaded = useLoad(
@@ -771,7 +779,15 @@ function HistoryRoute({
         </button>
       </div>
     );
-  return (
+  return comparison ? (
+    <Suspense fallback={<Skeleton label="Chargement de la comparaison…" />}>
+      <ScenarioComparison
+        client={client}
+        organization={organization}
+        records={loaded.data}
+      />
+    </Suspense>
+  ) : (
     <History
       client={client}
       organization={organization}
@@ -832,6 +848,16 @@ export function Workspace({
               client={client}
               organization={organization}
               userId={userId}
+            />
+          }
+        />
+        <Route
+          path="history/compare"
+          element={
+            <HistoryRoute
+              client={client}
+              organization={organization}
+              comparison
             />
           }
         />

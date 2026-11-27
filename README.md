@@ -274,8 +274,11 @@ La [première tranche de 5B](docs/scenario-lab-phase-5b.md) permet de créer des
 scénarios identiques et isolés, avec provenance et publication explicite avant
 résolution. La [tranche 5B-2](docs/controlled-scenarios-phase-5b2.md) ajoute les
 changements numériques sous politiques publiées, accords de responsables,
-prévisualisation et nouveaux graphes/modèles DRAFT. Les comparaisons, gains et
-analyses de sensibilité restent à construire.
+prévisualisation et nouveaux graphes/modèles DRAFT. La
+[tranche 5B-3](docs/scenario-comparison-phase-5b3.md) compare les runs enregistrés
+avec revérification indépendante, deltas exacts et règles explicites de
+comparabilité. Un écart entre modèles ou snapshots différents ne démontre pas
+un gain économique. Les analyses de sensibilité restent à construire.
 La Phase 5C, le LLM et les optimisations avancées restent hors périmètre.
 
 La [fondation UX-F1](docs/validation-ux-f1.md) ajoute navigation responsive,
