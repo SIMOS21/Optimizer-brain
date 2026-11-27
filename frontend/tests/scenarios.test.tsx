@@ -292,7 +292,7 @@ it("does not display any calculated gain or a fabricated result", async () => {
   mount(api, { ...org, role: "VIEWER" }, "/clone");
   await screen.findByTestId("scenario-detail");
   expect(
-    screen.getByText(/comparaison et les gains ne sont pas encore/),
+    screen.getByText(/Aucun gain économique n’est déduit de la création/),
   ).toBeInTheDocument();
   expect(screen.queryByTestId("recorded-objective")).not.toBeInTheDocument();
   expect(screen.getByTestId("scenario-model-link")).toHaveAttribute(

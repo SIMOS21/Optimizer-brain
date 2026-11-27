@@ -153,6 +153,11 @@ class RunArtifactResponse(ArtifactMetadata):
     document: RunDocument
 
 
+class ComparisonSelection(StrictModel):
+    baseline_run_id: Annotated[str | None, Field(min_length=1, max_length=100)] = None
+    candidate_run_id: Annotated[str | None, Field(min_length=1, max_length=100)] = None
+
+
 class OptimizationJobCreate(StrictModel):
     settings: SolveSettings = Field(default_factory=SolveSettings)
 

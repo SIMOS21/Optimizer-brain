@@ -366,6 +366,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/organizations/{organization_id}/scenario-comparisons": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Scenario Comparison */
+        get: operations["scenario_comparison_api_v1_organizations__organization_id__scenario_comparisons_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/organizations/{organization_id}/scenarios": {
         parameters: {
             query?: never;
@@ -860,6 +877,177 @@ export interface components {
             /** Items */
             items: components["schemas"]["ChangeTargetInfo"][];
         };
+        /** ComparedRun */
+        ComparedRun: {
+            /** Run Id */
+            run_id: string;
+            /** Organization Id */
+            organization_id: string;
+            /** Content Hash */
+            content_hash: string;
+            /** Created At */
+            created_at: number;
+            /** Created By */
+            created_by: string;
+            /** Started At */
+            started_at: string;
+            /** Model Version Id */
+            model_version_id: string;
+            /** Model Id */
+            model_id: string;
+            /** Model Name */
+            model_name: string;
+            /** Model Version */
+            model_version: string;
+            /** Model Content Hash */
+            model_content_hash: string;
+            /** Model Hash */
+            model_hash: string;
+            /** Manifest Hash */
+            manifest_hash: string;
+            /** Graph Snapshot Id */
+            graph_snapshot_id: string;
+            /** Graph Content Hash */
+            graph_content_hash: string;
+            /** Data Snapshot Id */
+            data_snapshot_id: string;
+            /** Reference Model Version Id */
+            reference_model_version_id: string;
+            /** Reference Content Hash */
+            reference_content_hash: string;
+            /** Scenario Id */
+            scenario_id: string;
+            /** Scenario Version Id */
+            scenario_version_id: string | null;
+            /** Scenario Content Hash */
+            scenario_content_hash: string | null;
+            /** Scenario Name */
+            scenario_name: string | null;
+            /** Assumptions */
+            assumptions: {
+                [key: string]: components["schemas"]["JsonValue"];
+            }[];
+            /** Public Status */
+            public_status: string;
+            /** Native Status */
+            native_status: string;
+            /** Verified Plan */
+            verified_plan: boolean;
+            /** Verification Issues */
+            verification_issues: string[];
+            /** Objective Id */
+            objective_id: string;
+            /**
+             * Objective Sense
+             * @enum {string}
+             */
+            objective_sense: "MAX" | "MIN";
+            /** Objective Unit */
+            objective_unit: string;
+            /** Objective Value */
+            objective_value: string | null;
+            /** Metric Fingerprint */
+            metric_fingerprint: string;
+            /** Verification */
+            verification: {
+                [key: string]: components["schemas"]["JsonValue"];
+            };
+            /** Native Evidence */
+            native_evidence: {
+                [key: string]: components["schemas"]["JsonValue"];
+            };
+        };
+        /** ComparisonReason */
+        ComparisonReason: {
+            /** Code */
+            code: string;
+            /** Message */
+            message: string;
+            /**
+             * Side
+             * @default PAIR
+             * @enum {string}
+             */
+            side: "BASELINE" | "CANDIDATE" | "PAIR";
+        };
+        /** ComparisonReport */
+        ComparisonReport: {
+            /**
+             * Schema Version
+             * @default 5B.3
+             * @constant
+             */
+            schema_version: "5B.3";
+            /**
+             * Algorithm Version
+             * @default verified-comparison-1
+             * @constant
+             */
+            algorithm_version: "verified-comparison-1";
+            /** Organization Id */
+            organization_id: string;
+            /** Baseline Run Id */
+            baseline_run_id: string | null;
+            /** Candidate Run Id */
+            candidate_run_id: string | null;
+            baseline: components["schemas"]["ComparedRun"] | null;
+            candidate: components["schemas"]["ComparedRun"] | null;
+            /**
+             * Comparability
+             * @enum {string}
+             */
+            comparability: "COMPARABLE" | "QUALIFIED" | "NOT_COMPARABLE" | "INCOMPLETE";
+            /**
+             * Claim
+             * @enum {string}
+             */
+            claim: "VERIFIED_OBJECTIVE_IMPROVEMENT" | "OBSERVED_DIFFERENCE" | "NONE";
+            /** Message */
+            message: string;
+            /** Same Model And Snapshot */
+            same_model_and_snapshot: boolean;
+            /** Reasons */
+            reasons: components["schemas"]["ComparisonReason"][];
+            /** Observed Objective Delta */
+            observed_objective_delta: string | null;
+            /** Oriented Objective Delta */
+            oriented_objective_delta: string | null;
+            /** Objective Unit */
+            objective_unit: string | null;
+            /** Objective Improvement */
+            objective_improvement: string | null;
+            /** Objective Improvement Percent */
+            objective_improvement_percent: string | null;
+            /** Improvement Tolerance */
+            improvement_tolerance: string | null;
+            /** Economic Gain */
+            economic_gain?: null;
+            /**
+             * Economic Gain Status
+             * @default NOT_DEMONSTRATED
+             * @constant
+             */
+            economic_gain_status: "NOT_DEMONSTRATED";
+            /** Decisions */
+            decisions: components["schemas"]["DecisionDifference"][];
+            /** Resources */
+            resources: components["schemas"]["ResourceDifference"][];
+            /** Constraints */
+            constraints: components["schemas"]["ConstraintDifference"][];
+            /**
+             * Limitations
+             * @default [
+             *       "Une différence entre scénarios n’est pas un gain économique démontré.",
+             *       "Les vérifications portent sur les IR originales et les tolérances enregistrées.",
+             *       "Les bornes et gaps natifs gardent leur portée binary64 ; aucun certificat n’est ajouté.",
+             *       "Les coûts présents dans la formule de l’objectif sont inclus ; aucun coût omis n’est estimé.",
+             *       "La saturation d’une contrainte ne prouve ni prix d’ombre ni bénéfice économique."
+             *     ]
+             */
+            limitations: string[];
+            /** Report Hash */
+            report_hash: string;
+        };
         /** CompositionDocument */
         CompositionDocument: {
             organization_model: components["schemas"]["OrganizationModel-Output"];
@@ -969,6 +1157,19 @@ export interface components {
              */
             cost_status: "NOT_EVALUATED";
         };
+        /** ConstraintDifference */
+        ConstraintDifference: {
+            /** Id */
+            id: string;
+            /** Department */
+            department: string;
+            /** Unit */
+            unit: string | null;
+            baseline: components["schemas"]["ConstraintMeasure"] | null;
+            candidate: components["schemas"]["ConstraintMeasure"] | null;
+            /** Slack Delta */
+            slack_delta: string | null;
+        };
         /** ConstraintLink */
         ConstraintLink: {
             /** Constraint Id */
@@ -1003,6 +1204,24 @@ export interface components {
              * @default []
              */
             source_paths: string[];
+        };
+        /** ConstraintMeasure */
+        ConstraintMeasure: {
+            /** Unit */
+            unit: string;
+            /** Lhs */
+            lhs: string | null;
+            /** Rhs */
+            rhs: string;
+            /** Slack */
+            slack: string | null;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "SATURATED" | "SATISFIED" | "VIOLATED" | "UNAVAILABLE";
+            /** Tolerance */
+            tolerance: string;
         };
         /** ConstraintTraceDocument */
         ConstraintTraceDocument: {
@@ -1107,6 +1326,25 @@ export interface components {
             preview_hash: string;
             /** Changes */
             changes: components["schemas"]["RecordedChange"][];
+        };
+        /** DecisionDifference */
+        DecisionDifference: {
+            /** Id */
+            id: string;
+            /** Department */
+            department: string;
+            /** Unit */
+            unit: string | null;
+            /** Baseline Unit */
+            baseline_unit: string | null;
+            /** Candidate Unit */
+            candidate_unit: string | null;
+            /** Baseline Value */
+            baseline_value: string | null;
+            /** Candidate Value */
+            candidate_value: string | null;
+            /** Delta */
+            delta: string | null;
         };
         /** Department */
         Department: {
@@ -1924,6 +2162,39 @@ export interface components {
             value: string | number;
             /** Source */
             source: string;
+        };
+        /** ResourceDifference */
+        ResourceDifference: {
+            /** Id */
+            id: string;
+            /** Department */
+            department: string;
+            /** Unit */
+            unit: string | null;
+            baseline: components["schemas"]["ResourceMeasure"] | null;
+            candidate: components["schemas"]["ResourceMeasure"] | null;
+            /** Capacity Delta */
+            capacity_delta: string | null;
+            /** Consumption Delta */
+            consumption_delta: string | null;
+            /** Remaining Delta */
+            remaining_delta: string | null;
+        };
+        /** ResourceMeasure */
+        ResourceMeasure: {
+            /** Unit */
+            unit: string;
+            /** Capacity */
+            capacity: string;
+            /** Consumption */
+            consumption: string | null;
+            /** Remaining */
+            remaining: string | null;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "SATURATED" | "SATISFIED" | "VIOLATED" | "UNAVAILABLE" | "UNMODELED";
         };
         /** ResourceNode */
         ResourceNode: {
@@ -3172,6 +3443,40 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["DiagnosticsResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    scenario_comparison_api_v1_organizations__organization_id__scenario_comparisons_get: {
+        parameters: {
+            query?: {
+                baseline_run_id?: string | null;
+                candidate_run_id?: string | null;
+            };
+            header?: never;
+            path: {
+                organization_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ComparisonReport"];
                 };
             };
             /** @description Validation Error */

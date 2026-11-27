@@ -30,6 +30,8 @@ from .change_contracts import (
 from .change_errors import ChangeError, ChangeErrorResponse
 from .models import ScenarioChangePolicy
 from .diagnostics import artifact_diagnostics
+from .comparisons import compare_artifacts
+from brain.scenario_comparison import ComparisonReport
 from .database import SCHEMA_REVISION, Settings, make_engine, sessions
 from .models import (
     AuditEvent,
@@ -47,6 +49,7 @@ from .schemas import (
     GraphArtifactResponse,
     ModelArtifactResponse,
     RunArtifactResponse,
+    ComparisonSelection,
     AuditResponse,
     DepartmentCreate,
     DepartmentResponse,
@@ -570,6 +573,21 @@ def run_get(organization_id: str, identity: str, session: DB, actor: Actor) -> o
 )
 def run_diagnostics(organization_id: str, identity: str, session: DB, actor: Actor) -> object:
     return artifact_diagnostics(session, actor, organization_id, identity, run=True)
+
+
+@router.get(
+    "/organizations/{organization_id}/scenario-comparisons",
+    response_model=ComparisonReport,
+)
+def scenario_comparison(
+    organization_id: str,
+    session: DB,
+    actor: Actor,
+    selection: Annotated[ComparisonSelection, Query()],
+) -> object:
+    return compare_artifacts(
+        session, actor, organization_id, selection.baseline_run_id, selection.candidate_run_id
+    )
 
 
 @router.post(
