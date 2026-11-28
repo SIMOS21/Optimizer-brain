@@ -1,5 +1,8 @@
 """An opt-in E2E launcher must never fall back to or reset the demo database."""
 
+import os
+import socket
+
 import pytest
 
 from scripts.studio_e2e import (
@@ -7,6 +10,7 @@ from scripts.studio_e2e import (
     load_environment,
     runtime_environment,
     prepare_navigation_catalog,
+    available_port,
 )
 
 RUNTIME = "postgresql+psycopg://brain_app:synthetic@127.0.0.1:55432/optimizer_brain_e2e"
@@ -66,3 +70,27 @@ def test_navigation_catalog_cannot_target_demo_even_when_called_directly(monkeyp
     )
     with pytest.raises(ValueError, match="hors base dédiée"):
         prepare_navigation_catalog("synthetic")
+
+
+def test_port_guard_still_refuses_a_real_listener():
+    with socket.socket() as server:
+        if os.name != "nt":
+            server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        server.bind(("127.0.0.1", 0))
+        server.listen(1)
+        with pytest.raises(ValueError, match="occupé"):
+            available_port(server.getsockname()[1])
+
+
+@pytest.mark.skipif(os.name == "nt", reason="POSIX TIME_WAIT restart semantics")
+def test_port_guard_accepts_time_wait_after_a_closed_server():
+    with socket.socket() as server:
+        server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        server.bind(("127.0.0.1", 0))
+        server.listen(1)
+        port = server.getsockname()[1]
+        with socket.create_connection(("127.0.0.1", port), timeout=1) as client:
+            connection, _ = server.accept()
+            connection.close()  # Active close leaves the server port in TIME_WAIT.
+            assert client.recv(1) == b""
+    available_port(port)

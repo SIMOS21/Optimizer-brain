@@ -194,6 +194,11 @@ def prepare_navigation_catalog(password: str) -> None:
 
 def available_port(port: int) -> None:
     with socket.socket() as listener:
+        if os.name != "nt":
+            # Match POSIX server restart semantics: a closed listener's
+            # TIME_WAIT connections are not an active service. SO_REUSEADDR
+            # still refuses an actual listening socket (unlike SO_REUSEPORT).
+            listener.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         try:
             listener.bind(("127.0.0.1", port))
         except OSError:

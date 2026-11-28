@@ -85,7 +85,7 @@ référencés dans la PR de revue.
 | Playwright assistant, API/RLS PostgreSQL réels, fournisseur simulé | 8 réussis, 15,3 s sur le build final |
 | Playwright historique, NVIDIA désactivé | 67 réussis, 8 tests assistant ignorés puis exécutés séparément, 7,2 min |
 
-Les neuf skips Python correspondent aux huit variantes SQLite déjà remplacées
+Les neuf skips de cette suite Python correspondent aux huit variantes SQLite déjà remplacées
 par leurs contrôles PostgreSQL et au contrôle concurrent de quota, garanti
 uniquement sous PostgreSQL. Les quatorze tests historiques sont conservés.
 Les 27 tests du contexte/transport ont aussi été rejoués avec succès après le
@@ -153,5 +153,22 @@ Prochaine action : revue de la PR, puis test d’inférence authentifiée avec u
 clé injectée côté serveur et les seuls modèles synthétiques autorisés. Ne pas
 mettre de clé dans le chat ; ne pas activer l’essai sur des données confidentielles.
 Aucune fusion automatique.
+
+## Correctif de relance E2E POSIX après la première CI
+
+Le commit initial `4431896` a passé les jobs Ubuntu/Windows, les 602 pytest et
+284 Vitest PostgreSQL et les 67 parcours historiques, pour le push et la PR.
+Le second lanceur a toutefois été refusé avant les huit tests assistant sur
+les deux runners Linux. La sonde `bind` sans réutilisation prenait une connexion
+fermée en `TIME_WAIT` pour un serveur encore en écoute.
+
+Reproduction sur le noyau Linux du conteneur existant, avec sockets locales
+éphémères et sans modification de PostgreSQL : serveur actif refusé, sonde simple
+refusée après fermeture, sonde avec `SO_REUSEADDR` acceptée. Le
+[comportement POSIX documenté](https://docs.python.org/3/library/socket.html#socket.create_server)
+justifie ce réglage sur POSIX uniquement. Windows conserve sa sonde exclusive.
+Deux tests couvrent la socket fermée et le refus maintenu d’un véritable listener.
+Pas de délai ou retry ajouté, pas de réutilisation d’un service utilisateur.
+Les résultats du correctif sont consignés dans la PR, sur son nouveau SHA.
 
 Reproduction et configuration : [guide 7A](nvidia-nim-gateway.md).
