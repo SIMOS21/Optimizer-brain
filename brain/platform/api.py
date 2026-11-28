@@ -4,6 +4,7 @@ from collections.abc import AsyncIterator, Callable, Coroutine, Iterator
 from contextlib import asynccontextmanager
 from decimal import Decimal
 import json
+from threading import BoundedSemaphore
 from typing import Annotated, Any
 
 from fastapi import APIRouter, Depends, FastAPI, Header, HTTPException, Query, Request
@@ -31,6 +32,20 @@ from .change_errors import ChangeError, ChangeErrorResponse
 from .models import ScenarioChangePolicy
 from .diagnostics import artifact_diagnostics
 from .comparisons import compare_artifacts
+from .explanations import preview_artifacts, reserve_call
+from brain.llm_gateway.contracts import (
+    ExplanationSelection,
+    ExplanationRequest,
+    ExplanationPreview,
+    ExplanationResponse,
+)
+from brain.llm_gateway.provider import (
+    GatewayError,
+    NvidiaSettings,
+    NvidiaProvider,
+    ExplanationProvider,
+)
+from brain.llm_gateway.context import render_explanation
 from brain.scenario_comparison import ComparisonReport
 from .database import SCHEMA_REVISION, Settings, make_engine, sessions
 from .models import (
@@ -104,6 +119,8 @@ class SecureJSONRoute(APIRoute):
                 ) from exc
             except ChangeError as exc:
                 raise HTTPException(exc.status, {"code": exc.code}) from exc
+            except GatewayError as exc:
+                raise HTTPException(exc.status, {"code": exc.code}) from None
             except service.ServiceError as exc:
                 raise HTTPException(exc.status, str(exc)) from exc
             except IntegrityError as exc:
@@ -157,6 +174,60 @@ CHANGE_RESPONSES: dict[int | str, dict[str, Any]] = {
 }
 
 router = APIRouter(prefix="/api/v1", route_class=SecureJSONRoute)
+
+
+@router.post(
+    "/organizations/{organization_id}/assistant/preview", response_model=ExplanationPreview
+)
+def explanation_preview(
+    organization_id: str, body: ExplanationSelection, actor: Actor, session: DB, request: Request
+) -> ExplanationPreview:
+    return preview_artifacts(
+        session, actor, organization_id, body, request.app.state.nvidia_settings
+    )
+
+
+@router.post(
+    "/organizations/{organization_id}/assistant/explain", response_model=ExplanationResponse
+)
+def explain_artifacts(
+    organization_id: str,
+    body: ExplanationRequest,
+    actor: Actor,
+    session: DB,
+    request: Request,
+    credentials: Annotated[HTTPAuthorizationCredentials | None, Depends(bearer)],
+) -> ExplanationResponse:
+    selection = ExplanationSelection(
+        run_id=body.run_id, baseline_run_id=body.baseline_run_id, intent=body.intent
+    )
+    settings: NvidiaSettings = request.app.state.nvidia_settings
+    preview = preview_artifacts(session, actor, organization_id, selection, settings)
+    if not preview.enabled:
+        raise GatewayError(
+            "LLM_" + preview.availability, 403 if preview.availability == "NOT_AUTHORIZED" else 503
+        )
+    if preview.context_hash != body.context_hash:
+        raise GatewayError("LLM_CONTEXT_CHANGED", 409)
+    slots: BoundedSemaphore = request.app.state.explanation_slots
+    if not slots.acquire(blocking=False):
+        raise GatewayError("LLM_BUSY", 429)
+    try:
+        reserve_call(session, actor, organization_id, settings, preview)
+        provider: ExplanationProvider = request.app.state.explanation_provider
+        response = render_explanation(preview, provider.complete(preview.outbound_json))
+    finally:
+        slots.release()
+    # Revocations/expiry during a slow hosted request must not return a protected result.
+    session.expire_all()
+    try:
+        if credentials is None:
+            raise auth.AuthenticationError()
+        current = auth.authenticate(session, credentials.credentials)
+    except auth.AuthenticationError:
+        raise HTTPException(401, "Authentification requise") from None
+    service.tenant(session, current, organization_id)
+    return response
 
 
 def artifact_view(
@@ -735,7 +806,12 @@ def audit_events(
     }
 
 
-def create_app(settings: Settings | None = None) -> FastAPI:
+def create_app(
+    settings: Settings | None = None,
+    *,
+    nvidia_settings: NvidiaSettings | None = None,
+    explanation_provider: ExplanationProvider | None = None,
+) -> FastAPI:
     settings = settings or Settings.from_env()
     engine = make_engine(settings)
     if engine.dialect.name == "postgresql":
@@ -773,6 +849,11 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         settings,
         sessions(engine),
     )
+    app.state.nvidia_settings = nvidia_settings or NvidiaSettings.from_env()
+    app.state.explanation_provider = explanation_provider or NvidiaProvider(
+        app.state.nvidia_settings
+    )
+    app.state.explanation_slots = BoundedSemaphore(4)
     app.include_router(router)
 
     @app.middleware("http")

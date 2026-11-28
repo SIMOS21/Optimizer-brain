@@ -71,8 +71,11 @@ def load_environment(path: Path) -> None:
 
 
 def runtime_environment(config: E2EConfig) -> dict[str, str]:
-    result = {k: v for k, v in os.environ.items() if not k.startswith(("BRAIN_", "STUDIO_"))}
+    result = {
+        k: v for k, v in os.environ.items() if not k.startswith(("BRAIN_", "STUDIO_", "NVIDIA_"))
+    }
     result.update(
+        NVIDIA_ENABLED="false",
         BRAIN_DATABASE_URL=config.runtime_url,
         STUDIO_API_TARGET=f"http://127.0.0.1:{API_PORT}",
         STUDIO_BASE_URL=f"http://127.0.0.1:{STUDIO_PORT}",
@@ -191,6 +194,11 @@ def prepare_navigation_catalog(password: str) -> None:
 
 def available_port(port: int) -> None:
     with socket.socket() as listener:
+        if os.name != "nt":
+            # Match POSIX server restart semantics: a closed listener's
+            # TIME_WAIT connections are not an active service. SO_REUSEADDR
+            # still refuses an actual listening socket (unlike SO_REUSEPORT).
+            listener.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         try:
             listener.bind(("127.0.0.1", port))
         except OSError:
@@ -257,6 +265,11 @@ def main() -> int:
     parser.add_argument("--execution-measure", choices=("before", "after"))
     parser.add_argument("--scenario-measure", choices=("before", "after"))
     parser.add_argument("--comparison-measure", action="store_true")
+    parser.add_argument(
+        "--assistant-fixture",
+        action="store_true",
+        help="Fake provider; isolated E2E database only, no NVIDIA network",
+    )
     args, tests = parser.parse_known_args()
     if args.env_file:
         load_environment(args.env_file)
@@ -273,6 +286,8 @@ def main() -> int:
         raise ValueError("Node.js requis")
     frontend = ROOT / "frontend"
     env = runtime_environment(config)
+    if args.assistant_fixture:
+        env["STUDIO_ASSISTANT_FIXTURE"] = "1"
     if not args.skip_build:
         for command_args in (
             [node, "node_modules/typescript/bin/tsc", "-b"],
@@ -284,7 +299,9 @@ def main() -> int:
             sys.executable,
             "-m",
             "uvicorn",
-            "brain.platform.api:create_app",
+            "scripts.studio_assistant_fixture:create_app"
+            if args.assistant_fixture
+            else "brain.platform.api:create_app",
             "--factory",
             "--host",
             "127.0.0.1",

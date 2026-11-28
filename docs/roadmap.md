@@ -17,7 +17,8 @@
 | UX V2 — UX-F4 | Optimization Center & Decision Cockpit : parcours guidé en 5 étapes, confirmation explicite avec paramètres figés, qualification mathématique indépendante, mode métier par défaut et expert unifié, E2E PostgreSQL isolés ; intégré dans main via PR #10, voir validation-ux-f4.md. |
 | UX V2 — UX-F5 | Scenario Lab guidé en sept étapes, références sécurisées, politiques/accords/délégations explicites, SET textuel exact, preview serveur et répétition figée ; historique paginé avec qualification indépendante et jobs distincts, correction du KPI mobile ; intégré via PR #11, voir validation-ux-f5.md et ADR 0013. |
 | 5B-3 — Verified Scenario Comparison | Moteur déterministe hors ligne, API GET sécurisée sans migration, Studio métier/expert et provenance, tests PostgreSQL et parcours réels usine/université ; livré sur branche de revue, voir validation-phase-5b3.md et ADR 0014. Aucun gain économique ni sensibilité automatique. |
-| 5C et 6 à 8 | Non implémentées |
+| 7A — NVIDIA NIM Gateway | Première tranche : explications guidées, faits revérifiés, API sécurisée, consentement et autorisations d’export, quotas persistants, assistant Studio et fournisseur simulé CI. Inférence hébergée non testée sans clé ; voir validation-nvidia-nim-gateway.md et ADR 0015. |
+| 5C, 6, reste de 7 et 8 | Non implémentés |
 
 La phase 2 livre IR → matrices → résultat brut → vérification indépendante →
 résultat traçable, avec maintien des routes legacy. Les contraintes numériques et

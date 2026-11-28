@@ -6,6 +6,7 @@ import { useLoad } from "../../shared/async";
 import { text, unitLabel } from "../../shared/format";
 import { Empty, ErrorNotice, JsonView } from "../../shared/ui";
 import { ConstraintDiagnostics } from "../diagnostics/ConstraintDiagnostics";
+import { ResultAssistant } from "../assistant/ResultAssistant";
 import { assessTrust } from "../dashboard/trust";
 import { Skeleton, StatusChip } from "../../shared/design-system";
 import { usePresentation } from "../../shared/presentation/context";
@@ -440,6 +441,7 @@ export function StoredRun({
   return (
     <>
       <DecisionCockpit record={loaded.data} />
+      <ResultAssistant client={client} org={org} run={id} />
       <ConstraintDiagnostics
         key={loaded.data.id}
         client={client}
