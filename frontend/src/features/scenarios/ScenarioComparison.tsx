@@ -16,6 +16,7 @@ import {
 } from "../../shared/design-system";
 import { ErrorNotice, JsonView } from "../../shared/ui";
 import { usePresentation } from "../../shared/presentation/context";
+import { ResultAssistant } from "../assistant/ResultAssistant";
 import "../../styles/scenario-comparison.css";
 
 function amount(
@@ -437,6 +438,7 @@ export function ScenarioComparison({
         </section>
       )}
       {request && loaded.data && <ComparisonResult report={loaded.data} />}
+      {request && loaded.data?.baseline && loaded.data.candidate && <ResultAssistant client={client} org={organization.id} baseline={loaded.data.baseline.run_id} run={loaded.data.candidate.run_id} />}
     </div>
   );
 }

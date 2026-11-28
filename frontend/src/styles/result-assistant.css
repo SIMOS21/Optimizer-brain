@@ -1,0 +1,32 @@
+.result-assistant {
+  margin-block: 1.5rem;
+  min-width: 0;
+}
+.result-assistant label {
+  display: block;
+  margin-block: 1rem;
+}
+.result-assistant select {
+  width: 100%;
+  max-width: 100%;
+}
+.result-assistant pre {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  max-height: 20rem;
+  overflow: auto;
+}
+.result-assistant p,
+.result-assistant li {
+  overflow-wrap: anywhere;
+}
+.assistant-consent {
+  display: flex !important;
+  align-items: flex-start;
+  gap: 0.6rem;
+}
+.assistant-consent input {
+  flex: 0 0 auto;
+  width: auto;
+  margin-top: 0.25rem;
+}

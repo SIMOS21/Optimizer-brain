@@ -5,6 +5,114 @@
     "version": "0.4c.0"
   },
   "paths": {
+    "/api/v1/organizations/{organization_id}/assistant/preview": {
+      "post": {
+        "summary": "Explanation Preview",
+        "operationId": "explanation_preview_api_v1_organizations__organization_id__assistant_preview_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "organization_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Organization Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExplanationSelection"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExplanationPreview"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/organizations/{organization_id}/assistant/explain": {
+      "post": {
+        "summary": "Explain Artifacts",
+        "operationId": "explain_artifacts_api_v1_organizations__organization_id__assistant_explain_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "organization_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Organization Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExplanationRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExplanationResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/auth/login": {
       "post": {
         "summary": "Login",
@@ -2205,6 +2313,55 @@
   },
   "components": {
     "schemas": {
+      "ArtifactReference": {
+        "properties": {
+          "run_id": {
+            "type": "string",
+            "title": "Run Id"
+          },
+          "content_hash": {
+            "type": "string",
+            "title": "Content Hash"
+          },
+          "model_version_id": {
+            "type": "string",
+            "title": "Model Version Id"
+          },
+          "model_content_hash": {
+            "type": "string",
+            "title": "Model Content Hash"
+          },
+          "graph_snapshot_id": {
+            "type": "string",
+            "title": "Graph Snapshot Id"
+          },
+          "data_snapshot_id": {
+            "type": "string",
+            "title": "Data Snapshot Id"
+          },
+          "verified_plan": {
+            "type": "boolean",
+            "title": "Verified Plan"
+          },
+          "public_status": {
+            "type": "string",
+            "title": "Public Status"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "run_id",
+          "content_hash",
+          "model_version_id",
+          "model_content_hash",
+          "graph_snapshot_id",
+          "data_snapshot_id",
+          "verified_plan",
+          "public_status"
+        ],
+        "title": "ArtifactReference"
+      },
       "ArtifactResponse": {
         "properties": {
           "id": {
@@ -5193,6 +5350,257 @@
         ],
         "title": "ExpectedPolicy"
       },
+      "ExplanationPreview": {
+        "properties": {
+          "schema_version": {
+            "type": "string",
+            "const": "7A.1",
+            "title": "Schema Version",
+            "default": "7A.1"
+          },
+          "organization_id": {
+            "type": "string",
+            "title": "Organization Id"
+          },
+          "selection": {
+            "$ref": "#/components/schemas/ExplanationSelection"
+          },
+          "context_hash": {
+            "type": "string",
+            "title": "Context Hash"
+          },
+          "enabled": {
+            "type": "boolean",
+            "title": "Enabled"
+          },
+          "availability": {
+            "type": "string",
+            "enum": [
+              "READY",
+              "DISABLED",
+              "NOT_AUTHORIZED",
+              "MISSING_API_KEY"
+            ],
+            "title": "Availability"
+          },
+          "provider": {
+            "type": "string",
+            "const": "NVIDIA_NIM",
+            "title": "Provider",
+            "default": "NVIDIA_NIM"
+          },
+          "model": {
+            "type": "string",
+            "title": "Model"
+          },
+          "facts": {
+            "items": {
+              "$ref": "#/components/schemas/GroundedFact"
+            },
+            "type": "array",
+            "title": "Facts"
+          },
+          "references": {
+            "items": {
+              "$ref": "#/components/schemas/ArtifactReference"
+            },
+            "type": "array",
+            "title": "References"
+          },
+          "outbound_json": {
+            "type": "string",
+            "title": "Outbound Json"
+          },
+          "disclosure": {
+            "type": "string",
+            "title": "Disclosure",
+            "default": "Seuls les alias, catégories et valeurs du JSON ci-dessous sont envoyés à NVIDIA. Aucun nom, identifiant métier, auteur, document, question libre ou secret n’est transmis. Prototype réservé aux données synthétiques ou publiques explicitement autorisées."
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "organization_id",
+          "selection",
+          "context_hash",
+          "enabled",
+          "availability",
+          "model",
+          "facts",
+          "references",
+          "outbound_json"
+        ],
+        "title": "ExplanationPreview"
+      },
+      "ExplanationRequest": {
+        "properties": {
+          "run_id": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "title": "Run Id"
+          },
+          "baseline_run_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 100,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Baseline Run Id"
+          },
+          "intent": {
+            "type": "string",
+            "enum": [
+              "DECISIONS",
+              "RESOURCES",
+              "COMPARISON"
+            ],
+            "title": "Intent",
+            "default": "DECISIONS"
+          },
+          "context_hash": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$",
+            "title": "Context Hash"
+          },
+          "consent_to_external_processing": {
+            "type": "boolean",
+            "const": true,
+            "title": "Consent To External Processing"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "run_id",
+          "context_hash",
+          "consent_to_external_processing"
+        ],
+        "title": "ExplanationRequest"
+      },
+      "ExplanationResponse": {
+        "properties": {
+          "schema_version": {
+            "type": "string",
+            "const": "7A.1",
+            "title": "Schema Version",
+            "default": "7A.1"
+          },
+          "organization_id": {
+            "type": "string",
+            "title": "Organization Id"
+          },
+          "context_hash": {
+            "type": "string",
+            "title": "Context Hash"
+          },
+          "provider": {
+            "type": "string",
+            "const": "NVIDIA_NIM",
+            "title": "Provider",
+            "default": "NVIDIA_NIM"
+          },
+          "model": {
+            "type": "string",
+            "title": "Model"
+          },
+          "presentation": {
+            "type": "string",
+            "const": "GROUNDED_SELECTION",
+            "title": "Presentation",
+            "default": "GROUNDED_SELECTION"
+          },
+          "selected_fact_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Selected Fact Ids"
+          },
+          "paragraphs": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Paragraphs"
+          },
+          "facts": {
+            "items": {
+              "$ref": "#/components/schemas/GroundedFact"
+            },
+            "type": "array",
+            "title": "Facts"
+          },
+          "references": {
+            "items": {
+              "$ref": "#/components/schemas/ArtifactReference"
+            },
+            "type": "array",
+            "title": "References"
+          },
+          "warning": {
+            "type": "string",
+            "title": "Warning",
+            "default": "Sélection de faits par le LLM, rédaction et chiffres contrôlés par le serveur. Aucune nouvelle preuve d’optimalité, causalité ou gain économique."
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "organization_id",
+          "context_hash",
+          "model",
+          "selected_fact_ids",
+          "paragraphs",
+          "facts",
+          "references"
+        ],
+        "title": "ExplanationResponse"
+      },
+      "ExplanationSelection": {
+        "properties": {
+          "run_id": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "title": "Run Id"
+          },
+          "baseline_run_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 100,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Baseline Run Id"
+          },
+          "intent": {
+            "type": "string",
+            "enum": [
+              "DECISIONS",
+              "RESOURCES",
+              "COMPARISON"
+            ],
+            "title": "Intent",
+            "default": "DECISIONS"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "run_id"
+        ],
+        "title": "ExplanationSelection"
+      },
       "Finding": {
         "properties": {
           "code": {
@@ -5478,6 +5886,47 @@
           "shared_parameters"
         ],
         "title": "GraphCreate"
+      },
+      "GroundedFact": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "STATUS",
+              "OBJECTIVE",
+              "DECISION",
+              "RESOURCE",
+              "CONSTRAINT",
+              "COMPARISON",
+              "LIMIT"
+            ],
+            "title": "Kind"
+          },
+          "text": {
+            "type": "string",
+            "title": "Text"
+          },
+          "values": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Values",
+            "default": []
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "kind",
+          "text"
+        ],
+        "title": "GroundedFact"
       },
       "HTTPValidationError": {
         "properties": {

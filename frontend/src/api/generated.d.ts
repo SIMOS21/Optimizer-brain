@@ -4,6 +4,40 @@
  */
 
 export interface paths {
+    "/api/v1/organizations/{organization_id}/assistant/preview": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Explanation Preview */
+        post: operations["explanation_preview_api_v1_organizations__organization_id__assistant_preview_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/organizations/{organization_id}/assistant/explain": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Explain Artifacts */
+        post: operations["explain_artifacts_api_v1_organizations__organization_id__assistant_explain_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/auth/login": {
         parameters: {
             query?: never;
@@ -576,6 +610,25 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** ArtifactReference */
+        ArtifactReference: {
+            /** Run Id */
+            run_id: string;
+            /** Content Hash */
+            content_hash: string;
+            /** Model Version Id */
+            model_version_id: string;
+            /** Model Content Hash */
+            model_content_hash: string;
+            /** Graph Snapshot Id */
+            graph_snapshot_id: string;
+            /** Data Snapshot Id */
+            data_snapshot_id: string;
+            /** Verified Plan */
+            verified_plan: boolean;
+            /** Public Status */
+            public_status: string;
+        };
         /** ArtifactResponse */
         ArtifactResponse: {
             /** Id */
@@ -1565,6 +1618,119 @@ export interface components {
             /** Expected Policy Content Hash */
             expected_policy_content_hash: string;
         };
+        /** ExplanationPreview */
+        ExplanationPreview: {
+            /**
+             * Schema Version
+             * @default 7A.1
+             * @constant
+             */
+            schema_version: "7A.1";
+            /** Organization Id */
+            organization_id: string;
+            selection: components["schemas"]["ExplanationSelection"];
+            /** Context Hash */
+            context_hash: string;
+            /** Enabled */
+            enabled: boolean;
+            /**
+             * Availability
+             * @enum {string}
+             */
+            availability: "READY" | "DISABLED" | "NOT_AUTHORIZED" | "MISSING_API_KEY";
+            /**
+             * Provider
+             * @default NVIDIA_NIM
+             * @constant
+             */
+            provider: "NVIDIA_NIM";
+            /** Model */
+            model: string;
+            /** Facts */
+            facts: components["schemas"]["GroundedFact"][];
+            /** References */
+            references: components["schemas"]["ArtifactReference"][];
+            /** Outbound Json */
+            outbound_json: string;
+            /**
+             * Disclosure
+             * @default Seuls les alias, catégories et valeurs du JSON ci-dessous sont envoyés à NVIDIA. Aucun nom, identifiant métier, auteur, document, question libre ou secret n’est transmis. Prototype réservé aux données synthétiques ou publiques explicitement autorisées.
+             */
+            disclosure: string;
+        };
+        /** ExplanationRequest */
+        ExplanationRequest: {
+            /** Run Id */
+            run_id: string;
+            /** Baseline Run Id */
+            baseline_run_id?: string | null;
+            /**
+             * Intent
+             * @default DECISIONS
+             * @enum {string}
+             */
+            intent: "DECISIONS" | "RESOURCES" | "COMPARISON";
+            /** Context Hash */
+            context_hash: string;
+            /**
+             * Consent To External Processing
+             * @constant
+             */
+            consent_to_external_processing: true;
+        };
+        /** ExplanationResponse */
+        ExplanationResponse: {
+            /**
+             * Schema Version
+             * @default 7A.1
+             * @constant
+             */
+            schema_version: "7A.1";
+            /** Organization Id */
+            organization_id: string;
+            /** Context Hash */
+            context_hash: string;
+            /**
+             * Provider
+             * @default NVIDIA_NIM
+             * @constant
+             */
+            provider: "NVIDIA_NIM";
+            /** Model */
+            model: string;
+            /**
+             * Presentation
+             * @default GROUNDED_SELECTION
+             * @constant
+             */
+            presentation: "GROUNDED_SELECTION";
+            /** Selected Fact Ids */
+            selected_fact_ids: string[];
+            /** Paragraphs */
+            paragraphs: string[];
+            /** Facts */
+            facts: components["schemas"]["GroundedFact"][];
+            /** References */
+            references: components["schemas"]["ArtifactReference"][];
+            /**
+             * Warning
+             * @default Sélection de faits par le LLM, rédaction et chiffres contrôlés par le serveur. Aucune nouvelle preuve d’optimalité, causalité ou gain économique.
+             */
+            warning: string;
+        };
+        /** ExplanationSelection */
+        ExplanationSelection: {
+            /** Run Id */
+            run_id: string;
+            /** Baseline Run Id */
+            baseline_run_id?: string | null;
+            /**
+             * Intent
+             * @default DECISIONS
+             * @enum {string}
+             */
+            intent: "DECISIONS" | "RESOURCES" | "COMPARISON";
+        };
         /** Finding */
         Finding: {
             /** Code */
@@ -1649,6 +1815,23 @@ export interface components {
             shared_parameters: {
                 [key: string]: components["schemas"]["Parameter-Output"];
             };
+        };
+        /** GroundedFact */
+        GroundedFact: {
+            /** Id */
+            id: string;
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "STATUS" | "OBJECTIVE" | "DECISION" | "RESOURCE" | "CONSTRAINT" | "COMPARISON" | "LIMIT";
+            /** Text */
+            text: string;
+            /**
+             * Values
+             * @default []
+             */
+            values: string[];
         };
         /** HTTPValidationError */
         HTTPValidationError: {
@@ -2619,6 +2802,76 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
+    explanation_preview_api_v1_organizations__organization_id__assistant_preview_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                organization_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ExplanationSelection"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ExplanationPreview"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    explain_artifacts_api_v1_organizations__organization_id__assistant_explain_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                organization_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ExplanationRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ExplanationResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     login_api_v1_auth_login_post: {
         parameters: {
             query?: never;

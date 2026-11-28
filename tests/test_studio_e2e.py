@@ -33,6 +33,8 @@ def test_services_and_browser_never_inherit_migration_or_demo_credentials(monkey
     monkeypatch.setenv("BRAIN_E2E_MIGRATION_DATABASE_URL", MIGRATION)
     monkeypatch.setenv("BRAIN_DEMO_PASSWORD", "private-demo-secret")
     monkeypatch.setenv("BRAIN_TEST_DATABASE_URL", "private-unit-url")
+    monkeypatch.setenv("NVIDIA_API_KEY", "private-provider-key")
+    monkeypatch.setenv("NVIDIA_ENABLED", "true")
     # Hosted Windows runners may have unrelated PASSWORD metadata. This
     # launcher filters the Brain/Studio namespace, not the whole operating system.
     monkeypatch.setenv("RUNNER_PASSWORD_METADATA", "public-runner-metadata")
@@ -46,6 +48,8 @@ def test_services_and_browser_never_inherit_migration_or_demo_credentials(monkey
         if key.startswith("STUDIO_")
     )
     assert env["RUNNER_PASSWORD_METADATA"] == "public-runner-metadata"
+    assert {key for key in env if key.startswith("NVIDIA_")} == {"NVIDIA_ENABLED"}
+    assert env["NVIDIA_ENABLED"] == "false"
     assert "synthetic" not in repr(E2EConfig(RUNTIME, MIGRATION))
 
 

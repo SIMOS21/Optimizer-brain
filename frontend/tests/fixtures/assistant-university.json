@@ -1,0 +1,483 @@
+{
+  "preview": {
+    "schema_version": "7A.1",
+    "organization_id": "c87775c3-505b-42d9-a914-1a99717e1a72",
+    "selection": {
+      "run_id": "dc034593-52ce-46da-8795-31bb82bf387e",
+      "baseline_run_id": "033d7710-c62d-42db-bd86-58a7e03e37e4",
+      "intent": "COMPARISON"
+    },
+    "context_hash": "d614d128849310559eb57ba969a8a7c7a65f16c98fc954ffa1368453b9145fb1",
+    "enabled": true,
+    "availability": "READY",
+    "provider": "NVIDIA_NIM",
+    "model": "nvidia/nemotron-3.5-lightning-30b-a3b",
+    "facts": [
+      {
+        "id": "f0",
+        "kind": "STATUS",
+        "text": "Référence : Optimalité attestée par le solveur dans ses tolérances enregistrées, pas un optimum rationnel exact.",
+        "values": []
+      },
+      {
+        "id": "f1",
+        "kind": "OBJECTIVE",
+        "text": "Référence : objectif 17 unit (MAX), recalculé sur l’IR originale.",
+        "values": [
+          "17"
+        ]
+      },
+      {
+        "id": "f2",
+        "kind": "STATUS",
+        "text": "Candidat : Optimalité attestée par le solveur dans ses tolérances enregistrées, pas un optimum rationnel exact.",
+        "values": []
+      },
+      {
+        "id": "f3",
+        "kind": "OBJECTIVE",
+        "text": "Candidat : objectif 10 unit (MAX), recalculé sur l’IR originale.",
+        "values": [
+          "10"
+        ]
+      },
+      {
+        "id": "f4",
+        "kind": "DECISION",
+        "text": "Référence : course_languages = 0 1.",
+        "values": [
+          "0"
+        ]
+      },
+      {
+        "id": "f5",
+        "kind": "DECISION",
+        "text": "Référence : course_mathematics = 1 1.",
+        "values": [
+          "1"
+        ]
+      },
+      {
+        "id": "f6",
+        "kind": "DECISION",
+        "text": "Référence : course_science = 1 1.",
+        "values": [
+          "1"
+        ]
+      },
+      {
+        "id": "f7",
+        "kind": "RESOURCE",
+        "text": "Référence : ressource budget, 9/9 EUR, marge 0 ; saturée dans les tolérances enregistrées. Une saturation ne démontre ni causalité, ni prix d’ombre, ni gain.",
+        "values": [
+          "9",
+          "9",
+          "0"
+        ]
+      },
+      {
+        "id": "f8",
+        "kind": "RESOURCE",
+        "text": "Référence : ressource rooms, 2/2 unit, marge 0 ; saturée dans les tolérances enregistrées. Une saturation ne démontre ni causalité, ni prix d’ombre, ni gain.",
+        "values": [
+          "2",
+          "2",
+          "0"
+        ]
+      },
+      {
+        "id": "f9",
+        "kind": "CONSTRAINT",
+        "text": "Référence : contrainte at_least_one_course, état SATISFIED, membre gauche 2, membre droit 1, marge 1, tolérance 1/10000000 1.",
+        "values": [
+          "2",
+          "1",
+          "1",
+          "1/10000000"
+        ]
+      },
+      {
+        "id": "f10",
+        "kind": "CONSTRAINT",
+        "text": "Référence : contrainte budget_capacity, état SATURATED, membre gauche 9, membre droit 9, marge 0, tolérance 1/10000000 EUR.",
+        "values": [
+          "9",
+          "9",
+          "0",
+          "1/10000000"
+        ]
+      },
+      {
+        "id": "f11",
+        "kind": "CONSTRAINT",
+        "text": "Référence : contrainte rooms_capacity, état SATURATED, membre gauche 2, membre droit 2, marge 0, tolérance 1/10000000 unit.",
+        "values": [
+          "2",
+          "2",
+          "0",
+          "1/10000000"
+        ]
+      },
+      {
+        "id": "f12",
+        "kind": "DECISION",
+        "text": "Candidat : course_languages = 0 1.",
+        "values": [
+          "0"
+        ]
+      },
+      {
+        "id": "f13",
+        "kind": "DECISION",
+        "text": "Candidat : course_mathematics = 1 1.",
+        "values": [
+          "1"
+        ]
+      },
+      {
+        "id": "f14",
+        "kind": "DECISION",
+        "text": "Candidat : course_science = 0 1.",
+        "values": [
+          "0"
+        ]
+      },
+      {
+        "id": "f15",
+        "kind": "RESOURCE",
+        "text": "Candidat : ressource budget, 6/9 EUR, marge 3 ; avec marge mesurée. Une saturation ne démontre ni causalité, ni prix d’ombre, ni gain.",
+        "values": [
+          "6",
+          "9",
+          "3"
+        ]
+      },
+      {
+        "id": "f16",
+        "kind": "RESOURCE",
+        "text": "Candidat : ressource rooms, 1/1 unit, marge 0 ; saturée dans les tolérances enregistrées. Une saturation ne démontre ni causalité, ni prix d’ombre, ni gain.",
+        "values": [
+          "1",
+          "1",
+          "0"
+        ]
+      },
+      {
+        "id": "f17",
+        "kind": "CONSTRAINT",
+        "text": "Candidat : contrainte at_least_one_course, état SATURATED, membre gauche 1, membre droit 1, marge 0, tolérance 1/10000000 1.",
+        "values": [
+          "1",
+          "1",
+          "0",
+          "1/10000000"
+        ]
+      },
+      {
+        "id": "f18",
+        "kind": "CONSTRAINT",
+        "text": "Candidat : contrainte budget_capacity, état SATISFIED, membre gauche 6, membre droit 9, marge 3, tolérance 1/10000000 EUR.",
+        "values": [
+          "6",
+          "9",
+          "3",
+          "1/10000000"
+        ]
+      },
+      {
+        "id": "f19",
+        "kind": "CONSTRAINT",
+        "text": "Candidat : contrainte rooms_capacity, état SATURATED, membre gauche 1, membre droit 1, marge 0, tolérance 1/10000000 unit.",
+        "values": [
+          "1",
+          "1",
+          "0",
+          "1/10000000"
+        ]
+      },
+      {
+        "id": "f20",
+        "kind": "COMPARISON",
+        "text": "Comparaison QUALIFIED. Écart observé candidat − référence : -7 unit. Aucun gain économique démontré.",
+        "values": [
+          "-7"
+        ]
+      },
+      {
+        "id": "f21",
+        "kind": "LIMIT",
+        "text": "Les faits portent sur les IR et tolérances historiques. Aucun nouveau calcul de scénario, prix d’ombre, causalité ou gain économique n’est fourni.",
+        "values": []
+      }
+    ],
+    "references": [
+      {
+        "run_id": "033d7710-c62d-42db-bd86-58a7e03e37e4",
+        "content_hash": "ed8f4aabbb7856ec079218c75243a031b0381bcb5d027e7893c29f93addb79f2",
+        "model_version_id": "37aade4c-c984-49b7-931d-e83ca2f71be7",
+        "model_content_hash": "436743547365ae8c39aa1c80dd263ab536c0559c561f3b909b140fc19e7847f8",
+        "graph_snapshot_id": "bfc8d95d-3f5d-4148-b720-17e2eeaabf56",
+        "data_snapshot_id": "synthetic_university_v1",
+        "verified_plan": true,
+        "public_status": "OPTIMAL"
+      },
+      {
+        "run_id": "dc034593-52ce-46da-8795-31bb82bf387e",
+        "content_hash": "9816a6089d47cf1aa4da1ce03f50fe5b50b15843186ff498195713fabffb369b",
+        "model_version_id": "3a75c868-e9ab-4487-bcb9-e67fccc86d09",
+        "model_content_hash": "3a2c70b0635f174c56bcbab71450c72648637c7bc51420c5853e976d6b56bfe7",
+        "graph_snapshot_id": "cad5e96c-c6fd-4353-ac70-4768a5d49899",
+        "data_snapshot_id": "data_scenario_f558c881b64c47219c1c98ce2c28682e",
+        "verified_plan": true,
+        "public_status": "OPTIMAL"
+      }
+    ],
+    "outbound_json": "{\"facts\":[{\"id\":\"f0\",\"kind\":\"STATUS\",\"values\":[]},{\"id\":\"f1\",\"kind\":\"OBJECTIVE\",\"values\":[\"17\"]},{\"id\":\"f2\",\"kind\":\"STATUS\",\"values\":[]},{\"id\":\"f3\",\"kind\":\"OBJECTIVE\",\"values\":[\"10\"]},{\"id\":\"f4\",\"kind\":\"DECISION\",\"values\":[\"0\"]},{\"id\":\"f5\",\"kind\":\"DECISION\",\"values\":[\"1\"]},{\"id\":\"f6\",\"kind\":\"DECISION\",\"values\":[\"1\"]},{\"id\":\"f7\",\"kind\":\"RESOURCE\",\"values\":[\"9\",\"9\",\"0\"]},{\"id\":\"f8\",\"kind\":\"RESOURCE\",\"values\":[\"2\",\"2\",\"0\"]},{\"id\":\"f9\",\"kind\":\"CONSTRAINT\",\"values\":[\"2\",\"1\",\"1\",\"1/10000000\"]},{\"id\":\"f10\",\"kind\":\"CONSTRAINT\",\"values\":[\"9\",\"9\",\"0\",\"1/10000000\"]},{\"id\":\"f11\",\"kind\":\"CONSTRAINT\",\"values\":[\"2\",\"2\",\"0\",\"1/10000000\"]},{\"id\":\"f12\",\"kind\":\"DECISION\",\"values\":[\"0\"]},{\"id\":\"f13\",\"kind\":\"DECISION\",\"values\":[\"1\"]},{\"id\":\"f14\",\"kind\":\"DECISION\",\"values\":[\"0\"]},{\"id\":\"f15\",\"kind\":\"RESOURCE\",\"values\":[\"6\",\"9\",\"3\"]},{\"id\":\"f16\",\"kind\":\"RESOURCE\",\"values\":[\"1\",\"1\",\"0\"]},{\"id\":\"f17\",\"kind\":\"CONSTRAINT\",\"values\":[\"1\",\"1\",\"0\",\"1/10000000\"]},{\"id\":\"f18\",\"kind\":\"CONSTRAINT\",\"values\":[\"6\",\"9\",\"3\",\"1/10000000\"]},{\"id\":\"f19\",\"kind\":\"CONSTRAINT\",\"values\":[\"1\",\"1\",\"0\",\"1/10000000\"]},{\"id\":\"f20\",\"kind\":\"COMPARISON\",\"values\":[\"-7\"]},{\"id\":\"f21\",\"kind\":\"LIMIT\",\"values\":[]}],\"intent\":\"COMPARISON\",\"schema_version\":\"7A.1\"}",
+    "disclosure": "Seuls les alias, catégories et valeurs du JSON ci-dessous sont envoyés à NVIDIA. Aucun nom, identifiant métier, auteur, document, question libre ou secret n’est transmis. Prototype réservé aux données synthétiques ou publiques explicitement autorisées."
+  },
+  "explanation": {
+    "schema_version": "7A.1",
+    "organization_id": "c87775c3-505b-42d9-a914-1a99717e1a72",
+    "context_hash": "d614d128849310559eb57ba969a8a7c7a65f16c98fc954ffa1368453b9145fb1",
+    "provider": "NVIDIA_NIM",
+    "model": "nvidia/nemotron-3.5-lightning-30b-a3b",
+    "presentation": "GROUNDED_SELECTION",
+    "selected_fact_ids": [
+      "f0",
+      "f2",
+      "f20",
+      "f21",
+      "f1",
+      "f3"
+    ],
+    "paragraphs": [
+      "Référence : Optimalité attestée par le solveur dans ses tolérances enregistrées, pas un optimum rationnel exact.",
+      "Candidat : Optimalité attestée par le solveur dans ses tolérances enregistrées, pas un optimum rationnel exact.",
+      "Comparaison QUALIFIED. Écart observé candidat − référence : -7 unit. Aucun gain économique démontré.",
+      "Les faits portent sur les IR et tolérances historiques. Aucun nouveau calcul de scénario, prix d’ombre, causalité ou gain économique n’est fourni.",
+      "Référence : objectif 17 unit (MAX), recalculé sur l’IR originale.",
+      "Candidat : objectif 10 unit (MAX), recalculé sur l’IR originale."
+    ],
+    "facts": [
+      {
+        "id": "f0",
+        "kind": "STATUS",
+        "text": "Référence : Optimalité attestée par le solveur dans ses tolérances enregistrées, pas un optimum rationnel exact.",
+        "values": []
+      },
+      {
+        "id": "f1",
+        "kind": "OBJECTIVE",
+        "text": "Référence : objectif 17 unit (MAX), recalculé sur l’IR originale.",
+        "values": [
+          "17"
+        ]
+      },
+      {
+        "id": "f2",
+        "kind": "STATUS",
+        "text": "Candidat : Optimalité attestée par le solveur dans ses tolérances enregistrées, pas un optimum rationnel exact.",
+        "values": []
+      },
+      {
+        "id": "f3",
+        "kind": "OBJECTIVE",
+        "text": "Candidat : objectif 10 unit (MAX), recalculé sur l’IR originale.",
+        "values": [
+          "10"
+        ]
+      },
+      {
+        "id": "f4",
+        "kind": "DECISION",
+        "text": "Référence : course_languages = 0 1.",
+        "values": [
+          "0"
+        ]
+      },
+      {
+        "id": "f5",
+        "kind": "DECISION",
+        "text": "Référence : course_mathematics = 1 1.",
+        "values": [
+          "1"
+        ]
+      },
+      {
+        "id": "f6",
+        "kind": "DECISION",
+        "text": "Référence : course_science = 1 1.",
+        "values": [
+          "1"
+        ]
+      },
+      {
+        "id": "f7",
+        "kind": "RESOURCE",
+        "text": "Référence : ressource budget, 9/9 EUR, marge 0 ; saturée dans les tolérances enregistrées. Une saturation ne démontre ni causalité, ni prix d’ombre, ni gain.",
+        "values": [
+          "9",
+          "9",
+          "0"
+        ]
+      },
+      {
+        "id": "f8",
+        "kind": "RESOURCE",
+        "text": "Référence : ressource rooms, 2/2 unit, marge 0 ; saturée dans les tolérances enregistrées. Une saturation ne démontre ni causalité, ni prix d’ombre, ni gain.",
+        "values": [
+          "2",
+          "2",
+          "0"
+        ]
+      },
+      {
+        "id": "f9",
+        "kind": "CONSTRAINT",
+        "text": "Référence : contrainte at_least_one_course, état SATISFIED, membre gauche 2, membre droit 1, marge 1, tolérance 1/10000000 1.",
+        "values": [
+          "2",
+          "1",
+          "1",
+          "1/10000000"
+        ]
+      },
+      {
+        "id": "f10",
+        "kind": "CONSTRAINT",
+        "text": "Référence : contrainte budget_capacity, état SATURATED, membre gauche 9, membre droit 9, marge 0, tolérance 1/10000000 EUR.",
+        "values": [
+          "9",
+          "9",
+          "0",
+          "1/10000000"
+        ]
+      },
+      {
+        "id": "f11",
+        "kind": "CONSTRAINT",
+        "text": "Référence : contrainte rooms_capacity, état SATURATED, membre gauche 2, membre droit 2, marge 0, tolérance 1/10000000 unit.",
+        "values": [
+          "2",
+          "2",
+          "0",
+          "1/10000000"
+        ]
+      },
+      {
+        "id": "f12",
+        "kind": "DECISION",
+        "text": "Candidat : course_languages = 0 1.",
+        "values": [
+          "0"
+        ]
+      },
+      {
+        "id": "f13",
+        "kind": "DECISION",
+        "text": "Candidat : course_mathematics = 1 1.",
+        "values": [
+          "1"
+        ]
+      },
+      {
+        "id": "f14",
+        "kind": "DECISION",
+        "text": "Candidat : course_science = 0 1.",
+        "values": [
+          "0"
+        ]
+      },
+      {
+        "id": "f15",
+        "kind": "RESOURCE",
+        "text": "Candidat : ressource budget, 6/9 EUR, marge 3 ; avec marge mesurée. Une saturation ne démontre ni causalité, ni prix d’ombre, ni gain.",
+        "values": [
+          "6",
+          "9",
+          "3"
+        ]
+      },
+      {
+        "id": "f16",
+        "kind": "RESOURCE",
+        "text": "Candidat : ressource rooms, 1/1 unit, marge 0 ; saturée dans les tolérances enregistrées. Une saturation ne démontre ni causalité, ni prix d’ombre, ni gain.",
+        "values": [
+          "1",
+          "1",
+          "0"
+        ]
+      },
+      {
+        "id": "f17",
+        "kind": "CONSTRAINT",
+        "text": "Candidat : contrainte at_least_one_course, état SATURATED, membre gauche 1, membre droit 1, marge 0, tolérance 1/10000000 1.",
+        "values": [
+          "1",
+          "1",
+          "0",
+          "1/10000000"
+        ]
+      },
+      {
+        "id": "f18",
+        "kind": "CONSTRAINT",
+        "text": "Candidat : contrainte budget_capacity, état SATISFIED, membre gauche 6, membre droit 9, marge 3, tolérance 1/10000000 EUR.",
+        "values": [
+          "6",
+          "9",
+          "3",
+          "1/10000000"
+        ]
+      },
+      {
+        "id": "f19",
+        "kind": "CONSTRAINT",
+        "text": "Candidat : contrainte rooms_capacity, état SATURATED, membre gauche 1, membre droit 1, marge 0, tolérance 1/10000000 unit.",
+        "values": [
+          "1",
+          "1",
+          "0",
+          "1/10000000"
+        ]
+      },
+      {
+        "id": "f20",
+        "kind": "COMPARISON",
+        "text": "Comparaison QUALIFIED. Écart observé candidat − référence : -7 unit. Aucun gain économique démontré.",
+        "values": [
+          "-7"
+        ]
+      },
+      {
+        "id": "f21",
+        "kind": "LIMIT",
+        "text": "Les faits portent sur les IR et tolérances historiques. Aucun nouveau calcul de scénario, prix d’ombre, causalité ou gain économique n’est fourni.",
+        "values": []
+      }
+    ],
+    "references": [
+      {
+        "run_id": "033d7710-c62d-42db-bd86-58a7e03e37e4",
+        "content_hash": "ed8f4aabbb7856ec079218c75243a031b0381bcb5d027e7893c29f93addb79f2",
+        "model_version_id": "37aade4c-c984-49b7-931d-e83ca2f71be7",
+        "model_content_hash": "436743547365ae8c39aa1c80dd263ab536c0559c561f3b909b140fc19e7847f8",
+        "graph_snapshot_id": "bfc8d95d-3f5d-4148-b720-17e2eeaabf56",
+        "data_snapshot_id": "synthetic_university_v1",
+        "verified_plan": true,
+        "public_status": "OPTIMAL"
+      },
+      {
+        "run_id": "dc034593-52ce-46da-8795-31bb82bf387e",
+        "content_hash": "9816a6089d47cf1aa4da1ce03f50fe5b50b15843186ff498195713fabffb369b",
+        "model_version_id": "3a75c868-e9ab-4487-bcb9-e67fccc86d09",
+        "model_content_hash": "3a2c70b0635f174c56bcbab71450c72648637c7bc51420c5853e976d6b56bfe7",
+        "graph_snapshot_id": "cad5e96c-c6fd-4353-ac70-4768a5d49899",
+        "data_snapshot_id": "data_scenario_f558c881b64c47219c1c98ce2c28682e",
+        "verified_plan": true,
+        "public_status": "OPTIMAL"
+      }
+    ],
+    "warning": "Sélection de faits par le LLM, rédaction et chiffres contrôlés par le serveur. Aucune nouvelle preuve d’optimalité, causalité ou gain économique."
+  }
+}

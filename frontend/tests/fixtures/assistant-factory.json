@@ -1,0 +1,491 @@
+{
+  "preview": {
+    "schema_version": "7A.1",
+    "organization_id": "58af5e0d-3cbc-437a-9fe0-1f1df574aee0",
+    "selection": {
+      "run_id": "427e1c1e-9ec6-4c1d-89cd-319c1418368c",
+      "baseline_run_id": "25bb5d59-e9b6-4daa-8582-0504ef8092a6",
+      "intent": "COMPARISON"
+    },
+    "context_hash": "7efe7eb092b1302824c37825070cfa4f9ea7863aff458f15c7170c2915cbe39f",
+    "enabled": true,
+    "availability": "READY",
+    "provider": "NVIDIA_NIM",
+    "model": "nvidia/nemotron-3.5-lightning-30b-a3b",
+    "facts": [
+      {
+        "id": "f0",
+        "kind": "STATUS",
+        "text": "Référence : Optimalité attestée par le solveur dans ses tolérances enregistrées, pas un optimum rationnel exact.",
+        "values": []
+      },
+      {
+        "id": "f1",
+        "kind": "OBJECTIVE",
+        "text": "Référence : objectif 4100 EUR (MAX), recalculé sur l’IR originale.",
+        "values": [
+          "4100"
+        ]
+      },
+      {
+        "id": "f2",
+        "kind": "STATUS",
+        "text": "Candidat : Optimalité attestée par le solveur dans ses tolérances enregistrées, pas un optimum rationnel exact.",
+        "values": []
+      },
+      {
+        "id": "f3",
+        "kind": "OBJECTIVE",
+        "text": "Candidat : objectif 3500 EUR (MAX), recalculé sur l’IR originale.",
+        "values": [
+          "3500"
+        ]
+      },
+      {
+        "id": "f4",
+        "kind": "DECISION",
+        "text": "Référence : qty_A = 40 unit.",
+        "values": [
+          "40"
+        ]
+      },
+      {
+        "id": "f5",
+        "kind": "DECISION",
+        "text": "Référence : qty_B = 15 unit.",
+        "values": [
+          "15"
+        ]
+      },
+      {
+        "id": "f6",
+        "kind": "RESOURCE",
+        "text": "Référence : ressource finance_resource, 7000/8000 EUR, marge 1000 ; avec marge mesurée. Une saturation ne démontre ni causalité, ni prix d’ombre, ni gain.",
+        "values": [
+          "7000",
+          "8000",
+          "1000"
+        ]
+      },
+      {
+        "id": "f7",
+        "kind": "RESOURCE",
+        "text": "Référence : ressource logistics_resource, 55/55 unit, marge 0 ; saturée dans les tolérances enregistrées. Une saturation ne démontre ni causalité, ni prix d’ombre, ni gain.",
+        "values": [
+          "55",
+          "55",
+          "0"
+        ]
+      },
+      {
+        "id": "f8",
+        "kind": "RESOURCE",
+        "text": "Référence : ressource production_resource, 95/100 hour, marge 5 ; avec marge mesurée. Une saturation ne démontre ni causalité, ni prix d’ombre, ni gain.",
+        "values": [
+          "95",
+          "100",
+          "5"
+        ]
+      },
+      {
+        "id": "f9",
+        "kind": "CONSTRAINT",
+        "text": "Référence : contrainte finance_budget, état SATISFIED, membre gauche 7000, membre droit 8000, marge 1000, tolérance 1/10000000 EUR.",
+        "values": [
+          "7000",
+          "8000",
+          "1000",
+          "1/10000000"
+        ]
+      },
+      {
+        "id": "f10",
+        "kind": "CONSTRAINT",
+        "text": "Référence : contrainte logistics_delivery, état SATURATED, membre gauche 55, membre droit 55, marge 0, tolérance 1/10000000 unit.",
+        "values": [
+          "55",
+          "55",
+          "0",
+          "1/10000000"
+        ]
+      },
+      {
+        "id": "f11",
+        "kind": "CONSTRAINT",
+        "text": "Référence : contrainte production_machine, état SATISFIED, membre gauche 95, membre droit 100, marge 5, tolérance 1/10000000 hour.",
+        "values": [
+          "95",
+          "100",
+          "5",
+          "1/10000000"
+        ]
+      },
+      {
+        "id": "f12",
+        "kind": "DECISION",
+        "text": "Candidat : qty_A = 40 unit.",
+        "values": [
+          "40"
+        ]
+      },
+      {
+        "id": "f13",
+        "kind": "DECISION",
+        "text": "Candidat : qty_B = 5 unit.",
+        "values": [
+          "5"
+        ]
+      },
+      {
+        "id": "f14",
+        "kind": "RESOURCE",
+        "text": "Candidat : ressource finance_resource, 5000/8000 EUR, marge 3000 ; avec marge mesurée. Une saturation ne démontre ni causalité, ni prix d’ombre, ni gain.",
+        "values": [
+          "5000",
+          "8000",
+          "3000"
+        ]
+      },
+      {
+        "id": "f15",
+        "kind": "RESOURCE",
+        "text": "Candidat : ressource logistics_resource, 45/45 unit, marge 0 ; saturée dans les tolérances enregistrées. Une saturation ne démontre ni causalité, ni prix d’ombre, ni gain.",
+        "values": [
+          "45",
+          "45",
+          "0"
+        ]
+      },
+      {
+        "id": "f16",
+        "kind": "RESOURCE",
+        "text": "Candidat : ressource production_resource, 85/100 hour, marge 15 ; avec marge mesurée. Une saturation ne démontre ni causalité, ni prix d’ombre, ni gain.",
+        "values": [
+          "85",
+          "100",
+          "15"
+        ]
+      },
+      {
+        "id": "f17",
+        "kind": "CONSTRAINT",
+        "text": "Candidat : contrainte finance_budget, état SATISFIED, membre gauche 5000, membre droit 8000, marge 3000, tolérance 1/10000000 EUR.",
+        "values": [
+          "5000",
+          "8000",
+          "3000",
+          "1/10000000"
+        ]
+      },
+      {
+        "id": "f18",
+        "kind": "CONSTRAINT",
+        "text": "Candidat : contrainte logistics_delivery, état SATURATED, membre gauche 45, membre droit 45, marge 0, tolérance 1/10000000 unit.",
+        "values": [
+          "45",
+          "45",
+          "0",
+          "1/10000000"
+        ]
+      },
+      {
+        "id": "f19",
+        "kind": "CONSTRAINT",
+        "text": "Candidat : contrainte production_machine, état SATISFIED, membre gauche 85, membre droit 100, marge 15, tolérance 1/10000000 hour.",
+        "values": [
+          "85",
+          "100",
+          "15",
+          "1/10000000"
+        ]
+      },
+      {
+        "id": "f20",
+        "kind": "COMPARISON",
+        "text": "Comparaison QUALIFIED. Écart observé candidat − référence : -600 EUR. Aucun gain économique démontré.",
+        "values": [
+          "-600"
+        ]
+      },
+      {
+        "id": "f21",
+        "kind": "LIMIT",
+        "text": "Les faits portent sur les IR et tolérances historiques. Aucun nouveau calcul de scénario, prix d’ombre, causalité ou gain économique n’est fourni.",
+        "values": []
+      }
+    ],
+    "references": [
+      {
+        "run_id": "25bb5d59-e9b6-4daa-8582-0504ef8092a6",
+        "content_hash": "2b1a918b0121a9a05dc25d633034c23565cca3302093f029a6d81e8cd8928888",
+        "model_version_id": "ca60f5d9-8a9c-4191-bb33-68e90bd1bb57",
+        "model_content_hash": "b58ae33296d979578ccf3d8c2fa4ffcabb94268510d155e89777d7e45c131191",
+        "graph_snapshot_id": "d276ad61-b3d8-4e2d-95bc-32b2e48fad0a",
+        "data_snapshot_id": "synthetic_demo_v1",
+        "verified_plan": true,
+        "public_status": "OPTIMAL"
+      },
+      {
+        "run_id": "427e1c1e-9ec6-4c1d-89cd-319c1418368c",
+        "content_hash": "f16d3684dbc60646f11bcbb8be6e8c9ee577be154afdda8bbbd801e084f10ec1",
+        "model_version_id": "483cd739-a485-4e19-a3ac-8f50f5ed8fe4",
+        "model_content_hash": "cd1d4c07a9067bb31839d96ac14a6b5b586f7c9302c428f2219dd167b22dbd4a",
+        "graph_snapshot_id": "84a4f5c0-c775-484f-8dd9-1fe71c4aded7",
+        "data_snapshot_id": "data_scenario_f2e7a4569a7d4ef7b128a71f3411109b",
+        "verified_plan": true,
+        "public_status": "OPTIMAL"
+      }
+    ],
+    "outbound_json": "{\"facts\":[{\"id\":\"f0\",\"kind\":\"STATUS\",\"values\":[]},{\"id\":\"f1\",\"kind\":\"OBJECTIVE\",\"values\":[\"4100\"]},{\"id\":\"f2\",\"kind\":\"STATUS\",\"values\":[]},{\"id\":\"f3\",\"kind\":\"OBJECTIVE\",\"values\":[\"3500\"]},{\"id\":\"f4\",\"kind\":\"DECISION\",\"values\":[\"40\"]},{\"id\":\"f5\",\"kind\":\"DECISION\",\"values\":[\"15\"]},{\"id\":\"f6\",\"kind\":\"RESOURCE\",\"values\":[\"7000\",\"8000\",\"1000\"]},{\"id\":\"f7\",\"kind\":\"RESOURCE\",\"values\":[\"55\",\"55\",\"0\"]},{\"id\":\"f8\",\"kind\":\"RESOURCE\",\"values\":[\"95\",\"100\",\"5\"]},{\"id\":\"f9\",\"kind\":\"CONSTRAINT\",\"values\":[\"7000\",\"8000\",\"1000\",\"1/10000000\"]},{\"id\":\"f10\",\"kind\":\"CONSTRAINT\",\"values\":[\"55\",\"55\",\"0\",\"1/10000000\"]},{\"id\":\"f11\",\"kind\":\"CONSTRAINT\",\"values\":[\"95\",\"100\",\"5\",\"1/10000000\"]},{\"id\":\"f12\",\"kind\":\"DECISION\",\"values\":[\"40\"]},{\"id\":\"f13\",\"kind\":\"DECISION\",\"values\":[\"5\"]},{\"id\":\"f14\",\"kind\":\"RESOURCE\",\"values\":[\"5000\",\"8000\",\"3000\"]},{\"id\":\"f15\",\"kind\":\"RESOURCE\",\"values\":[\"45\",\"45\",\"0\"]},{\"id\":\"f16\",\"kind\":\"RESOURCE\",\"values\":[\"85\",\"100\",\"15\"]},{\"id\":\"f17\",\"kind\":\"CONSTRAINT\",\"values\":[\"5000\",\"8000\",\"3000\",\"1/10000000\"]},{\"id\":\"f18\",\"kind\":\"CONSTRAINT\",\"values\":[\"45\",\"45\",\"0\",\"1/10000000\"]},{\"id\":\"f19\",\"kind\":\"CONSTRAINT\",\"values\":[\"85\",\"100\",\"15\",\"1/10000000\"]},{\"id\":\"f20\",\"kind\":\"COMPARISON\",\"values\":[\"-600\"]},{\"id\":\"f21\",\"kind\":\"LIMIT\",\"values\":[]}],\"intent\":\"COMPARISON\",\"schema_version\":\"7A.1\"}",
+    "disclosure": "Seuls les alias, catégories et valeurs du JSON ci-dessous sont envoyés à NVIDIA. Aucun nom, identifiant métier, auteur, document, question libre ou secret n’est transmis. Prototype réservé aux données synthétiques ou publiques explicitement autorisées."
+  },
+  "explanation": {
+    "schema_version": "7A.1",
+    "organization_id": "58af5e0d-3cbc-437a-9fe0-1f1df574aee0",
+    "context_hash": "7efe7eb092b1302824c37825070cfa4f9ea7863aff458f15c7170c2915cbe39f",
+    "provider": "NVIDIA_NIM",
+    "model": "nvidia/nemotron-3.5-lightning-30b-a3b",
+    "presentation": "GROUNDED_SELECTION",
+    "selected_fact_ids": [
+      "f0",
+      "f2",
+      "f20",
+      "f21",
+      "f1",
+      "f3"
+    ],
+    "paragraphs": [
+      "Référence : Optimalité attestée par le solveur dans ses tolérances enregistrées, pas un optimum rationnel exact.",
+      "Candidat : Optimalité attestée par le solveur dans ses tolérances enregistrées, pas un optimum rationnel exact.",
+      "Comparaison QUALIFIED. Écart observé candidat − référence : -600 EUR. Aucun gain économique démontré.",
+      "Les faits portent sur les IR et tolérances historiques. Aucun nouveau calcul de scénario, prix d’ombre, causalité ou gain économique n’est fourni.",
+      "Référence : objectif 4100 EUR (MAX), recalculé sur l’IR originale.",
+      "Candidat : objectif 3500 EUR (MAX), recalculé sur l’IR originale."
+    ],
+    "facts": [
+      {
+        "id": "f0",
+        "kind": "STATUS",
+        "text": "Référence : Optimalité attestée par le solveur dans ses tolérances enregistrées, pas un optimum rationnel exact.",
+        "values": []
+      },
+      {
+        "id": "f1",
+        "kind": "OBJECTIVE",
+        "text": "Référence : objectif 4100 EUR (MAX), recalculé sur l’IR originale.",
+        "values": [
+          "4100"
+        ]
+      },
+      {
+        "id": "f2",
+        "kind": "STATUS",
+        "text": "Candidat : Optimalité attestée par le solveur dans ses tolérances enregistrées, pas un optimum rationnel exact.",
+        "values": []
+      },
+      {
+        "id": "f3",
+        "kind": "OBJECTIVE",
+        "text": "Candidat : objectif 3500 EUR (MAX), recalculé sur l’IR originale.",
+        "values": [
+          "3500"
+        ]
+      },
+      {
+        "id": "f4",
+        "kind": "DECISION",
+        "text": "Référence : qty_A = 40 unit.",
+        "values": [
+          "40"
+        ]
+      },
+      {
+        "id": "f5",
+        "kind": "DECISION",
+        "text": "Référence : qty_B = 15 unit.",
+        "values": [
+          "15"
+        ]
+      },
+      {
+        "id": "f6",
+        "kind": "RESOURCE",
+        "text": "Référence : ressource finance_resource, 7000/8000 EUR, marge 1000 ; avec marge mesurée. Une saturation ne démontre ni causalité, ni prix d’ombre, ni gain.",
+        "values": [
+          "7000",
+          "8000",
+          "1000"
+        ]
+      },
+      {
+        "id": "f7",
+        "kind": "RESOURCE",
+        "text": "Référence : ressource logistics_resource, 55/55 unit, marge 0 ; saturée dans les tolérances enregistrées. Une saturation ne démontre ni causalité, ni prix d’ombre, ni gain.",
+        "values": [
+          "55",
+          "55",
+          "0"
+        ]
+      },
+      {
+        "id": "f8",
+        "kind": "RESOURCE",
+        "text": "Référence : ressource production_resource, 95/100 hour, marge 5 ; avec marge mesurée. Une saturation ne démontre ni causalité, ni prix d’ombre, ni gain.",
+        "values": [
+          "95",
+          "100",
+          "5"
+        ]
+      },
+      {
+        "id": "f9",
+        "kind": "CONSTRAINT",
+        "text": "Référence : contrainte finance_budget, état SATISFIED, membre gauche 7000, membre droit 8000, marge 1000, tolérance 1/10000000 EUR.",
+        "values": [
+          "7000",
+          "8000",
+          "1000",
+          "1/10000000"
+        ]
+      },
+      {
+        "id": "f10",
+        "kind": "CONSTRAINT",
+        "text": "Référence : contrainte logistics_delivery, état SATURATED, membre gauche 55, membre droit 55, marge 0, tolérance 1/10000000 unit.",
+        "values": [
+          "55",
+          "55",
+          "0",
+          "1/10000000"
+        ]
+      },
+      {
+        "id": "f11",
+        "kind": "CONSTRAINT",
+        "text": "Référence : contrainte production_machine, état SATISFIED, membre gauche 95, membre droit 100, marge 5, tolérance 1/10000000 hour.",
+        "values": [
+          "95",
+          "100",
+          "5",
+          "1/10000000"
+        ]
+      },
+      {
+        "id": "f12",
+        "kind": "DECISION",
+        "text": "Candidat : qty_A = 40 unit.",
+        "values": [
+          "40"
+        ]
+      },
+      {
+        "id": "f13",
+        "kind": "DECISION",
+        "text": "Candidat : qty_B = 5 unit.",
+        "values": [
+          "5"
+        ]
+      },
+      {
+        "id": "f14",
+        "kind": "RESOURCE",
+        "text": "Candidat : ressource finance_resource, 5000/8000 EUR, marge 3000 ; avec marge mesurée. Une saturation ne démontre ni causalité, ni prix d’ombre, ni gain.",
+        "values": [
+          "5000",
+          "8000",
+          "3000"
+        ]
+      },
+      {
+        "id": "f15",
+        "kind": "RESOURCE",
+        "text": "Candidat : ressource logistics_resource, 45/45 unit, marge 0 ; saturée dans les tolérances enregistrées. Une saturation ne démontre ni causalité, ni prix d’ombre, ni gain.",
+        "values": [
+          "45",
+          "45",
+          "0"
+        ]
+      },
+      {
+        "id": "f16",
+        "kind": "RESOURCE",
+        "text": "Candidat : ressource production_resource, 85/100 hour, marge 15 ; avec marge mesurée. Une saturation ne démontre ni causalité, ni prix d’ombre, ni gain.",
+        "values": [
+          "85",
+          "100",
+          "15"
+        ]
+      },
+      {
+        "id": "f17",
+        "kind": "CONSTRAINT",
+        "text": "Candidat : contrainte finance_budget, état SATISFIED, membre gauche 5000, membre droit 8000, marge 3000, tolérance 1/10000000 EUR.",
+        "values": [
+          "5000",
+          "8000",
+          "3000",
+          "1/10000000"
+        ]
+      },
+      {
+        "id": "f18",
+        "kind": "CONSTRAINT",
+        "text": "Candidat : contrainte logistics_delivery, état SATURATED, membre gauche 45, membre droit 45, marge 0, tolérance 1/10000000 unit.",
+        "values": [
+          "45",
+          "45",
+          "0",
+          "1/10000000"
+        ]
+      },
+      {
+        "id": "f19",
+        "kind": "CONSTRAINT",
+        "text": "Candidat : contrainte production_machine, état SATISFIED, membre gauche 85, membre droit 100, marge 15, tolérance 1/10000000 hour.",
+        "values": [
+          "85",
+          "100",
+          "15",
+          "1/10000000"
+        ]
+      },
+      {
+        "id": "f20",
+        "kind": "COMPARISON",
+        "text": "Comparaison QUALIFIED. Écart observé candidat − référence : -600 EUR. Aucun gain économique démontré.",
+        "values": [
+          "-600"
+        ]
+      },
+      {
+        "id": "f21",
+        "kind": "LIMIT",
+        "text": "Les faits portent sur les IR et tolérances historiques. Aucun nouveau calcul de scénario, prix d’ombre, causalité ou gain économique n’est fourni.",
+        "values": []
+      }
+    ],
+    "references": [
+      {
+        "run_id": "25bb5d59-e9b6-4daa-8582-0504ef8092a6",
+        "content_hash": "2b1a918b0121a9a05dc25d633034c23565cca3302093f029a6d81e8cd8928888",
+        "model_version_id": "ca60f5d9-8a9c-4191-bb33-68e90bd1bb57",
+        "model_content_hash": "b58ae33296d979578ccf3d8c2fa4ffcabb94268510d155e89777d7e45c131191",
+        "graph_snapshot_id": "d276ad61-b3d8-4e2d-95bc-32b2e48fad0a",
+        "data_snapshot_id": "synthetic_demo_v1",
+        "verified_plan": true,
+        "public_status": "OPTIMAL"
+      },
+      {
+        "run_id": "427e1c1e-9ec6-4c1d-89cd-319c1418368c",
+        "content_hash": "f16d3684dbc60646f11bcbb8be6e8c9ee577be154afdda8bbbd801e084f10ec1",
+        "model_version_id": "483cd739-a485-4e19-a3ac-8f50f5ed8fe4",
+        "model_content_hash": "cd1d4c07a9067bb31839d96ac14a6b5b586f7c9302c428f2219dd167b22dbd4a",
+        "graph_snapshot_id": "84a4f5c0-c775-484f-8dd9-1fe71c4aded7",
+        "data_snapshot_id": "data_scenario_f2e7a4569a7d4ef7b128a71f3411109b",
+        "verified_plan": true,
+        "public_status": "OPTIMAL"
+      }
+    ],
+    "warning": "Sélection de faits par le LLM, rédaction et chiffres contrôlés par le serveur. Aucune nouvelle preuve d’optimalité, causalité ou gain économique."
+  }
+}

@@ -1,4 +1,4 @@
-> **Développement :** lire `AGENTS.md` et `OPTIMIZATION_BRAIN_SPEC.md`. Les phases 0 à 3, 4A, 4B et le centre d'exécution backend/frontend 4C sont livrés. La Phase 5 reste hors périmètre.
+> **Développement :** lire `AGENTS.md` et `OPTIMIZATION_BRAIN_SPEC.md`. Les phases 0 à 4C, 5A, 5B-1/2/3 et UX V2 sont livrées. La première tranche 7A ajoute un assistant NVIDIA facultatif ; 5C et 6 restent hors périmètre.
 
 # Optimization Brain — MVP conservé et Universal Model Kernel
 
@@ -11,6 +11,11 @@ indépendante des valeurs brutes sur cette IR. Le Brain fonctionne hors ligne, s
 Documents : [audit initial](docs/audit-phase-0.md), [contrat DSL](docs/model-dsl.md),
 [choix algorithmiques](docs/decision-records/0001-universal-kernel.md),
 [roadmap réelle](docs/roadmap.md), [résultats de validation](docs/validation.md).
+Assistant NVIDIA 7A : [activation et contrats](docs/nvidia-nim-gateway.md),
+[frontière de confiance](docs/decision-records/0015-optional-nvidia-grounded-explanations.md),
+[validation et limites](docs/validation-nvidia-nim-gateway.md).
+Il est désactivé par défaut. Les explications guidées utilisent des faits revérifiés,
+avec consentement et autorisations d’export explicites ; aucun calcul ne dépend de NVIDIA.
 Phase 2 : [contrat solveur](docs/solver-contract.md), [API](docs/API.md),
 [ADR numérique](docs/decision-records/0002-highs-numerics-and-verification.md),
 [validation phase 2](docs/validation-phase-2.md).
@@ -237,7 +242,7 @@ USER / DONNÉES MÉTIER -> LLM (optionnel) -> JSON PROPOSÉ
 -> résultat JSON avec statut + mesures -> LLM (optionnel) pour explication
 ```
 
-Le champ de type `"ignore_constraints"` sera rejeté. Un LLM ne peut pas inventer une capacité ou une règle cachée : les paramètres doivent provenir d'une source métier validée. Aucun appel LLM n'est inclus dans ce dépôt.
+Le champ de type `"ignore_constraints"` sera rejeté. Un LLM ne peut pas inventer une capacité ou une règle cachée : les paramètres doivent provenir d'une source métier validée. La passerelle 7A ajoute uniquement des explications guidées facultatives dans l’API sécurisée ; le Brain et l’API legacy restent sans appel LLM. La génération de propositions n’est pas implémentée.
 
 ## Structure
 
@@ -279,7 +284,7 @@ prévisualisation et nouveaux graphes/modèles DRAFT. La
 avec revérification indépendante, deltas exacts et règles explicites de
 comparabilité. Un écart entre modèles ou snapshots différents ne démontre pas
 un gain économique. Les analyses de sensibilité restent à construire.
-La Phase 5C, le LLM et les optimisations avancées restent hors périmètre.
+La Phase 5C, la génération de contraintes par LLM et les optimisations avancées restent hors périmètre. La passerelle d’explication facultative 7A est décrite ci-dessus.
 
 La [fondation UX-F1](docs/validation-ux-f1.md) ajoute navigation responsive,
 catalogue d'organisations et modes de présentation métier/expert. Les pages et

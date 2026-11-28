@@ -16,6 +16,9 @@ import type {
   ControlledProposal,
   ControlledCommit,
   ScenarioComparison,
+  ExplanationSelection,
+  ExplanationPreview,
+  ExplanationResponse,
 } from "./types";
 import { decode, parsePrecise } from "./validation";
 
@@ -40,6 +43,25 @@ export class ApiError extends Error {
   }
 }
 const changeMessages: Record<string, string> = {
+  LLM_DISABLED: "L’assistant est désactivé. Les calculs restent disponibles.",
+  LLM_MISSING_API_KEY: "La clé NVIDIA n’est pas configurée sur le serveur.",
+  LLM_NOT_AUTHORIZED:
+    "Cet espace ou ce modèle n’est pas autorisé à transmettre des données à NVIDIA.",
+  LLM_CONTEXT_CHANGED:
+    "Le contexte a changé. Consultez de nouveau la prévisualisation.",
+  LLM_QUOTA_EXCEEDED:
+    "Le quota d’explications de cette organisation est atteint.",
+  LLM_BUSY: "La passerelle est occupée. Réessayez ultérieurement.",
+  LLM_RATE_LIMIT: "NVIDIA limite les requêtes. Réessayez ultérieurement.",
+  LLM_TIMEOUT:
+    "NVIDIA n’a pas répondu dans le délai prévu. Aucun calcul n’a été relancé.",
+  LLM_UNAVAILABLE: "NVIDIA est indisponible. Aucun calcul n’a été relancé.",
+  LLM_INVALID_RESPONSE:
+    "La réponse NVIDIA a été refusée : elle ne respecte pas les faits autorisés.",
+  LLM_CONTEXT_TOO_LARGE:
+    "Le contexte dépasse les limites de cette première tranche.",
+  LLM_INVALID_ARTIFACT:
+    "L’intégrité des artefacts historiques n’a pas pu être établie. Aucune explication n’est envoyée.",
   COMPARISON_INTEGRITY_CONFLICT:
     "L’intégrité ou la reconstruction des résultats historiques n’a pas pu être établie. Aucun écart n’est présenté.",
   UNIT_CHANGE_FORBIDDEN: "Le changement d’unité est interdit.",
@@ -97,7 +119,7 @@ export class ApiClient {
       controller.signal.throwIfAborted();
       if (!response.ok) {
         let code: string | undefined;
-        if ([403, 409, 422].includes(response.status)) {
+        if ([403, 409, 422, 429, 502, 503, 504].includes(response.status)) {
           // Only closed public codes are displayed. Never echo arbitrary server text.
           const detail = (await response.json().catch(() => null)) as {
             detail?: { code?: unknown };
@@ -223,6 +245,85 @@ export class ApiClient {
   }
   run(org: string, id: string): Promise<RunArtifact> {
     return this.scoped(org, id, "optimization-runs", "RunArtifactResponse");
+  }
+  async previewExplanation(
+    org: string,
+    selection: ExplanationSelection,
+  ): Promise<ExplanationPreview> {
+    let result: ExplanationPreview;
+    try {
+      result = await this.request(
+        `/organizations/${encodeURIComponent(org)}/assistant/preview`,
+        "ExplanationPreview",
+        "POST",
+        selection,
+      );
+    } catch (error) {
+      if (error instanceof ApiError && error.status === 409)
+        throw new ApiError(409, "LLM_INVALID_ARTIFACT");
+      throw error;
+    }
+    this.checkExplanationIdentity(org, selection, result.references);
+    if (
+      result.selection.run_id !== selection.run_id ||
+      (result.selection.baseline_run_id ?? null) !==
+        (selection.baseline_run_id ?? null) ||
+      result.selection.intent !== selection.intent ||
+      result.organization_id !== org
+    )
+      throw new Error(
+        "Prévisualisation incompatible avec la sélection active.",
+      );
+    return result;
+  }
+  async explain(
+    org: string,
+    preview: ExplanationPreview,
+  ): Promise<ExplanationResponse> {
+    const result = await this.request(
+      `/organizations/${encodeURIComponent(org)}/assistant/explain`,
+      "ExplanationResponse",
+      "POST",
+      {
+        ...preview.selection,
+        context_hash: preview.context_hash,
+        consent_to_external_processing: true,
+      },
+    );
+    this.checkExplanationIdentity(org, preview.selection, result.references);
+    if (
+      result.organization_id !== org ||
+      result.context_hash !== preview.context_hash ||
+      result.model !== preview.model ||
+      JSON.stringify(result.facts) !== JSON.stringify(preview.facts) ||
+      JSON.stringify(result.references) !==
+        JSON.stringify(preview.references) ||
+      result.paragraphs.length !== result.selected_fact_ids.length ||
+      result.paragraphs.some(
+        (text, i) =>
+          text !==
+          preview.facts.find((f) => f.id === result.selected_fact_ids[i])?.text,
+      )
+    )
+      throw new Error("Explication incompatible avec les faits revérifiés.");
+    return result;
+  }
+  private checkExplanationIdentity(
+    org: string,
+    selection: ExplanationSelection,
+    references: ExplanationPreview["references"],
+  ): void {
+    const expected = selection.baseline_run_id
+      ? [selection.baseline_run_id, selection.run_id]
+      : [selection.run_id];
+    if (
+      !org ||
+      references.length !== expected.length ||
+      references.some((ref, i) => ref.run_id !== expected[i])
+    )
+      throw new Error(
+        "Références incompatibles avec les résultats sélectionnés.",
+      );
   }
   async compareRuns(
     org: string,
